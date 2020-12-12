@@ -5,7 +5,7 @@ SRCS = main.c
 OBJS = ${SRCS:.c=.o}
 
 $(NAME): $(OBJS)
-	gcc $(OBJS) -L./minilibx/ -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
+	gcc $(OBJS) -L./minilibx-linux/ -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
 
 $(OBJS): %.o : %.c
 	gcc -c $< -o $@

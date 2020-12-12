@@ -1,1 +1,1 @@
-#include "minilibx/mlx.h"
+#include "minilibx-linux/mlx.h"
