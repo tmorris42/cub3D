@@ -1,0 +1,1 @@
+#include "minilibx/mlx.h"
