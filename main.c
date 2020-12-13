@@ -22,14 +22,14 @@ typedef struct		s_screen
 	void	*win;
 }					t_screen;
 
-int		ft_get_color(int r, int g, int b)   // use bit-shift instead   ex:  t  << 16
+int		ft_get_color(int r, int g, int b, int alpha)
 {
-	return ((255 * ((255 * r) + g)) + b);
+	return ((alpha << 24) + (r << 16) + (g << 8) + (b));
 }
 
 int		ft_draw(t_screen *screen)
 {
-	mlx_pixel_put(screen->mlx, screen->win, 10, 10, 255);
+	mlx_pixel_put(screen->mlx, screen->win, 10, 10, ft_get_color(255,0,0,0));
 //	mlx_string_put(screen->mlx, screen->win, 10, 10, 255, "This is Blue");
 //	mlx_string_put(screen->mlx, screen->win, 10, 20, get_color(0, 255, 0), "This is Green");
 //	mlx_string_put(screen->mlx, screen->win, 10, 40, get_color(255, 0, 0), "This is Red");
