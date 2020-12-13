@@ -3,6 +3,68 @@
 
 #include "libft/libft.h"
 
+typedef struct	s_map_data
+{
+	unsigned int	floor;
+	unsigned int	ceil;
+	int		res_width;
+	int		res_height;
+	int		map_width;
+	int		map_height;
+	char	*textures[4];
+	char	*sprite;
+//	t_map	*map_layout;
+	int		player_x;
+	int		player_y;
+	double	player_facing;
+
+}				t_map_data;
+
+void		ft_map_data_init(t_map_data *map)
+{
+	int		i;
+	map->floor = 0;
+	map->ceil = 0;
+	map->res_width = 0;
+	map->res_height = 0;
+	i = -1;
+	while (++i < 4)
+		map->textures[i] = NULL;
+	map->sprite = NULL;
+	map->player_x = -1;
+	map->player_y = -1;
+	map->player_facing = -1;
+}
+
+void		ft_free_map_data(t_map_data *map)
+{
+	int		i;
+	
+	i = -1;
+	while (++i < 4)
+	{
+		free(map->textures[i]);
+		map->textures[i] = NULL;
+	}
+	free(map->sprite);
+	map->sprite = NULL;
+	//free(map)		// right now map is not malloc'd but if that changes
+}
+
+
+void		ft_print_map_data(t_map_data map)
+{
+	int		i;
+	ft_printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map.res_width,
+			map.res_height,	map.map_width, map.map_height);
+	i = -1;
+	while (++i < 4)
+		ft_printf("\t%s\n", map.textures[i]);
+	ft_printf("Sprite:\n\t%s\n", map.sprite);
+	ft_printf("Floor Color: %u\nCeiling Color: %u\n", map.floor, map.ceil);
+	ft_printf("Player Location: %d, %d,  %d\n", map.player_x, map.player_y, map.player_facing);
+}
+
 int	 		ft_get_chr_index(char c, char *str)
 {
 	int		i;
@@ -30,12 +92,12 @@ static void	ft_free_array(char **array)
 	free(array);
 }
 
-static int	ft_config_other(char *line)
+static int	ft_config_other(char *line, t_map_data *map_data)
 {
 	return (0);
 }
 
-static int	ft_config_r(char *line)
+static int	ft_config_r(char *line, t_map_data *map_data)
 {
 	char	**arr;
 
@@ -47,100 +109,80 @@ static int	ft_config_r(char *line)
 		ft_free_array(arr);
 		return (-1); //error, invalid R configuration
 	}
+	map_data->res_width = ft_atoi(arr[1]);
+	map_data->res_height = ft_atoi(arr[2]);
 	ft_printf("\tR: %d, %d\n", ft_atoi(arr[1]), ft_atoi(arr[2]));
 	// in reality, don't print, save to configuration struc, and verify that HEIGHT and WIDTH are both > 0
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_f(char *line)
+static int	ft_config_f(char *line, t_map_data *map_data)
 {
 	return (0);
 }
 
-static int	ft_config_c(char *line)
+static int	ft_config_c(char *line, t_map_data *map_data)
 {
 	return (0);
 }
 
-static int	ft_config_n(char *line)
+static int ft_config_nesw(char *line, t_map_data *map_data, char *code)
 {
 	char	**arr;
+	char	*filename;
+	int		index;
+
+	if (code[0] == 'N' && code[1] == 'O')
+		index = 0;
+	else if (code[0] == 'E' && code[1] == 'A')
+		index = 1;
+	else if (code[0] == 'S' && code[1] == 'O')
+		index = 2;
+	else if (code[0] == 'W' && code[1] == 'E')
+		index = 3;
+	else
+		return (-1);
+
 
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
-	if (ft_strncmp(arr[0], "NO", 3) || !arr[1] || arr[2])
+	if (ft_strncmp(arr[0], code, 3) || !arr[1] || arr[2])
 	{
 		ft_free_array(arr);
 		return (-1); //error, invalid NO configuration
 	}
-	ft_printf("\tNO: %s\n", arr[1]);
+	filename = ft_strdup(arr[1]);
+	ft_printf("\t%s: %s\n", code, filename);
+	map_data->textures[index] = filename;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_e(char *line)
+static int	ft_config_n(char *line, t_map_data *map_data)
 {
-	char	**arr;
-
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
-	if (ft_strncmp(arr[0], "EA", 3) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
-	ft_printf("\tEA: %s\n", arr[1]);
-	// in reality, don't print, save to configuration struc, verify filename if necc.
-	ft_free_array(arr);
-	return (1);
+	return (ft_config_nesw(line, map_data, "NO"));
 }
 
-static int	ft_config_w(char *line)
+static int	ft_config_e(char *line, t_map_data *map_data)
 {
-	char	**arr;
-
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
-	if (ft_strncmp(arr[0], "WE", 3) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
-	ft_printf("\tWE: %s\n", arr[1]);
-	// in reality, don't print, save to configuration struc, verify filename if necc.
-	ft_free_array(arr);
-	return (1);
+	return (ft_config_nesw(line, map_data, "EA"));
 }
 
-static int	ft_config_so(char *line)
+static int	ft_config_w(char *line, t_map_data *map_data)
 {
-	char	**arr;
-
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
-	if (ft_strncmp(arr[0], "SO", 3) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
-	ft_printf("\tSO: %s\n", arr[1]);
-	// in reality, don't print, save to configuration struc, verify filename if necc.
-	ft_free_array(arr);
-	return (1);
+	return (ft_config_nesw(line, map_data, "WE"));
 }
 
-static int	ft_config_s(char *line)
+static int	ft_config_s(char *line, t_map_data *map_data)
 {
 	char	**arr;
+	char	*filename;
 	
 	if (line[0] == 'S' && line[1] == 'O')
-		return (ft_config_so(line));
+		return (ft_config_nesw(line, map_data, "SO"));
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
@@ -149,16 +191,18 @@ static int	ft_config_s(char *line)
 		ft_free_array(arr);
 		return (-1); //error, invalid NO configuration
 	}
-	ft_printf("\tS: %s\n", arr[1]);
+	filename = ft_strdup(arr[1]);
+	ft_printf("\tS: %s\n", filename);
+	map_data->sprite = filename;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_parse_line(char *line)
+static int	ft_parse_line(char *line, t_map_data *map_data)
 {
 	int		i;
-	int		(*config[8]) (char *map_line);
+	int		(*config[8]) (char *map_line, t_map_data *map_data);
 
 	config[0] = ft_config_other;
 	config[1] = ft_config_r;
@@ -174,7 +218,7 @@ static int	ft_parse_line(char *line)
 		return (0);
 	// check to make sure you don't seg fault by assuming len of string
 	i = ft_get_chr_index(line[0], "RFCNEWS");
-	i = (*config[i + 1]) (line);
+	i = (*config[i + 1]) (line, map_data);
 	if (i == -1)
 	{
 		ft_printf("PARSING ERROR\n");
@@ -201,7 +245,9 @@ int			ft_parse_file(char *filename)
 	int		fd;
 	int		status;
 	char	*line;
+	t_map_data map_data;
 
+	ft_map_data_init(&map_data);
 	status = 0;
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
@@ -209,13 +255,16 @@ int			ft_parse_file(char *filename)
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (ft_parse_line(line) <= 0)
+		if (ft_parse_line(line, &map_data) <= 0)
 			ft_printf("%s\n", line);
 		free(line);
 		line = NULL;
 		if (status == 0)	
 			break ;
 	}
+	ft_printf("MAP DATA\n");
+	ft_print_map_data(map_data);
+	ft_free_map_data(&map_data);
 	return (0);
 }
 
