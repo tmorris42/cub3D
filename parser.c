@@ -27,6 +27,8 @@ void		ft_map_data_init(t_map_data *map)
 	map->ceil = 0;
 	map->res_width = 0;
 	map->res_height = 0;
+	map->map_width = 0;
+	map->map_height = 0;
 	i = -1;
 	while (++i < 4)
 		map->textures[i] = NULL;
@@ -94,6 +96,11 @@ static void	ft_free_array(char **array)
 
 static int	ft_config_other(char *line, t_map_data *map_data)
 {
+	// Idea for parsing the map for leaks (lack of outer wall)
+	// 		verify that a space is only adjacent to another space or a '1'
+	// 			if it is next to a zero, that's probably a leak
+	// 						unless the zero is just outside the map... hm
+	// 							READ SUBJECT TO SEE IF THAT'S ALLOWED
 	return (0);
 }
 
@@ -111,20 +118,94 @@ static int	ft_config_r(char *line, t_map_data *map_data)
 	}
 	map_data->res_width = ft_atoi(arr[1]);
 	map_data->res_height = ft_atoi(arr[2]);
-	ft_printf("\tR: %d, %d\n", ft_atoi(arr[1]), ft_atoi(arr[2]));
+	//ft_printf("\tR: %d, %d\n", ft_atoi(arr[1]), ft_atoi(arr[2]));
 	// in reality, don't print, save to configuration struc, and verify that HEIGHT and WIDTH are both > 0
+	ft_free_array(arr);
+	return (1);
+}
+
+static int	ft_parse_rgb(char *line, unsigned int *rgb)
+{
+	char	**arr;
+	int		i;
+	int		temp;
+
+	(*rgb) = 0;
+	arr = ft_split(line, ',');
+	if (!arr)
+		return (-1);
+	i = 0;
+	while (arr[i])
+	{
+		temp = ft_atoi(arr[i]);
+		if (i > 2 || temp < 0 || temp > 255)
+		{
+			ft_free_array(arr);
+			return (-1);
+		}
+		(*rgb) = ((*rgb) << 8) + temp;
+		++i;
+	}
 	ft_free_array(arr);
 	return (1);
 }
 
 static int	ft_config_f(char *line, t_map_data *map_data)
 {
-	return (0);
+	char			**arr;
+	unsigned int	rgb_i;
+	int				status;
+
+	rgb_i = 0;
+	status = 0;
+	arr = ft_split(line, ' ');
+	if (!arr)
+		return (-1); //error msg split failed / error parsing map
+	if (ft_strncmp(arr[0], "F", 2) || !arr[1] || arr[2])
+	{
+		ft_free_array(arr);
+		return (-1); //error, invalid NO configuration
+	}
+	status = ft_parse_rgb(arr[1], &rgb_i);
+	if (status == -1)
+	{
+		ft_free_array(arr);
+		return (-1); //err, invalid rgb
+	}
+	//ft_printf("\t%s: %s\n", code, filename);
+	map_data->floor = rgb_i;
+	// in reality, don't print, save to configuration struc, verify filename if necc.
+	ft_free_array(arr);
+	return (1);
 }
 
 static int	ft_config_c(char *line, t_map_data *map_data)
 {
-	return (0);
+	char			**arr;
+	unsigned int	rgb_i;
+	int				status;
+
+	rgb_i = 0;
+	status = 0;
+	arr = ft_split(line, ' ');
+	if (!arr)
+		return (-1); //error msg split failed / error parsing map
+	if (ft_strncmp(arr[0], "C", 2) || !arr[1] || arr[2])
+	{
+		ft_free_array(arr);
+		return (-1); //error, invalid NO configuration
+	}
+	status = ft_parse_rgb(arr[1], &rgb_i);
+	if (status == -1)
+	{
+		ft_free_array(arr);
+		return (-1); //err, invalid rgb
+	}
+	//ft_printf("\t%s: %s\n", code, filename);
+	map_data->ceil = rgb_i;
+	// in reality, don't print, save to configuration struc, verify filename if necc.
+	ft_free_array(arr);
+	return (1);
 }
 
 static int ft_config_nesw(char *line, t_map_data *map_data, char *code)
@@ -154,7 +235,7 @@ static int ft_config_nesw(char *line, t_map_data *map_data, char *code)
 		return (-1); //error, invalid NO configuration
 	}
 	filename = ft_strdup(arr[1]);
-	ft_printf("\t%s: %s\n", code, filename);
+	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->textures[index] = filename;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
@@ -192,7 +273,7 @@ static int	ft_config_s(char *line, t_map_data *map_data)
 		return (-1); //error, invalid NO configuration
 	}
 	filename = ft_strdup(arr[1]);
-	ft_printf("\tS: %s\n", filename);
+	//ft_printf("\tS: %s\n", filename);
 	map_data->sprite = filename;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
