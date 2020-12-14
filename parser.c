@@ -96,6 +96,14 @@ static void	ft_free_array(char **array)
 
 static int	ft_config_other(char *line, t_map_data *map_data)
 {
+	int		i;
+
+	i = 0;
+	while (line && line[i])
+	{
+		if (ft_strchr(" 012NESW", line[i]) == NULL)
+			return (-1);
+	}
 	// Idea for parsing the map for leaks (lack of outer wall)
 	// 		verify that a space is only adjacent to another space or a '1'
 	// 			if it is next to a zero, that's probably a leak
@@ -284,6 +292,7 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 {
 	int		i;
 	int		(*config[8]) (char *map_line, t_map_data *map_data);
+	int		parsing_map;
 
 	config[0] = ft_config_other;
 	config[1] = ft_config_r;
@@ -294,8 +303,11 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
 
+	parsing_map = 0;
 	i = 0;
-	if (!line || line[0] == '\0')
+	if (!line || (parsing_map && line[0] == '\0'))
+		return (-1);
+	else if (line[0] == '\0')
 		return (0);
 	// check to make sure you don't seg fault by assuming len of string
 	i = ft_get_chr_index(line[0], "RFCNEWS");
@@ -336,7 +348,7 @@ int			ft_parse_file(char *filename)
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (ft_parse_line(line, &map_data) <= 0)
+		if (ft_parse_line(line, &map_data) < 0)
 			ft_printf("%s\n", line);
 		free(line);
 		line = NULL;
