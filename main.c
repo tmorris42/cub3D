@@ -201,7 +201,7 @@ void	ft_raycast(t_screen screen)
 		if (side_check == 1)
 			ft_draw_vertical_line(screen, x, draw_start, draw_end, color);
 		else
-			ft_draw_vertical_line(screen, x, draw_start, draw_end, color);
+			ft_draw_vertical_line(screen, x, draw_start, draw_end, color / 2);
 		++x;
 	}
 
@@ -236,6 +236,9 @@ int		ft_draw(t_screen *screen)
 //		mlx_string_put(screen->mlx, screen->win, 10, 10 + 10 * y, 255, print);
 		++y;
 	}
+	printf("Position: %f, %f\nDirection: %f, %f\n",
+				screen->player->pos_x, screen->player->pos_y,
+				screen->player->rot_x, screen->player->rot_y);
 //	mlx_put_image_to_window(screen->mlx, screen->win, screen->wall_n.img, 50, 50);
 //	mlx_pixel_put(screen->mlx, screen->win, 10, 10, ft_get_color(255,0,0,0));
 //	mlx_string_put(screen->mlx, screen->win, 10, 10, 255, "This is Blue");
@@ -256,6 +259,27 @@ int		ft_close_screen(void *win, t_screen *screen)
 	return (1);
 }
 
+void	ft_collision_with_wall(t_screen *screen, int x, int y)
+{
+	int pos_x = (int)screen->player->pos_x;
+	int pos_y = (int)screen->player->pos_y;
+	if (screen->map_data[pos_x][pos_y] > 0)
+	{
+		if (x == 1)
+			screen->player->pos_x = (double)((int)(screen->player->pos_x) - 0.1);
+		else if (x == -1)
+		{
+			screen->player->pos_x = (double)((int)(screen->player->pos_x + 1) + 0.1);
+		}
+		if (y == 1)
+			screen->player->pos_y = (double)((int)(screen->player->pos_y) - 0.1);
+		else if (y == -1)
+		{
+			screen->player->pos_y = (double)((int)(screen->player->pos_y + 1) + 0.1);
+		}
+	}
+}
+
 int		ft_parse_keys(int	key, t_screen *screen)
 {
 	double		old_rx;
@@ -263,9 +287,22 @@ int		ft_parse_keys(int	key, t_screen *screen)
 	if (key == K_ESCAPE)
 		ft_close_screen(screen->win, screen);
 	else if (key == K_UP)
-		screen->player->pos_y -= 1;
+	{
+		screen->player->pos_x += screen->player->rot_x;
+		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x > 0)), 0);
+		screen->player->pos_y += screen->player->rot_y;
+		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y > 0)));
+	//	screen->player->pos_y -= 1;
+	}
 	else if (key == K_DOWN)
-		screen->player->pos_y += 1;
+	{
+		screen->player->pos_x -= screen->player->rot_x;
+		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x < 0)), 0);
+		screen->player->pos_y -= screen->player->rot_y;
+		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y < 0)));
+
+//		screen->player->pos_y += 1;
+	}
 	else if (key == K_RIGHT)	//should be turn right
 	{
 		old_rx = screen->player->rot_x;
@@ -282,7 +319,7 @@ int		ft_parse_keys(int	key, t_screen *screen)
 //		screen->player->pos_x += 1;
 	}
 	else
-		printf(" : %d\n", key);  //for debugging only, REMOVE THISi
+		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
 	ft_draw(screen);
 	return (1);
 }
@@ -297,7 +334,7 @@ t_screen	set_map(t_screen screen)
 	screen.map_data[0][3] = 1;
 	screen.map_data[0][4] = 2;
 	screen.map_data[1][0] = 2;
-	screen.map_data[1][1] = 0;
+	screen.map_data[1][1] = 3;
 	screen.map_data[1][2] = 0;
 	screen.map_data[1][3] = 0;
 	screen.map_data[1][4] = 1;
