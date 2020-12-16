@@ -261,8 +261,8 @@ int		ft_close_screen(void *win, t_screen *screen)
 
 void	ft_collision_with_wall(t_screen *screen, int x, int y)
 {
-	int pos_x = (int)screen->player->pos_x;
-	int pos_y = (int)screen->player->pos_y;
+	int pos_x = (int)(screen->player->pos_x + 0.5);
+	int pos_y = (int)(screen->player->pos_y + 0.5);
 	if (screen->map_data[pos_x][pos_y] > 0)
 	{
 		if (x == 1)
@@ -283,24 +283,36 @@ void	ft_collision_with_wall(t_screen *screen, int x, int y)
 int		ft_parse_keys(int	key, t_screen *screen)
 {
 	double		old_rx;
+	t_player	*p;
 
+	p = screen->player;
 	if (key == K_ESCAPE)
 		ft_close_screen(screen->win, screen);
 	else if (key == K_UP)
 	{
-		screen->player->pos_x += screen->player->rot_x;
+		if (screen->map_data[(int)p->pos_y][(int)(p->pos_x + p->rot_x)] == 0)
+			screen->player->pos_x += screen->player->rot_x;
+		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
+			screen->player->pos_y += screen->player->rot_y;
+		/*
 		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x > 0)), 0);
 		screen->player->pos_y += screen->player->rot_y;
 		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y > 0)));
+		*/
 	//	screen->player->pos_y -= 1;
 	}
 	else if (key == K_DOWN)
 	{
+		if (screen->map_data[(int)p->pos_y][(int)(p->pos_x - p->rot_x)] == 0)
+			screen->player->pos_x -= screen->player->rot_x;
+		if (screen->map_data[(int)(p->pos_y - p->rot_y)][(int)p->pos_x] == 0)
+			screen->player->pos_y -= screen->player->rot_y;
+		/*
 		screen->player->pos_x -= screen->player->rot_x;
 		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x < 0)), 0);
 		screen->player->pos_y -= screen->player->rot_y;
 		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y < 0)));
-
+*/
 //		screen->player->pos_y += 1;
 	}
 	else if (key == K_RIGHT)	//should be turn right
@@ -342,7 +354,7 @@ t_screen	set_map(t_screen screen)
 	screen.map_data[2][1] = 0;
 	screen.map_data[2][2] = 0;
 	screen.map_data[2][3] = 0;
-	screen.map_data[2][4] = 1;
+	screen.map_data[2][4] = 0;
 	screen.map_data[3][0] = 2;
 	screen.map_data[3][1] = 0;
 	screen.map_data[3][2] = 0;
@@ -353,6 +365,82 @@ t_screen	set_map(t_screen screen)
 	screen.map_data[4][2] = 3;
 	screen.map_data[4][3] = 3;
 	screen.map_data[4][4] = 1;
+
+	screen.map_data[0][5] = 1;
+	screen.map_data[0][6] = 1;
+	screen.map_data[0][7] = 1;
+	screen.map_data[0][8] = 1;
+	screen.map_data[0][9] = 1;
+	screen.map_data[1][5] = 0;
+	screen.map_data[1][6] = 0;
+	screen.map_data[1][7] = 0;
+	screen.map_data[1][8] = 0;
+	screen.map_data[1][9] = 1;
+	screen.map_data[2][5] = 0;
+	screen.map_data[2][6] = 0;
+	screen.map_data[2][7] = 0;
+	screen.map_data[2][8] = 0;
+	screen.map_data[2][9] = 1;
+	screen.map_data[3][5] = 0;
+	screen.map_data[3][6] = 0;
+	screen.map_data[3][7] = 0;
+	screen.map_data[3][8] = 0;
+	screen.map_data[3][9] = 1;
+	screen.map_data[4][5] = 0;
+	screen.map_data[4][6] = 0;
+	screen.map_data[4][7] = 0;
+	screen.map_data[4][8] = 0;
+	screen.map_data[4][9] = 1;
+
+	int y = 0;
+	int x = 0;
+	while (y < 10)
+	{
+		x = 0;
+		while (x < 10)
+		{
+			screen.map_data[y][x] = 1;
+			++x;
+		}
+		++y;
+	}
+	y = 1;
+	while (y < 9)
+	{
+		x = 1;
+		while (x < 9)
+		{
+			screen.map_data[y][x] = 0;
+			++x;
+		}
+		++y;
+	}
+    screen.map_data[0][0] = 2;
+    screen.map_data[0][1] = 1;
+	screen.map_data[0][2] = 1;
+	screen.map_data[0][3] = 1;
+	screen.map_data[0][4] = 2;
+	screen.map_data[1][0] = 2;
+	screen.map_data[1][1] = 3;
+	screen.map_data[1][2] = 0;
+	screen.map_data[1][3] = 0;
+	screen.map_data[1][4] = 1;
+	screen.map_data[2][0] = 2;
+	screen.map_data[2][1] = 0;
+	screen.map_data[2][2] = 0;
+	screen.map_data[2][3] = 0;
+	screen.map_data[2][4] = 0;
+	screen.map_data[3][0] = 2;
+	screen.map_data[3][1] = 0;
+	screen.map_data[3][2] = 0;
+	screen.map_data[3][3] = 0; //'N' - '0';
+	screen.map_data[3][4] = 1;
+	screen.map_data[4][0] = 2;
+	screen.map_data[4][1] = 3;
+	screen.map_data[4][2] = 3;
+	screen.map_data[4][3] = 3;
+	screen.map_data[4][4] = 1;
+
 	return (screen);
 }
 
