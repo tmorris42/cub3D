@@ -13,10 +13,11 @@ typedef struct	s_map_data
 	int		map_height;
 	char	*textures[4];
 	char	*sprite;
-//	t_map	*map_layout;
+	t_list	*map_layout;
 	int		player_x;
 	int		player_y;
-	double	player_facing;
+	int		player_facing_x;
+	int		player_facing_y;
 
 }				t_map_data;
 
@@ -33,9 +34,11 @@ void		ft_map_data_init(t_map_data *map)
 	while (++i < 4)
 		map->textures[i] = NULL;
 	map->sprite = NULL;
+	map->map_layout = NULL;
 	map->player_x = -1;
 	map->player_y = -1;
-	map->player_facing = -1;
+	map->player_facing_x = -1;
+	map->player_facing_y = -1;
 }
 
 void		ft_free_map_data(t_map_data *map)
@@ -49,6 +52,8 @@ void		ft_free_map_data(t_map_data *map)
 		map->textures[i] = NULL;
 	}
 	free(map->sprite);
+	ft_lstclear(&(map->map_layout), &free);
+	map->map_layout = NULL;
 	map->sprite = NULL;
 	//free(map)		// right now map is not malloc'd but if that changes
 }
@@ -57,6 +62,7 @@ void		ft_free_map_data(t_map_data *map)
 void		ft_print_map_data(t_map_data map)
 {
 	int		i;
+	t_list	*index;
 	ft_printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map.res_width,
 			map.res_height,	map.map_width, map.map_height);
 	i = -1;
@@ -64,7 +70,14 @@ void		ft_print_map_data(t_map_data map)
 		ft_printf("\t%s\n", map.textures[i]);
 	ft_printf("Sprite:\n\t%s\n", map.sprite);
 	ft_printf("Floor Color: %u\nCeiling Color: %u\n", map.floor, map.ceil);
-	ft_printf("Player Location: %d, %d,  %d\n", map.player_x, map.player_y, map.player_facing);
+	ft_printf("Player Location: %d, %d, <%d, %d>\n", map.player_x, map.player_y, map.player_facing_x, map.player_facing_y);
+	ft_printf("Map Layout:\n");
+	index = map.map_layout;
+	while (index)
+	{
+		ft_printf("\t|%s|\n", index->content);
+		index = index->next;
+	}
 }
 
 int	 		ft_get_chr_index(char c, char *str)
@@ -79,6 +92,20 @@ int	 		ft_get_chr_index(char c, char *str)
 		++i;
 	}
 	return (-1);
+}
+
+int			ft_get_direction_vector(char dir, int xy)
+{
+	if (xy == 0 && (dir == 'N' || dir == 'S'))
+		return (0);
+	if (xy == 1 && (dir == 'W' || dir == 'E'))
+		return (0);
+	if (dir == 'W' || dir == 'N')
+		return (-1);
+	if (dir == 'E' || dir == 'S')
+		return (1);
+	return (0);
+
 }
 
 static void	ft_free_array(char **array)
@@ -97,19 +124,50 @@ static void	ft_free_array(char **array)
 static int	ft_config_other(char *line, t_map_data *map_data)
 {
 	int		i;
+	char	*mapline;
+	t_list	*new;
 
 	i = 0;
 	while (line && line[i])
 	{
-		if (ft_strchr(" 012NESW", line[i]) == NULL)
+		if (ft_strchr("NESW", line[i]))
+		{
+			// if player loc set ==> error
+			if (map_data->player_x != -1 || map_data->player_y != -1)
+				return (-1); // error, duplicate player symobls
+			else
+			{
+				map_data->player_x = i;
+				map_data->player_y = map_data->map_height;
+				map_data->player_facing_x = ft_get_direction_vector(line[i], 0);
+				map_data->player_facing_y = ft_get_direction_vector(line[i], 1);
+			}
+			// else, set it and facing  (remember height is not yet increased
+		}
+		else if (ft_strchr(" 012", line[i]) == NULL)
 			return (-1);
+		++i;
 	}
+	// if here, then only legal chars were found. //still have to check for mapleaks though
+	mapline = ft_strdup(line);
+	if (!mapline)
+		return (-1);
+	new = ft_lstnew(mapline);
+	if (!new)
+	{
+		free(mapline);
+		return (-1);
+	}
+	ft_lstadd_back(&(map_data->map_layout), new);
+	map_data->map_width = ft_max(map_data->map_width, ft_strlen(mapline));
+	map_data->map_height += 1;
+
 	// Idea for parsing the map for leaks (lack of outer wall)
 	// 		verify that a space is only adjacent to another space or a '1'
 	// 			if it is next to a zero, that's probably a leak
 	// 						unless the zero is just outside the map... hm
 	// 							READ SUBJECT TO SEE IF THAT'S ALLOWED
-	return (0);
+	return (1);
 }
 
 static int	ft_config_r(char *line, t_map_data *map_data)
