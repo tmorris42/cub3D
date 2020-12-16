@@ -14,6 +14,7 @@ typedef struct	s_map_data
 	char	*textures[4];
 	char	*sprite;
 	t_list	*map_layout;
+	int		**map_grid;
 	int		player_x;
 	int		player_y;
 	int		player_facing_x;
@@ -35,10 +36,27 @@ void		ft_map_data_init(t_map_data *map)
 		map->textures[i] = NULL;
 	map->sprite = NULL;
 	map->map_layout = NULL;
+	map->map_grid = NULL;
 	map->player_x = -1;
 	map->player_y = -1;
 	map->player_facing_x = -1;
 	map->player_facing_y = -1;
+}
+
+void		ft_free_int_array(int **arr, int y_max)
+{
+	int		i;
+
+	i = 0;
+	if (!arr)
+		return ;
+	while (i < y_max)
+	{
+		free(arr[i]);
+		++i;
+	}
+	free(arr);
+
 }
 
 void		ft_free_map_data(t_map_data *map)
@@ -54,14 +72,18 @@ void		ft_free_map_data(t_map_data *map)
 	free(map->sprite);
 	ft_lstclear(&(map->map_layout), &free);
 	map->map_layout = NULL;
+	ft_free_int_array(map->map_grid, map->map_height);
+	map->map_grid = NULL;
 	map->sprite = NULL;
-	//free(map)		// right now map is not malloc'd but if that changes
+	free(map);		// right now map is not malloc'd but if that changes
 }
 
 
 void		ft_print_map_data(t_map_data map)
 {
 	int		i;
+	int		j;
+
 	t_list	*index;
 	ft_printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map.res_width,
 			map.res_height,	map.map_width, map.map_height);
@@ -77,6 +99,21 @@ void		ft_print_map_data(t_map_data map)
 	{
 		ft_printf("\t|%s|\n", index->content);
 		index = index->next;
+	}
+	if (!map.map_grid)
+		return ;
+	ft_printf("Map Grid:\n");
+	j = 0;
+	while (j < map.map_height)
+	{
+		i = 0;
+		while (i < map.map_width)
+		{
+			ft_printf("%c", map.map_grid[j][i] + '0');
+			++i;
+		}
+		ft_printf("\n");
+		++j;
 	}
 }
 
@@ -141,6 +178,7 @@ static int	ft_config_other(char *line, t_map_data *map_data)
 				map_data->player_y = map_data->map_height;
 				map_data->player_facing_x = ft_get_direction_vector(line[i], 0);
 				map_data->player_facing_y = ft_get_direction_vector(line[i], 1);
+				line[i] = '0';
 			}
 			// else, set it and facing  (remember height is not yet increased
 		}
@@ -391,36 +429,87 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 	return (i);
 }
 
-int			ft_parse_file(char *filename)
+int		ft_convert_map_to_2d(t_map_data *map)
+{
+	int		**grid;
+	t_list	*index;
+	char	*content;
+	int		i;
+	int		j;
+
+	index = map->map_layout;
+	grid = (int**)ft_calloc(map->map_height, sizeof(*grid));
+	if (!grid)
+		return (-1);
+	j = 0;
+	while (j < map->map_height)
+	{
+		grid[j] = (int*)ft_calloc(map->map_width, sizeof(**grid));
+		if (!(grid[j]))
+		{
+			ft_free_int_array(grid, map->map_height);
+			return (-1);
+		}
+		i = 0;
+		content = (char*)index->content;
+		while ((i < map->map_width) && (content)[i])
+		{
+			grid[j][i] = content[i] - '0';
+			++i;
+		}
+		++j;
+		index = index->next;
+	}
+	map->map_grid = grid;
+	return (1);
+}
+
+t_map_data	*ft_parse_file(char *filename)
 {
 	int		fd;
 	int		status;
 	char	*line;
-	t_map_data map_data;
+	t_map_data *map_data;
 
-	ft_map_data_init(&map_data);
+	map_data = malloc(sizeof(*map_data));
+	if (!map_data)
+		return (NULL);
+	ft_map_data_init(map_data);
 	status = 0;
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
-		return (-1);
+	{
+		ft_free_map_data(map_data);
+		return (NULL); //free map_data
+	}
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (ft_parse_line(line, &map_data) < 0)
+		if (ft_parse_line(line, map_data) < 0)
 			ft_printf("%s\n", line);
 		free(line);
 		line = NULL;
 		if (status == 0)	
 			break ;
 	}
-	ft_printf("MAP DATA\n");
-	ft_print_map_data(map_data);
-	ft_free_map_data(&map_data);
-	return (0);
+
+	if (!(ft_convert_map_to_2d(map_data)))
+	{
+		ft_free_map_data(map_data);
+		return (NULL);
+	}
+//	ft_printf("TESTING INDEXING:\n\n\t%c\n", map_data->map_layout[2][3]);
+	return (map_data);
 }
 
 int		main(void)
 {
-	ft_parse_file("example.cub");
+	t_map_data	*map;
+	map = ft_parse_file("example.cub");
+
+	ft_printf("MAP DATA\n");
+	ft_print_map_data(*map);
+	ft_free_map_data(map);
+
 	return (0);
 }
