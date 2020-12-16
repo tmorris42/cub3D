@@ -101,8 +101,8 @@ void	ft_raycast(t_screen screen)
 
 //	plane_x = 0;
 //	plane_y = -0.66;
-	plane_x = -.66 * screen.player->rot_y;
-	plane_y = (-.66 *  (-screen.player->rot_x));
+	plane_x = -.50 * screen.player->rot_y;
+	plane_y = (-.50 *  (-screen.player->rot_x));
 	printf("<%f, %f>\n", plane_x, plane_y);
 
 	x = 0;
@@ -166,7 +166,7 @@ void	ft_raycast(t_screen screen)
 				side_check = 1;
 			}
 		//	if (screen.map_data[map_x][map_y] > 0)
-			if (map_y > screen.map_height || map_x > screen.map_width)
+			if (map_y > screen.map_height || map_x > screen.map_width || map_x < 0 || map_y < 0)
 				ft_printf("About to crash from illegal map index");
 			if (screen.map_data[map_y][map_x] > 0)
 			{
@@ -470,7 +470,7 @@ int		main(int argc, char **argv)
 	player.rot_y = 0.0;
 	*/
 	player.pos_x = map_parse->player_x + 0.01;
-	player.pos_y = map_parse->player_x + 0.01;
+	player.pos_y = map_parse->player_y + 0.01;
 	player.rot_x = map_parse->player_facing_x;
 	player.rot_y = map_parse->player_facing_y;
 	screen.map_height = map_parse->map_height;
