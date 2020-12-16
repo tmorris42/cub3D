@@ -249,6 +249,8 @@ int		ft_draw(t_screen *screen)
 
 int		ft_close_screen(void *win, t_screen *screen)
 {
+	if (screen->mlx && screen->wall_n.img)
+		mlx_destroy_image(screen->mlx, screen->wall_n.img);
 	if (screen->mlx && screen->win)
 		mlx_destroy_window(screen->mlx, screen->win);
 	if (screen->mlx)
