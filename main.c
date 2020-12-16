@@ -20,6 +20,8 @@
 #define RED			255 << 16
 #define GREEN		255 << 8
 #define BLUE		255
+#define DARKGRAY	1315860
+#define LIGHTGRAY	13158600
 
 typedef struct		s_player
 {
@@ -44,6 +46,9 @@ typedef struct		s_screen
 {
 	void	*mlx;
 	void	*win;
+	t_img_data buf;
+	int		width;
+	int		height;
 //	int		map_data[MAP_W][MAP_H];
 	int		**map_data; //rename to map, please
 	int		map_width;
@@ -63,13 +68,44 @@ void	ft_put_pixel_to_image(t_img_data *img, int x, int y, unsigned int color)
 }
 */
 
-void	ft_draw_vertical_line(t_screen screen, int x, int y,
+void	ft_pixel_put(t_img_data *img, int x, int y, int color)
+{
+    char    *img_addr;
+	int		offset;
+	unsigned int	*pixel;
+
+	offset = (y * img->len) + (x * img->bpp / 8);
+	img_addr = img->addr + offset;
+	pixel = (unsigned int*)img_addr;
+    *pixel = color;
+}
+
+void	ft_draw_vertical_line(t_screen *screen, int x, int y,
 								int end, int color)
 {
 	while (y < end)
 	{
-		mlx_pixel_put(screen.mlx, screen.win, x, y, color);
+//		mlx_pixel_put(screen.mlx, screen.win, x, y, color);
+		ft_pixel_put(&screen->buf, x, y, color);
 		++y;
+	}
+}
+
+void	ft_draw_rectangle(t_screen *screen, int startx, int starty, int lenx, int leny, int color)
+{
+	int		i;
+	int		j;
+
+	j = starty;
+	while (j < starty + leny)
+	{
+		i = startx;
+		while (i < startx + lenx)
+		{
+			ft_pixel_put(&screen->buf, i, j, color);
+			++i;
+		}
+		++j;
 	}
 }
 
@@ -200,9 +236,9 @@ void	ft_raycast(t_screen screen)
 			draw_end = SCREEN_HEIGHT - 1;
 
 		if (side_check == 1)
-			ft_draw_vertical_line(screen, x, draw_start, draw_end, color);
+			ft_draw_vertical_line(&screen, x, draw_start, draw_end, color);
 		else
-			ft_draw_vertical_line(screen, x, draw_start, draw_end, color / 2);
+			ft_draw_vertical_line(&screen, x, draw_start, draw_end, color / 2);
 		++x;
 	}
 
@@ -215,9 +251,11 @@ int		ft_draw(t_screen *screen)
 	int		y;
 	char	print[6];
 
-
-	mlx_clear_window(screen->mlx, screen->win);
+	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, DARKGRAY);
+	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, LIGHTGRAY);
+//	mlx_clear_window(screen->mlx, screen->win);
 	ft_raycast(*screen);
+	mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
 //	return (1);
 	print[5] = '\0';
 	y = 0;
@@ -460,31 +498,31 @@ int		main(int argc, char **argv)
 		map_parse = ft_parse_file(argv[1]);
 		if (map_parse)
 			ft_print_map_data(*map_parse);
-//		ft_free_map_data(map_parse);
-//		return (0);
 	}
-/*
-	player.pos_x = 2.01;
-	player.pos_y = 2.01;
-	player.rot_x = -1.0;
-	player.rot_y = 0.0;
-	*/
+	else
+	{
+		map_parse = ft_parse_file("example.cub");
+		if (map_parse)
+			ft_print_map_data(*map_parse);
+	}
 	player.pos_x = map_parse->player_x + 0.01;
 	player.pos_y = map_parse->player_y + 0.01;
 	player.rot_x = map_parse->player_facing_x;
 	player.rot_y = map_parse->player_facing_y;
 	screen.map_height = map_parse->map_height;
 	screen.map_width = map_parse->map_width;
-//	screen = set_map(screen);	
 	screen.map_data = map_parse->map_grid;
 	screen.player = &player;
+	screen.width = map_parse->res_width;
+	screen.height = map_parse->res_height;
 	screen.mlx = mlx_init();
 	if (!screen.mlx)
 		return (0);
 	screen.win = mlx_new_window(screen.mlx, SCREEN_WIDTH, SCREEN_HEIGHT, "Cub3D, Son");
 	if (!screen.win)
 		return (0); // not freeing from mlx_init
-
+	screen.buf.img  = mlx_new_image(screen.mlx, screen.width, screen.height);
+	screen.buf.addr = mlx_get_data_addr(screen.buf.img, &screen.buf.bpp, &screen.buf.len, &screen.buf.endian);
 	screen.wall_n.img = NULL;
 	texture_width = 0;
 	texture_height = 0;
