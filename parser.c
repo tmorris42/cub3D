@@ -1,26 +1,4 @@
-#include <unistd.h>
-#include <fcntl.h>
-
-#include "libft/libft.h"
-
-typedef struct	s_map_data
-{
-	unsigned int	floor;
-	unsigned int	ceil;
-	int		res_width;
-	int		res_height;
-	int		map_width;
-	int		map_height;
-	char	*textures[4];
-	char	*sprite;
-	t_list	*map_layout;
-	int		**map_grid;
-	int		player_x;
-	int		player_y;
-	int		player_facing_x;
-	int		player_facing_y;
-
-}				t_map_data;
+#include "header.h"
 
 void		ft_map_data_init(t_map_data *map)
 {
@@ -501,7 +479,7 @@ t_map_data	*ft_parse_file(char *filename)
 //	ft_printf("TESTING INDEXING:\n\n\t%c\n", map_data->map_layout[2][3]);
 	return (map_data);
 }
-
+/*
 int		main(void)
 {
 	t_map_data	*map;
@@ -513,3 +491,4 @@ int		main(void)
 
 	return (0);
 }
+*/

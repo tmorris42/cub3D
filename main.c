@@ -1,13 +1,11 @@
-#include <math.h>
 #include <stdio.h> //remove this
 #include <stdlib.h> //for exit() EXIT_SUCCESS, EXIT_FAILURE
 #include "header.h"
-#include "libft/libft.h"
 
 #define SCREEN_WIDTH	300
 #define SCREEN_HEIGHT	200
-#define MAP_W			10
-#define MAP_H			10
+#define MAP_W			5
+#define MAP_H			5
 
 #define K_ESCAPE	65307
 #define K_LEFT		65361
@@ -46,7 +44,8 @@ typedef struct		s_screen
 {
 	void	*mlx;
 	void	*win;
-	int		map_data[MAP_W][MAP_H];
+//	int		map_data[MAP_W][MAP_H];
+	int		**map_data; //rename to map, please
 	int		map_width;
 	int		map_height;
 	t_player	*player;
@@ -167,6 +166,8 @@ void	ft_raycast(t_screen screen)
 				side_check = 1;
 			}
 		//	if (screen.map_data[map_x][map_y] > 0)
+			if (map_y > screen.map_height || map_x > screen.map_width)
+				ft_printf("About to crash from illegal map index");
 			if (screen.map_data[map_y][map_x] > 0)
 			{
 				hit = 1;
@@ -220,19 +221,19 @@ int		ft_draw(t_screen *screen)
 //	return (1);
 	print[5] = '\0';
 	y = 0;
-	while (y < 5)
+	while (y < screen->map_height)
 	{
 		x = 0;
-		while (x < 5)
+		while (x < screen->map_width)
 		{
 //			ft_printf("map_data[%d,%d] = %c\n", x, y, (screen->map_data)[y][x]);
 			if ((int)(screen->player->pos_x) == x && (int)(screen->player->pos_y) == y)
-				print[x] = '*';
+				ft_printf("*");
 			else
-				print[x] = screen->map_data[y][x] + '0';
+				ft_printf("%c", screen->map_data[y][x] + '0');
 			++x;
 		}
-		ft_printf("%s\n", print);
+		ft_printf("\n");
 //		mlx_string_put(screen->mlx, screen->win, 10, 10 + 10 * y, 255, print);
 		++y;
 	}
@@ -446,19 +447,36 @@ t_screen	set_map(t_screen screen)
 	return (screen);
 }
 
-int		main(void)
+int		main(int argc, char **argv)
 {
 	t_screen	screen;
 	t_player	player;
 	int			texture_width;
 	int			texture_height;
+	t_map_data	*map_parse;
 
+	if (argc > 1)
+	{
+		map_parse = ft_parse_file(argv[1]);
+		if (map_parse)
+			ft_print_map_data(*map_parse);
+//		ft_free_map_data(map_parse);
+//		return (0);
+	}
+/*
 	player.pos_x = 2.01;
 	player.pos_y = 2.01;
 	player.rot_x = -1.0;
 	player.rot_y = 0.0;
-    
-	screen = set_map(screen);	
+	*/
+	player.pos_x = map_parse->player_x + 0.01;
+	player.pos_y = map_parse->player_x + 0.01;
+	player.rot_x = map_parse->player_facing_x;
+	player.rot_y = map_parse->player_facing_y;
+	screen.map_height = map_parse->map_height;
+	screen.map_width = map_parse->map_width;
+//	screen = set_map(screen);	
+	screen.map_data = map_parse->map_grid;
 	screen.player = &player;
 	screen.mlx = mlx_init();
 	if (!screen.mlx)
