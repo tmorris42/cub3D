@@ -12,9 +12,9 @@
 #define K_S			115
 #define K_D			100
 
-#define RED			255 << 16
-#define GREEN		255 << 8
-#define BLUE		255
+#define RED			0xff0000
+#define GREEN		0x00ff00
+#define BLUE		0x0000ff
 #define DARKGRAY	1315860
 #define LIGHTGRAY	13158600
 
@@ -37,6 +37,12 @@ typedef struct		s_image_data
 	int		endian;
 }					t_img_data;
 
+typedef struct		s_colors
+{
+	int		floor;
+	int		ceiling;
+}					t_colors;
+
 typedef struct		s_screen
 {
 	void	*mlx;
@@ -49,6 +55,7 @@ typedef struct		s_screen
 	int		map_height;
 	t_player	*player;
 	t_img_data	wall_n;
+	t_colors	colors;
 }					t_screen;
 
 int		ft_get_color(int r, int g, int b, int alpha)
@@ -237,8 +244,10 @@ int		ft_draw(t_screen *screen)
 	int		y;
 	char	print[6];
 
-	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, DARKGRAY);
-	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, LIGHTGRAY);
+//	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, DARKGRAY);
+//	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, LIGHTGRAY);
+	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, screen->colors.ceiling);
+	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, screen->colors.floor);
 //	mlx_clear_window(screen->mlx, screen->win);
 	ft_raycast(*screen);
 	mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
@@ -372,21 +381,21 @@ int		main(int argc, char **argv)
 	t_map_data	*map_parse;
 
 	if (argc > 1)
-	{
 		map_parse = ft_parse_file(argv[1]);
-		if (map_parse)
-			ft_print_map_data(*map_parse);
-	}
 	else
-	{
-		map_parse = ft_parse_file("example.cub");
-		if (map_parse)
-			ft_print_map_data(*map_parse);
-	}
+		return (0);
+
+	if (map_parse)
+		ft_print_map_data(*map_parse);
+	else
+		return (-1);
+	ft_printf("player x: %d\n", map_parse->player_x);
 	player.pos_x = map_parse->player_x + 0.01;
 	player.pos_y = map_parse->player_y + 0.01;
 	player.rot_x = map_parse->player_facing_x;
 	player.rot_y = map_parse->player_facing_y;
+	screen.colors.ceiling = map_parse->ceil;
+	screen.colors.floor = map_parse->floor;
 	screen.map_height = map_parse->map_height;
 	screen.map_width = map_parse->map_width;
 	screen.map_data = map_parse->map_grid;
