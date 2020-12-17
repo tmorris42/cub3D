@@ -23,5 +23,6 @@ re: fclean all
 debug:
 	gcc -c -g3 $(SRCS) -fsanitize=address
 	gcc -g3 $(OBJS) -L./libft/ -lft -L./minilibx-linux/ -lmlx -lXext -lX11 -lbsd -lm -o debug.o -fsanitize=address
+	rm -f $(OBJS)
 
 .PHONY: all clean fclean re debug

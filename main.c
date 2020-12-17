@@ -2,11 +2,6 @@
 #include <stdlib.h> //for exit() EXIT_SUCCESS, EXIT_FAILURE
 #include "header.h"
 
-#define SCREEN_WIDTH	300
-#define SCREEN_HEIGHT	200
-#define MAP_W			5
-#define MAP_H			5
-
 #define K_ESCAPE	65307
 #define K_LEFT		65361
 #define K_UP		65362
@@ -49,7 +44,6 @@ typedef struct		s_screen
 	t_img_data buf;
 	int		width;
 	int		height;
-//	int		map_data[MAP_W][MAP_H];
 	int		**map_data; //rename to map, please
 	int		map_width;
 	int		map_height;
@@ -61,12 +55,6 @@ int		ft_get_color(int r, int g, int b, int alpha)
 {
 	return ((alpha << 24) + (r << 16) + (g << 8) + (b));
 }
-/*
-void	ft_put_pixel_to_image(t_img_data *img, int x, int y, unsigned int color)
-{
-	
-}
-*/
 
 void	ft_pixel_put(t_img_data *img, int x, int y, int color)
 {
@@ -85,7 +73,6 @@ void	ft_draw_vertical_line(t_screen *screen, int x, int y,
 {
 	while (y < end)
 	{
-//		mlx_pixel_put(screen.mlx, screen.win, x, y, color);
 		ft_pixel_put(&screen->buf, x, y, color);
 		++y;
 	}
@@ -143,9 +130,9 @@ void	ft_raycast(t_screen screen)
 
 	x = 0;
 	printf("START LOOP\n");
-	while (x < SCREEN_WIDTH)
+	while (x < screen.width)
 	{
-		camera_x = 2 * x / (double)SCREEN_WIDTH - 1;
+		camera_x = 2 * x / (double)screen.width - 1;
 		ray_dir_x = screen.player->rot_x + plane_x * camera_x;
 		ray_dir_y = screen.player->rot_y + plane_y * camera_x;
 
@@ -227,14 +214,13 @@ void	ft_raycast(t_screen screen)
 		int		line_height;
 		int		draw_start;
 		int		draw_end;
-		line_height = (int)(SCREEN_HEIGHT / wall_dist);
-		draw_start = (SCREEN_HEIGHT - line_height) / 2;
-		draw_end = (SCREEN_HEIGHT + line_height) / 2;
+		line_height = (int)(screen.height / wall_dist);
+		draw_start = (screen.height - line_height) / 2;
+		draw_end = (screen.height + line_height) / 2;
 		if (draw_start < 0)
 			draw_start = 0;
-		if (draw_end >= SCREEN_HEIGHT)
-			draw_end = SCREEN_HEIGHT - 1;
-
+		if (draw_end >= screen.height)
+			draw_end = screen.height - 1;
 		if (side_check == 1)
 			ft_draw_vertical_line(&screen, x, draw_start, draw_end, color);
 		else
@@ -377,114 +363,6 @@ int		ft_parse_keys(int	key, t_screen *screen)
 	return (1);
 }
 
-t_screen	set_map(t_screen screen)
-{
-	screen.map_width = MAP_W;
-	screen.map_height = MAP_H;
-    screen.map_data[0][0] = 2;
-    screen.map_data[0][1] = 1;
-	screen.map_data[0][2] = 1;
-	screen.map_data[0][3] = 1;
-	screen.map_data[0][4] = 2;
-	screen.map_data[1][0] = 2;
-	screen.map_data[1][1] = 3;
-	screen.map_data[1][2] = 0;
-	screen.map_data[1][3] = 0;
-	screen.map_data[1][4] = 1;
-	screen.map_data[2][0] = 2;
-	screen.map_data[2][1] = 0;
-	screen.map_data[2][2] = 0;
-	screen.map_data[2][3] = 0;
-	screen.map_data[2][4] = 0;
-	screen.map_data[3][0] = 2;
-	screen.map_data[3][1] = 0;
-	screen.map_data[3][2] = 0;
-	screen.map_data[3][3] = 0; //'N' - '0';
-	screen.map_data[3][4] = 1;
-	screen.map_data[4][0] = 2;
-	screen.map_data[4][1] = 3;
-	screen.map_data[4][2] = 3;
-	screen.map_data[4][3] = 3;
-	screen.map_data[4][4] = 1;
-
-	screen.map_data[0][5] = 1;
-	screen.map_data[0][6] = 1;
-	screen.map_data[0][7] = 1;
-	screen.map_data[0][8] = 1;
-	screen.map_data[0][9] = 1;
-	screen.map_data[1][5] = 0;
-	screen.map_data[1][6] = 0;
-	screen.map_data[1][7] = 0;
-	screen.map_data[1][8] = 0;
-	screen.map_data[1][9] = 1;
-	screen.map_data[2][5] = 0;
-	screen.map_data[2][6] = 0;
-	screen.map_data[2][7] = 0;
-	screen.map_data[2][8] = 0;
-	screen.map_data[2][9] = 1;
-	screen.map_data[3][5] = 0;
-	screen.map_data[3][6] = 0;
-	screen.map_data[3][7] = 0;
-	screen.map_data[3][8] = 0;
-	screen.map_data[3][9] = 1;
-	screen.map_data[4][5] = 0;
-	screen.map_data[4][6] = 0;
-	screen.map_data[4][7] = 0;
-	screen.map_data[4][8] = 0;
-	screen.map_data[4][9] = 1;
-
-	int y = 0;
-	int x = 0;
-	while (y < 10)
-	{
-		x = 0;
-		while (x < 10)
-		{
-			screen.map_data[y][x] = 1;
-			++x;
-		}
-		++y;
-	}
-	y = 1;
-	while (y < 9)
-	{
-		x = 1;
-		while (x < 9)
-		{
-			screen.map_data[y][x] = 0;
-			++x;
-		}
-		++y;
-	}
-    screen.map_data[0][0] = 2;
-    screen.map_data[0][1] = 1;
-	screen.map_data[0][2] = 1;
-	screen.map_data[0][3] = 1;
-	screen.map_data[0][4] = 2;
-	screen.map_data[1][0] = 2;
-	screen.map_data[1][1] = 3;
-	screen.map_data[1][2] = 0;
-	screen.map_data[1][3] = 0;
-	screen.map_data[1][4] = 1;
-	screen.map_data[2][0] = 2;
-	screen.map_data[2][1] = 0;
-	screen.map_data[2][2] = 0;
-	screen.map_data[2][3] = 0;
-	screen.map_data[2][4] = 0;
-	screen.map_data[3][0] = 2;
-	screen.map_data[3][1] = 0;
-	screen.map_data[3][2] = 0;
-	screen.map_data[3][3] = 0; //'N' - '0';
-	screen.map_data[3][4] = 1;
-	screen.map_data[4][0] = 2;
-	screen.map_data[4][1] = 3;
-	screen.map_data[4][2] = 3;
-	screen.map_data[4][3] = 3;
-	screen.map_data[4][4] = 1;
-
-	return (screen);
-}
-
 int		main(int argc, char **argv)
 {
 	t_screen	screen;
@@ -518,7 +396,7 @@ int		main(int argc, char **argv)
 	screen.mlx = mlx_init();
 	if (!screen.mlx)
 		return (0);
-	screen.win = mlx_new_window(screen.mlx, SCREEN_WIDTH, SCREEN_HEIGHT, "Cub3D, Son");
+	screen.win = mlx_new_window(screen.mlx, screen.width, screen.height, "Cub3D");
 	if (!screen.win)
 		return (0); // not freeing from mlx_init
 	screen.buf.img  = mlx_new_image(screen.mlx, screen.width, screen.height);
