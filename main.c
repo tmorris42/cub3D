@@ -56,6 +56,7 @@ typedef struct		s_screen
 	t_player	*player;
 	t_img_data	wall_n;
 	t_colors	colors;
+	int			refresh;
 }					t_screen;
 
 int		ft_get_color(int r, int g, int b, int alpha)
@@ -244,6 +245,9 @@ int		ft_draw(t_screen *screen)
 	int		y;
 	char	print[6];
 
+	if (screen->refresh == 0)
+		return (0);
+	screen->refresh = 0;
 //	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, DARKGRAY);
 //	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, LIGHTGRAY);
 	ft_draw_rectangle(screen, 0, 0, screen->width, screen->height, screen->colors.ceiling);
@@ -368,7 +372,7 @@ int		ft_parse_keys(int	key, t_screen *screen)
 	}
 	else
 		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
-	ft_draw(screen);
+	screen->refresh = 1;
 	return (1);
 }
 
@@ -402,6 +406,7 @@ int		main(int argc, char **argv)
 	screen.player = &player;
 	screen.width = map_parse->res_width;
 	screen.height = map_parse->res_height;
+	screen.refresh = 1;
 	screen.mlx = mlx_init();
 	if (!screen.mlx)
 		return (0);
@@ -419,7 +424,7 @@ int		main(int argc, char **argv)
 
 	mlx_expose_hook(screen.win, &ft_draw, &screen);
 	mlx_hook(screen.win, 2, 1L<<0, &ft_parse_keys, &screen);
-//	mlx_loop_hook(screen.mlx, &ft_draw, &screen);
+	mlx_loop_hook(screen.mlx, &ft_draw, &screen);
 
 	// Wait so user can see window
 	mlx_loop(screen.mlx);
