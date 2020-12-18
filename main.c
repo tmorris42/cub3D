@@ -76,6 +76,24 @@ void	ft_pixel_put(t_img_data *img, int x, int y, int color)
     *pixel = color;
 }
 
+unsigned int	ft_get_pixel_from_image(t_img_data *img, int x, int y)
+{
+    char    *img_addr;
+	int		offset;
+	unsigned int	*pixel;
+	unsigned int	color;
+
+	if (x < 0 || y < 0 || x >= img->width || y >= img->height)
+		return (0);
+//	ft_printf("SIMPLE CHECK SHOWS ILLEGAL\n%d, %d [%d, %d]\n",
+//				x, y, img->width, img->height);
+	offset = (y * img->len) + (x * img->bpp / 8);
+	img_addr = img->addr + offset;
+	pixel = (unsigned int*)img_addr;
+	color = *pixel;
+    return (color);
+}
+
 void	ft_draw_vertical_line(t_screen *screen, int x, int y,
 								int end, int color)
 {
@@ -102,11 +120,6 @@ void	ft_draw_rectangle(t_screen *screen, int startx, int starty, int lenx, int l
 		}
 		++j;
 	}
-}
-
-void	ft_2d_raycast(t_screen screen)
-{
-
 }
 
 void	ft_raycast(t_screen screen)
@@ -206,33 +219,64 @@ void	ft_raycast(t_screen screen)
 			}
 		}
 
-		int color;
-		if (screen.map_data[map_y][map_x] == 1)
-			color = RED;
-		else if (screen.map_data[map_y][map_x] == 2)
-			color = GREEN;
-		else
-			color = BLUE;
-
 		if (side_check == 0)
 			wall_dist = (map_x - screen.player->pos_x + (1 - step_x) / 2) / ray_dir_x;
 		else
 			wall_dist = (map_y - screen.player->pos_y + (1 - step_y) / 2) / ray_dir_y;
+		
+		double wall_x; //where on wall hit occured
+		if (side_check == 0)
+			wall_x = screen.player->pos_y + wall_dist * ray_dir_y;
+		else
+			wall_x = screen.player->pos_x + wall_dist * ray_dir_x;
+//		printf("WALL_X = %f  (%f)\n", wall_x, floor(wall_x));
+		wall_x -= floor((wall_x));
 
+		int texture_width;
+		int		texture_height;
+		unsigned int color;
+		texture_width = screen.wall_n.width;
+		texture_height = screen.wall_n.height;
+
+		int texture_x;
+		texture_x = (int)(wall_x * (double)texture_width);
+//		ft_printf("texture_x = %d\n", texture_x);
+		if (side_check == 0 && ray_dir_x > 0)
+			texture_x = texture_width - texture_x - 1;
+		else if (side_check == 1 && ray_dir_y < 0)
+			texture_x = texture_width - texture_x - 1;
+//		ft_printf("iafter texture_x = %d\n", texture_x);
+
+		double	step;
 		int		line_height;
 		int		draw_start;
 		int		draw_end;
+		double	texture_pos;
 		line_height = (int)(screen.height / wall_dist);
+		step = 1.0 * texture_height / line_height;
+		
+		
 		draw_start = (screen.height - line_height) / 2;
 		draw_end = (screen.height + line_height) / 2;
 		if (draw_start < 0)
 			draw_start = 0;
 		if (draw_end >= screen.height)
 			draw_end = screen.height - 1;
-		if (side_check == 1)
-			ft_draw_vertical_line(&screen, x, draw_start, draw_end, color);
-		else
-			ft_draw_vertical_line(&screen, x, draw_start, draw_end, color / 2);
+	
+		texture_pos = (draw_start - (screen.height - line_height) / 2) * 2;
+		int y;
+		int texture_y;
+		y = draw_start;
+		while (y < draw_end)
+		{
+			texture_y = (int)texture_pos & (texture_height - 1); //what's this masking doing?
+			texture_pos += step;
+//			ft_printf("texture x,y  %d,%d\n", texture_x, texture_y);
+			color = ft_get_pixel_from_image(&(screen.wall_n), texture_x, texture_y);
+			ft_pixel_put(&(screen.buf), x, y, color);
+			++y;
+		}
+		
 		++x;
 	}
 
@@ -424,7 +468,9 @@ int		main(int argc, char **argv)
 	screen.wall_n.img = NULL;
 	texture_width = 0;
 	texture_height = 0;
-	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/wall_n_small.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
+	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/brick800640.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
+//	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/wall_n.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
+	screen.wall_n.addr = mlx_get_data_addr(screen.wall_n.img, &screen.wall_n.bpp, &screen.wall_n.len, &screen.wall_n.endian);
 	if (!screen.wall_n.img)
 		return (0); //not freeing window and mlx
 
