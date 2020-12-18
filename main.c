@@ -285,6 +285,12 @@ int		ft_draw(t_screen *screen)
 	return (1);
 }
 
+int		ft_redraw(t_screen *screen)
+{
+	screen->refresh = 1;
+	return (ft_draw(screen));
+}
+
 int		ft_close_screen(t_screen *screen)
 {
 	if (screen->mlx && screen->wall_n.img)
@@ -422,7 +428,7 @@ int		main(int argc, char **argv)
 	if (!screen.wall_n.img)
 		return (0); //not freeing window and mlx
 
-	mlx_expose_hook(screen.win, &ft_draw, &screen);
+	mlx_expose_hook(screen.win, &ft_redraw, &screen);
 	mlx_hook(screen.win, 2, 1L<<0, &ft_parse_keys, &screen);
 	mlx_hook(screen.win, 33, 0L<<0, &ft_close_screen, &screen);
 	mlx_loop_hook(screen.mlx, &ft_draw, &screen);
