@@ -5,8 +5,8 @@ WE ./textures/we.xmp
 EA ./textures/ea.xmp
 
 S ./textures/sprite.xmp
-F 220,100,0
-C 225,30,0
+F 100,100,100
+C 0,30,200
 
    1111111
    1000001
