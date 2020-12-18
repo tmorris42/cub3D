@@ -1,26 +1,4 @@
-#include <unistd.h>
-#include <fcntl.h>
-
-#include "libft/libft.h"
-
-typedef struct	s_map_data
-{
-	unsigned int	floor;
-	unsigned int	ceil;
-	int		res_width;
-	int		res_height;
-	int		map_width;
-	int		map_height;
-	char	*textures[4];
-	char	*sprite;
-	t_list	*map_layout;
-	int		**map_grid;
-	int		player_x;
-	int		player_y;
-	int		player_facing_x;
-	int		player_facing_y;
-
-}				t_map_data;
+#include "header.h"
 
 void		ft_map_data_init(t_map_data *map)
 {
@@ -464,6 +442,38 @@ int		ft_convert_map_to_2d(t_map_data *map)
 	return (1);
 }
 
+int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
+{
+	int		**arr;
+	int		max_x;
+	int		max_y;
+	int		str_index;
+
+	arr = map->map_grid;
+	max_x = map->map_width;
+	max_y = map->map_height;
+	str_index = (max_x * y) + x;
+	if (x >= max_x || y >= max_y)
+		return (-1);
+	if (arr[y][x] == ' ' - '0')
+		return (-1);
+	if (paths[str_index] == 'V')
+		return (0);
+	paths[str_index] = 'V';
+	ft_printf("arr[%d][%d] == %d\n", y, x, arr[y][x]);
+	if (arr[y][x] == 1)
+		return (1);
+	if (ft_check_map_leaks(map, paths, x, y + 1) == -1)
+		return (-1);
+	if (ft_check_map_leaks(map, paths, x, y - 1) == -1)
+		return (-1);
+	if (ft_check_map_leaks(map, paths, x + 1, y) == -1)
+		return (-1);
+	if (ft_check_map_leaks(map, paths, x - 1, y) == -1)
+		return (-1);
+	return (0);
+}
+
 t_map_data	*ft_parse_file(char *filename)
 {
 	int		fd;
@@ -499,17 +509,33 @@ t_map_data	*ft_parse_file(char *filename)
 		return (NULL);
 	}
 //	ft_printf("TESTING INDEXING:\n\n\t%c\n", map_data->map_layout[2][3]);
+	line = (char*)ft_calloc(map_data->map_width * map_data->map_height, sizeof(char));
+	if (!line)
+	{
+		ft_free_map_data(map_data);
+		return (NULL);
+	}
+	if (ft_check_map_leaks(map_data, line, map_data->player_x, map_data->player_y) < 0)
+	{
+		ft_printf("Returned -1!! Illegal map.\n");
+		ft_free_map_data(map_data);
+		map_data = NULL;
+	}
+	free(line);
 	return (map_data);
 }
-
+/*
 int		main(void)
 {
 	t_map_data	*map;
-	map = ft_parse_file("example.cub");
+	map = ft_parse_file("illegalmap.cub");
 
-	ft_printf("MAP DATA\n");
-	ft_print_map_data(*map);
-	ft_free_map_data(map);
+	//ft_printf("MAP DATA\n");
+	//ft_print_map_data(*map);
+	ft_printf("parse result pointer: %p\n", map);
+	if (map)
+		ft_free_map_data(map);
 
 	return (0);
 }
+*/
