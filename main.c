@@ -285,7 +285,7 @@ int		ft_draw(t_screen *screen)
 	return (1);
 }
 
-int		ft_close_screen(void *win, t_screen *screen)
+int		ft_close_screen(t_screen *screen)
 {
 	if (screen->mlx && screen->wall_n.img)
 		mlx_destroy_image(screen->mlx, screen->wall_n.img);
@@ -327,7 +327,7 @@ int		ft_parse_keys(int	key, t_screen *screen)
 
 	p = screen->player;
 	if (key == K_ESCAPE)
-		ft_close_screen(screen->win, screen);
+		ft_close_screen(screen);
 	else if (key == K_UP)
 	{
 		if (screen->map_data[(int)p->pos_y][(int)(p->pos_x + p->rot_x)] == 0)
@@ -424,12 +424,13 @@ int		main(int argc, char **argv)
 
 	mlx_expose_hook(screen.win, &ft_draw, &screen);
 	mlx_hook(screen.win, 2, 1L<<0, &ft_parse_keys, &screen);
+	mlx_hook(screen.win, 33, 0L<<0, &ft_close_screen, &screen);
 	mlx_loop_hook(screen.mlx, &ft_draw, &screen);
 
 	// Wait so user can see window
 	mlx_loop(screen.mlx);
 	
 //	mlx_destroy_window(screen.mlx, screen.win);
-	ft_close_screen(screen.win, &screen);
+	ft_close_screen(&screen);
 	exit(EXIT_SUCCESS);
 }
