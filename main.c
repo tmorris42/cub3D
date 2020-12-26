@@ -54,7 +54,7 @@ typedef struct		s_screen
 	int		map_width;
 	int		map_height;
 	t_player	*player;
-	t_img_data	wall_n;
+	t_img_data	walls[4];
 	t_colors	colors;
 	int			refresh;
 }					t_screen;
@@ -232,11 +232,21 @@ void	ft_raycast(t_screen screen)
 //		printf("WALL_X = %f  (%f)\n", wall_x, floor(wall_x));
 		wall_x -= floor((wall_x));
 
+		int	wall_num = 0;
+		if (side_check == 0)
+		{
+			if (ray_dir_x < 0)
+				wall_num = 3; //0 == N, 1 == E, etc
+			else
+				wall_num = 1;
+		}
+		else if (ray_dir_y > 0)
+			wall_num = 2;
 		int texture_width;
 		int		texture_height;
 		unsigned int color;
-		texture_width = screen.wall_n.width;
-		texture_height = screen.wall_n.height;
+		texture_width = screen.walls[wall_num].width;
+		texture_height = screen.walls[wall_num].height;
 
 		int texture_x;
 		texture_x = (int)(wall_x * (double)texture_width);
@@ -273,7 +283,7 @@ void	ft_raycast(t_screen screen)
 			texture_y = (int)texture_pos & (texture_height - 1); //what's this masking doing?
 			texture_pos += step;
 //			ft_printf("texture x,y  %d,%d\n", texture_x, texture_y);
-			color = ft_get_pixel_from_image(&(screen.wall_n), texture_x, texture_y);
+			color = ft_get_pixel_from_image(&(screen.walls[wall_num]), texture_x, texture_y);
 			ft_pixel_put(&(screen.buf), x, y, color);
 			++y;
 		}
@@ -322,11 +332,6 @@ int		ft_draw(t_screen *screen)
 	printf("Position: %f, %f\nDirection: %f, %f\n",
 				screen->player->pos_x, screen->player->pos_y,
 				screen->player->rot_x, screen->player->rot_y);
-//	mlx_put_image_to_window(screen->mlx, screen->win, screen->wall_n.img, 50, 50);
-//	mlx_pixel_put(screen->mlx, screen->win, 10, 10, ft_get_color(255,0,0,0));
-//	mlx_string_put(screen->mlx, screen->win, 10, 10, 255, "This is Blue");
-//	mlx_string_put(screen->mlx, screen->win, 10, 20, get_color(0, 255, 0), "This is Green");
-//	mlx_string_put(screen->mlx, screen->win, 10, 40, get_color(255, 0, 0), "This is Red");
 	return (1);
 }
 
@@ -338,8 +343,11 @@ int		ft_redraw(t_screen *screen)
 
 int		ft_close_screen(t_screen *screen)
 {
-	if (screen->mlx && screen->wall_n.img)
-		mlx_destroy_image(screen->mlx, screen->wall_n.img);
+	int		i;
+
+	i = 0;
+	while (screen->mlx && screen->walls && i < 4)
+		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
 	if (screen->mlx && screen->win)
 		mlx_destroy_window(screen->mlx, screen->win);
 	if (screen->mlx)
@@ -471,15 +479,20 @@ int		main(int argc, char **argv)
 		return (0); // not freeing from mlx_init
 	screen.buf.img  = mlx_new_image(screen.mlx, screen.width, screen.height);
 	screen.buf.addr = mlx_get_data_addr(screen.buf.img, &screen.buf.bpp, &screen.buf.len, &screen.buf.endian);
-	screen.wall_n.img = NULL;
 	texture_width = 0;
 	texture_height = 0;
-	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/bw.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
-//	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/wall_n.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
-	screen.wall_n.addr = mlx_get_data_addr(screen.wall_n.img, &screen.wall_n.bpp, &screen.wall_n.len, &screen.wall_n.endian);
-	if (!screen.wall_n.img)
-		return (0); //not freeing window and mlx
 
+	screen.walls[0].img = mlx_xpm_file_to_image(screen.mlx, map_parse->textures[0], &(screen.walls[0].width), &(screen.walls[0].height));
+	screen.walls[1].img = mlx_xpm_file_to_image(screen.mlx, map_parse->textures[1], &(screen.walls[1].width), &(screen.walls[1].height));
+	screen.walls[2].img = mlx_xpm_file_to_image(screen.mlx, map_parse->textures[2], &(screen.walls[2].width), &(screen.walls[2].height));
+	screen.walls[3].img = mlx_xpm_file_to_image(screen.mlx, map_parse->textures[3], &(screen.walls[3].width), &(screen.walls[3].height));
+
+	screen.walls[0].addr = mlx_get_data_addr(screen.walls[0].img, &screen.walls[0].bpp, &screen.walls[0].len, &screen.walls[0].endian);
+	screen.walls[1].addr = mlx_get_data_addr(screen.walls[1].img, &screen.walls[1].bpp, &screen.walls[1].len, &screen.walls[1].endian);
+	screen.walls[2].addr = mlx_get_data_addr(screen.walls[2].img, &screen.walls[2].bpp, &screen.walls[2].len, &screen.walls[2].endian);
+	screen.walls[3].addr = mlx_get_data_addr(screen.walls[3].img, &screen.walls[3].bpp, &screen.walls[3].len, &screen.walls[3].endian);
+	// check that image loaded and is valid
+	
 	mlx_expose_hook(screen.win, &ft_redraw, &screen);
 	mlx_hook(screen.win, 2, 1L<<0, &ft_parse_keys, &screen);
 	mlx_hook(screen.win, 33, 0L<<0, &ft_close_screen, &screen);
