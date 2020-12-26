@@ -381,14 +381,15 @@ int		ft_parse_keys(int	key, t_screen *screen)
 		ft_close_screen(screen);
 	else if (key == K_UP)
 	{
-		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)(p->pos_x + p->rot_x)] == 0)
+		if (screen->map_data[(int)(p->pos_y)][(int)(p->pos_x + p->rot_x)] == 0)
 		{
-	//		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
-	//		{
 				screen->player->pos_x += screen->player->rot_x;
-				screen->player->pos_y += screen->player->rot_y;
-	//		}
 		}
+		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
+		{
+			screen->player->pos_y += screen->player->rot_y;
+		}
+	
 		/*
 		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x > 0)), 0);
 		screen->player->pos_y += screen->player->rot_y;
