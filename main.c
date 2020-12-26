@@ -263,7 +263,8 @@ void	ft_raycast(t_screen screen)
 		if (draw_end >= screen.height)
 			draw_end = screen.height - 1;
 	
-		texture_pos = (draw_start - (screen.height - line_height) / 2) * 2;
+		texture_pos = (draw_start - (screen.height - line_height) / 2) * step;
+//		texture_pos = 0; //testing this
 		int y;
 		int texture_y;
 		y = draw_start;
@@ -380,10 +381,14 @@ int		ft_parse_keys(int	key, t_screen *screen)
 		ft_close_screen(screen);
 	else if (key == K_UP)
 	{
-		if (screen->map_data[(int)p->pos_y][(int)(p->pos_x + p->rot_x)] == 0)
-			screen->player->pos_x += screen->player->rot_x;
-		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
-			screen->player->pos_y += screen->player->rot_y;
+		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)(p->pos_x + p->rot_x)] == 0)
+		{
+	//		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
+	//		{
+				screen->player->pos_x += screen->player->rot_x;
+				screen->player->pos_y += screen->player->rot_y;
+	//		}
+		}
 		/*
 		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x > 0)), 0);
 		screen->player->pos_y += screen->player->rot_y;
@@ -468,7 +473,7 @@ int		main(int argc, char **argv)
 	screen.wall_n.img = NULL;
 	texture_width = 0;
 	texture_height = 0;
-	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/brick800640.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
+	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/bw.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
 //	screen.wall_n.img = mlx_xpm_file_to_image(screen.mlx, "textures/wall_n.xpm", &(screen.wall_n.width), &(screen.wall_n.height));
 	screen.wall_n.addr = mlx_get_data_addr(screen.wall_n.img, &screen.wall_n.bpp, &screen.wall_n.len, &screen.wall_n.endian);
 	if (!screen.wall_n.img)
