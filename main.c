@@ -18,47 +18,6 @@
 #define DARKGRAY	1315860
 #define LIGHTGRAY	13158600
 
-typedef struct		s_player
-{
-	double	pos_x;
-	double	pos_y;
-	double	rot_x;
-	double	rot_y;
-}					t_player;
-
-typedef struct		s_image_data
-{
-	void	*img;
-	int		width;
-	int		height;
-	char	*addr;
-	int		bpp;
-	int		len;
-	int		endian;
-}					t_img_data;
-
-typedef struct		s_colors
-{
-	int		floor;
-	int		ceiling;
-}					t_colors;
-
-typedef struct		s_screen
-{
-	void	*mlx;
-	void	*win;
-	t_img_data buf;
-	int		width;
-	int		height;
-	int		**map_data; //rename to map, please
-	int		map_width;
-	int		map_height;
-	t_player	*player;
-	t_img_data	walls[4];
-	t_colors	colors;
-	int			refresh;
-}					t_screen;
-
 int		ft_get_color(int r, int g, int b, int alpha)
 {
 	return ((alpha << 24) + (r << 16) + (g << 8) + (b));
@@ -492,7 +451,21 @@ int		main(int argc, char **argv)
 	screen.walls[2].addr = mlx_get_data_addr(screen.walls[2].img, &screen.walls[2].bpp, &screen.walls[2].len, &screen.walls[2].endian);
 	screen.walls[3].addr = mlx_get_data_addr(screen.walls[3].img, &screen.walls[3].bpp, &screen.walls[3].len, &screen.walls[3].endian);
 	// check that image loaded and is valid
-	
+
+	if (argc > 2)
+	{
+		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
+		{
+			ft_save(&screen, "save.bmp"); //if returns -1, then error
+			ft_close_screen(&screen);
+		}
+		else
+		{
+			ft_printf("INVALID OPTION -- usage -- blah blah"); //clear and exit
+			ft_close_screen(&screen);
+		}
+	}
+
 	mlx_expose_hook(screen.win, &ft_redraw, &screen);
 	mlx_hook(screen.win, 2, 1L<<0, &ft_parse_keys, &screen);
 	mlx_hook(screen.win, 33, 0L<<0, &ft_close_screen, &screen);
