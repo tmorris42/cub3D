@@ -269,6 +269,7 @@ int		ft_draw(t_screen *screen)
 //	mlx_clear_window(screen->mlx, screen->win);
 	ft_raycast(*screen);
 	mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
+
 //	return (1);
 	print[5] = '\0';
 	y = 0;
@@ -438,6 +439,10 @@ int		main(int argc, char **argv)
 		return (0); // not freeing from mlx_init
 	screen.buf.img  = mlx_new_image(screen.mlx, screen.width, screen.height);
 	screen.buf.addr = mlx_get_data_addr(screen.buf.img, &screen.buf.bpp, &screen.buf.len, &screen.buf.endian);
+	screen.buf.width = screen.width;
+	screen.buf.height = screen.height;
+	ft_printf("BUFFER SIZE: %d,%d\n", screen.buf.width, screen.buf.height);
+
 	texture_width = 0;
 	texture_height = 0;
 
@@ -456,6 +461,7 @@ int		main(int argc, char **argv)
 	{
 		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 		{
+			ft_redraw(&screen);
 			ft_save(&screen, "save.bmp"); //if returns -1, then error
 			ft_close_screen(&screen);
 		}

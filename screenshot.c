@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 20:00:44 by tmorris           #+#    #+#             */
-/*   Updated: 2020/12/27 17:04:46 by tmorris          ###   ########.fr       */
+/*   Updated: 2020/12/27 17:46:08 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,33 +72,36 @@ static int	ft_print_pixels(int fd, t_screen *screen)
 	max = screen->width * screen->height;
 	i = 0;
 	x = 0;
-	y = 0;
+	y = screen->height - 1;
 	while (i < max)
 	{
 		pixel = ft_get_pixel_from_image(&screen->buf, x, y);
-		if (i % 2 == 0)
-			c = 0;
-		else
-			c = 255;
+//		ft_printf("PIXEL =========== %d\n", pixel);
+//		if (i % 2 == 0)
+//			c = 0;
+//		else
+//			c = 255;
 //			ft_putint_fd(0, fd);
 //		else
 //			ft_putint_fd(255, fd);
-		ft_putchar_fd(c, fd);
-		ft_putchar_fd(c, fd);
-		ft_putchar_fd(c, fd);
+		ft_putchar_fd((char)(pixel & 0xFF), fd);
+		ft_putchar_fd((char)((pixel >> 8) & 0xFF), fd);
+		ft_putchar_fd((char)((pixel >> 16) & 0xFF), fd);
+//		ft_putchar_fd(255 * (pixel > 0), fd);
+//		ft_putchar_fd(pixel > 0, fd);
+//		ft_putchar_fd(pixel > 0, fd);
 		++x;
 		if (x >= screen->width)
 		{
-			x = 0;
-			++y;
+			x = (4 - ((max * 3) % 4)) * ((max * 3) % 4 != 0);
+			while (x > 0)
+			{
+				ft_putchar_fd(0, fd);
+				--x;
+			}
+			--y;
 		}
 		++i;
-	}
-	i = (4 - ((max * 3) % 4)) * ((max * 3) % 4 != 0);
-	while (i > 0)
-	{
-		ft_putchar_fd(0, fd);
-		--i;
 	}
 	return (1);
 }
@@ -120,7 +123,7 @@ int		ft_save(t_screen *screen, char *filename)
 		ft_printf("open error\n");
 		return (-1);
 	}
-	ft_printf("SAVING to '%s'\n", "test.bmp");
+	ft_printf("SAVING to '%s'\n", filename);
 	ft_print_header(fd);
 	ft_print_info(fd, screen);
 	ft_print_pixels(fd, screen);
