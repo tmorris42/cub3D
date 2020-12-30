@@ -301,23 +301,6 @@ int		ft_redraw(t_screen *screen)
 	return (ft_draw(screen));
 }
 
-/*int		ft_close_screen(t_screen *screen)
-{
-	int		i;
-
-	i = 0;
-	while (screen->mlx && screen->walls && i < 4)
-		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
-	if (screen->mlx && screen->win)
-		mlx_destroy_window(screen->mlx, screen->win);
-	if (screen->mlx)
-		mlx_destroy_display(screen->mlx);
-	free(screen->mlx);
-	exit(EXIT_SUCCESS);
-	
-	return (1);
-}*/
-
 void	ft_collision_with_wall(t_screen *screen, int x, int y)
 {
 	int pos_x = (int)(screen->player->pos_x + 0.5);
@@ -338,6 +321,8 @@ void	ft_collision_with_wall(t_screen *screen, int x, int y)
 		}
 	}
 }
+
+
 
 int		ft_parse_keys(int	key, t_screen *screen)
 {
