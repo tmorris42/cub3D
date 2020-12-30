@@ -415,6 +415,7 @@ int		main(int argc, char **argv)
 	screen->map_height = map_parse->map_height;
 	screen->map_width = map_parse->map_width;
 	screen->map_data = map_parse->map_grid;
+	map_parse->map_grid = NULL;
 	screen->player = &player;
 	screen->width = map_parse->res_width;
 	screen->height = map_parse->res_height;
@@ -445,10 +446,15 @@ int		main(int argc, char **argv)
 	screen->walls[3].addr = mlx_get_data_addr(screen->walls[3].img, &screen->walls[3].bpp, &screen->walls[3].len, &screen->walls[3].endian);
 	// check that image loaded and is valid
 
+	ft_free_map_data(map_parse);
+	map_parse = NULL;
+
 	if (argc > 2)
 	{
 		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 		{
+			//seperate drawing to the buffer and drawing to the screen, so that this can avoid drawing to the screen
+			//also, since we're complaining, speed up the writing to file process by not repeatedly calling get_pixel(x, y) and instead just loop through all the pixels. It should be faster.
 			ft_redraw(screen);
 			ft_save(screen, "save.bmp"); //if returns -1, then error
 			ft_close_screen(&screen);
