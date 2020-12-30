@@ -5,7 +5,7 @@ LIBFT = libft.a
 MLX_DIR = ./minilibx-linux/
 MLX = libmlx.a
 
-SRCS = main.c parser.c screenshot.c
+SRCS = main.c parser.c screenshot.c screen.c
 
 OBJS = ${SRCS:.c=.o}
 
