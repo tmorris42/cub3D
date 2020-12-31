@@ -322,6 +322,17 @@ void	ft_collision_with_wall(t_screen *screen, int x, int y)
 	}
 }
 
+void	ft_rotate(double rad, t_screen *screen)
+{
+	double	old_rx;
+	t_player	*p;
+
+	p = screen->player;
+	old_rx = p->rot_x;
+	p->rot_x = (cos(rad) * old_rx) - (p->rot_y * sin(rad));
+	p->rot_y = (sin(rad) * old_rx) + (cos(rad) * p->rot_y);
+}
+
 void	ft_move_relative(double x, double y, t_screen *screen)
 {
 	t_player	*p;
@@ -335,7 +346,7 @@ void	ft_move_relative(double x, double y, t_screen *screen)
 
 int		ft_parse_keys(int	key, t_screen *screen)
 {
-	double		old_rx;
+//	double		old_rx;
 	t_player	*p;
 
 	p = screen->player;
@@ -349,21 +360,10 @@ int		ft_parse_keys(int	key, t_screen *screen)
 		ft_move_relative(p->rot_y, -p->rot_x, screen);
 	else if (key == K_D)
 		ft_move_relative(-p->rot_y, p->rot_x, screen);
-	else if (key == K_RIGHT)	//should be turn right
-	{
-		old_rx = screen->player->rot_x;
-		screen->player->rot_x = (0.866 * old_rx) - (screen->player->rot_y / 2);
-		screen->player->rot_y = (0.5 * old_rx) + (0.866 * screen->player->rot_y);
-
-//		screen->player->pos_x += 1;
-	}
-	else if (key == K_LEFT) //should be turn left
-	{
-		old_rx = screen->player->rot_x;
-		screen->player->rot_x = 0.866 * old_rx + (screen->player->rot_y / 2);
-		screen->player->rot_y = (-0.5 * old_rx) + (0.866 * screen->player->rot_y);
-//		screen->player->pos_x += 1;
-	}
+	else if (key == K_RIGHT)
+		ft_rotate(M_PI / 6.0, screen);
+	else if (key == K_LEFT)
+		ft_rotate(-M_PI / 6.0, screen);
 	else
 		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
 	screen->refresh = 1;
