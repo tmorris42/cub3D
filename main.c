@@ -322,7 +322,16 @@ void	ft_collision_with_wall(t_screen *screen, int x, int y)
 	}
 }
 
+void	ft_move_relative(double x, double y, t_screen *screen)
+{
+	t_player	*p;
 
+	p = screen->player;
+	if (screen->map_data[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
+		p->pos_x += x;
+	if (screen->map_data[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
+		p->pos_y += y;
+}
 
 int		ft_parse_keys(int	key, t_screen *screen)
 {
@@ -332,38 +341,14 @@ int		ft_parse_keys(int	key, t_screen *screen)
 	p = screen->player;
 	if (key == K_ESCAPE)
 		ft_close_screen(&screen);
-	else if (key == K_UP)
-	{
-		if (screen->map_data[(int)(p->pos_y)][(int)(p->pos_x + p->rot_x)] == 0)
-		{
-				screen->player->pos_x += screen->player->rot_x;
-		}
-		if (screen->map_data[(int)(p->pos_y + p->rot_y)][(int)p->pos_x] == 0)
-		{
-			screen->player->pos_y += screen->player->rot_y;
-		}
-	
-		/*
-		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x > 0)), 0);
-		screen->player->pos_y += screen->player->rot_y;
-		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y > 0)));
-		*/
-	//	screen->player->pos_y -= 1;
-	}
-	else if (key == K_DOWN)
-	{
-		if (screen->map_data[(int)p->pos_y][(int)(p->pos_x - p->rot_x)] == 0)
-			screen->player->pos_x -= screen->player->rot_x;
-		if (screen->map_data[(int)(p->pos_y - p->rot_y)][(int)p->pos_x] == 0)
-			screen->player->pos_y -= screen->player->rot_y;
-		/*
-		screen->player->pos_x -= screen->player->rot_x;
-		ft_collision_with_wall(screen, -1 + (2 * (screen->player->rot_x < 0)), 0);
-		screen->player->pos_y -= screen->player->rot_y;
-		ft_collision_with_wall(screen, 0, -1 + (2 * (screen->player->rot_y < 0)));
-*/
-//		screen->player->pos_y += 1;
-	}
+	else if (key == K_UP || key == K_W)
+		ft_move_relative(p->rot_x, p->rot_y, screen);
+	else if (key == K_DOWN || key == K_S)
+		ft_move_relative(-p->rot_x, -p->rot_y, screen);
+	else if (key == K_A)
+		ft_move_relative(p->rot_y, -p->rot_x, screen);
+	else if (key == K_D)
+		ft_move_relative(-p->rot_y, p->rot_x, screen);
 	else if (key == K_RIGHT)	//should be turn right
 	{
 		old_rx = screen->player->rot_x;
