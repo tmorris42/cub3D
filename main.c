@@ -370,6 +370,18 @@ int		ft_parse_keys(int	key, t_screen *screen)
 	return (1);
 }
 
+void	ft_reset_resolution(t_screen *screen)
+{
+	int	x;
+	int	y;
+
+	x = 0;
+	y = 0;
+	mlx_get_screen_size(screen->mlx, &x, &y);
+	screen->width = ft_min(screen->width, x);
+	screen->height = ft_min(screen->height, y);
+}
+
 int		main(int argc, char **argv)
 {
 	t_screen	*screen;
@@ -406,6 +418,7 @@ int		main(int argc, char **argv)
 	screen->height = map_parse->res_height;
 	screen->refresh = 1;
 	screen->mlx = mlx_init();
+	ft_reset_resolution(screen);
 	if (!screen->mlx)
 		return (0);
 	screen->win = mlx_new_window(screen->mlx, screen->width, screen->height, "cub3D");
