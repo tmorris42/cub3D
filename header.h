@@ -62,6 +62,7 @@ typedef struct		s_screen
 	int			map_height;
 	t_player	*player;
 	t_img_data	walls[4];
+	t_img_data	sprite;
 	t_colors	colors;
 	int			refresh;
 }					t_screen;
