@@ -387,7 +387,10 @@ int		ft_load_image(char *filename, t_screen *screen, t_img_data *image)
 {
 	//add error checking and handling
 	image->img = mlx_xpm_file_to_image(screen->mlx, filename, &(image->width), &(image->height));
-	image->addr = mlx_get_data_addr(image->img, &image->bpp, &image->len, &image->endian);
+	if (image->img)
+		image->addr = mlx_get_data_addr(image->img, &image->bpp, &image->len, &image->endian);
+	else
+		return (-1);
 	return (1);
 }
 
