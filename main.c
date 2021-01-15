@@ -1,4 +1,4 @@
-#include <stdio.h> //remove this
+#include <stdio.h> //remove this  ACTUALLY, printf may be allowed now. Standby
 #include <stdlib.h> //for exit() EXIT_SUCCESS, EXIT_FAILURE
 #include "header.h"
 
@@ -39,18 +39,14 @@ unsigned int	ft_get_pixel_from_image(t_img_data *img, int x, int y)
 {
     char    *img_addr;
 	int		offset;
-	unsigned int	*pixel;
-	unsigned int	color;
+	unsigned int	*color;
 
 	if (x < 0 || y < 0 || x >= img->width || y >= img->height)
 		return (0);
-//	ft_printf("SIMPLE CHECK SHOWS ILLEGAL\n%d, %d [%d, %d]\n",
-//				x, y, img->width, img->height);
 	offset = (y * img->len) + (x * img->bpp / 8);
 	img_addr = img->addr + offset;
-	pixel = (unsigned int*)img_addr;
-	color = *pixel;
-    return (color);
+	color = (unsigned int*)img_addr;
+    return (*color);
 }
 
 void	ft_draw_vertical_line(t_screen *screen, int x, int y,
@@ -451,8 +447,11 @@ int		main(int argc, char **argv)
 	{
 		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 		{
-			//seperate drawing to the buffer and drawing to the screen, so that this can avoid drawing to the screen
-			//also, since we're complaining, speed up the writing to file process by not repeatedly calling get_pixel(x, y) and instead just loop through all the pixels. It should be faster.
+			//seperate drawing to the buffer and drawing to the screen, so that
+			//	this can avoid drawing to the screen
+			//also, since we're complaining, speed up the writing to file
+			//	process by not repeatedly calling get_pixel(x, y) and instead
+			//	just loop through all the pixels. It should be faster.
 			ft_redraw(screen);
 			ft_save(screen, "save.bmp"); //if returns -1, then error
 			ft_close_screen(&screen);
@@ -465,8 +464,8 @@ int		main(int argc, char **argv)
 	}
 
 	mlx_expose_hook(screen->win, &ft_redraw, screen);
-	mlx_hook(screen->win, 2, 1L<<0, &ft_parse_keys, screen);
-	mlx_hook(screen->win, 33, 0L<<0, &ft_close_screen, &screen);
+	mlx_hook(screen->win, 2, 1L << 0, &ft_parse_keys, screen);
+	mlx_hook(screen->win, 33, 0L << 0, &ft_close_screen, &screen);
 	mlx_loop_hook(screen->mlx, &ft_draw, screen);
 
 	// Wait so user can see window
