@@ -102,6 +102,7 @@ void	ft_raycast(t_screen screen)
 	int		side_check;
 	
 
+	double	sprite_buffer[screen.width]; //must be malloc'd instead
 //	plane_x = 0;
 //	plane_y = -0.66;
 	plane_x = -.50 * screen.player->rot_y;
@@ -248,6 +249,9 @@ void	ft_raycast(t_screen screen)
 			++y;
 		}
 		
+		sprite_buffer[x] = wall_dist;
+		//sort the sprites into distance order here, skipping for now
+
 		++x;
 	}
 
