@@ -98,6 +98,7 @@ void	ft_raycast(t_screen screen)
 	int		side_check;
 	
 
+	double	sprite_buffer[screen.width]; //must be malloc'd instead
 //	plane_x = 0;
 //	plane_y = -0.66;
 	plane_x = -.50 * screen.player->rot_y;
@@ -167,7 +168,8 @@ void	ft_raycast(t_screen screen)
 		//	if (screen.map_data[map_x][map_y] > 0)
 			if (map_y > screen.map_height || map_x > screen.map_width || map_x < 0 || map_y < 0)
 				ft_printf("About to crash from illegal map index");
-			if (screen.map_data[map_y][map_x] > 0)
+//			if (screen.map_data[map_y][map_x] > 0)
+			if (screen.map_data[map_y][map_x] == 1)
 			{
 				hit = 1;
 //				printf("GOT A HIT\n");
@@ -243,6 +245,9 @@ void	ft_raycast(t_screen screen)
 			++y;
 		}
 		
+		sprite_buffer[x] = wall_dist;
+		//sort the sprites into distance order here, skipping for now
+
 		++x;
 	}
 
@@ -378,6 +383,14 @@ void	ft_reset_resolution(t_screen *screen)
 	screen->height = ft_min(screen->height, y);
 }
 
+int		ft_load_image(char *filename, t_screen *screen, t_img_data *image)
+{
+	//add error checking and handling
+	image->img = mlx_xpm_file_to_image(screen->mlx, filename, &(image->width), &(image->height));
+	image->addr = mlx_get_data_addr(image->img, &image->bpp, &image->len, &image->endian);
+	return (1);
+}
+
 int		main(int argc, char **argv)
 {
 	t_screen	*screen;
@@ -429,15 +442,11 @@ int		main(int argc, char **argv)
 	texture_width = 0;
 	texture_height = 0;
 
-	screen->walls[0].img = mlx_xpm_file_to_image(screen->mlx, map_parse->textures[0], &(screen->walls[0].width), &(screen->walls[0].height));
-	screen->walls[1].img = mlx_xpm_file_to_image(screen->mlx, map_parse->textures[1], &(screen->walls[1].width), &(screen->walls[1].height));
-	screen->walls[2].img = mlx_xpm_file_to_image(screen->mlx, map_parse->textures[2], &(screen->walls[2].width), &(screen->walls[2].height));
-	screen->walls[3].img = mlx_xpm_file_to_image(screen->mlx, map_parse->textures[3], &(screen->walls[3].width), &(screen->walls[3].height));
-
-	screen->walls[0].addr = mlx_get_data_addr(screen->walls[0].img, &screen->walls[0].bpp, &screen->walls[0].len, &screen->walls[0].endian);
-	screen->walls[1].addr = mlx_get_data_addr(screen->walls[1].img, &screen->walls[1].bpp, &screen->walls[1].len, &screen->walls[1].endian);
-	screen->walls[2].addr = mlx_get_data_addr(screen->walls[2].img, &screen->walls[2].bpp, &screen->walls[2].len, &screen->walls[2].endian);
-	screen->walls[3].addr = mlx_get_data_addr(screen->walls[3].img, &screen->walls[3].bpp, &screen->walls[3].len, &screen->walls[3].endian);
+	ft_load_image(map_parse->textures[0], screen, &(screen->walls[0]));
+	ft_load_image(map_parse->textures[1], screen, &(screen->walls[1]));
+	ft_load_image(map_parse->textures[2], screen, &(screen->walls[2]));
+	ft_load_image(map_parse->textures[3], screen, &(screen->walls[3]));
+	ft_load_image(map_parse->sprite, screen, &(screen->sprite));
 	// check that image loaded and is valid
 
 	ft_free_map_data(map_parse);
