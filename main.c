@@ -18,6 +18,9 @@
 #define DARKGRAY	1315860
 #define LIGHTGRAY	13158600
 
+#define TRUE		1
+#define FALSE		0
+
 int		ft_get_color(int r, int g, int b, int alpha)
 {
 	return ((alpha << 24) + (r << 16) + (g << 8) + (b));
@@ -395,31 +398,50 @@ int		ft_load_image(char *filename, t_screen *screen, t_img_data *image)
 	return (1);
 }
 
-t_screen	*ft_load_screen(t_player *player, t_map_data *data)
+void		ft_parse_to_screen(t_screen *screen, t_map_data *data)
+{
+	t_player	*player;
+
+	player = screen->player;
+	player->pos_x = data->player_x + 0.01;
+	player->pos_y = data->player_y + 0.01;
+	player->rot_x = data->player_facing_x;
+	player->rot_y = data->player_facing_y;
+	screen->colors.ceiling = data->ceil;
+	screen->colors.floor = data->floor;
+	screen->map_height = data->map_height;
+	screen->map_width = data->map_width;
+	screen->map_data = data->map_grid;
+	data->map_grid = NULL;
+	screen->player = player;
+	screen->width = data->res_width;
+	screen->height = data->res_height;
+	screen->refresh = 1;
+	screen->mlx = mlx_init();
+}
+
+t_screen	*ft_load_screen(t_player *player, t_map_data *data, int save)
 {
 	t_screen	*screen;
 	
 	screen = ft_new_screen();
-	if (screen)
-	{
-		player->pos_x = data->player_x + 0.01;
-		player->pos_y = data->player_y + 0.01;
-		player->rot_x = data->player_facing_x;
-		player->rot_y = data->player_facing_y;
-		screen->colors.ceiling = data->ceil;
-		screen->colors.floor = data->floor;
-		screen->map_height = data->map_height;
-		screen->map_width = data->map_width;
-		screen->map_data = data->map_grid;
-		data->map_grid = NULL;
-		screen->player = player;
-		screen->width = data->res_width;
-		screen->height = data->res_height;
-		screen->refresh = 1;
-		screen->mlx = mlx_init();
-	}
-	else
-		perror("Error\nScreen could not be initialized");
+	if (!screen)
+		return (NULL);
+	ft_parse_to_screen(screen, data);
+	if (!screen->mlx)
+		ft_close_screen(&screen);
+	if (save == FALSE)
+		ft_reset_resolution(screen);
+	screen->buf.img  = mlx_new_image(screen->mlx, screen->width, screen->height);
+	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
+	screen->buf.width = screen->width;
+	screen->buf.height = screen->height;
+	ft_load_image(data->textures[0], screen, &(screen->walls[0]));
+	ft_load_image(data->textures[1], screen, &(screen->walls[1]));
+	ft_load_image(data->textures[2], screen, &(screen->walls[2]));
+	ft_load_image(data->textures[3], screen, &(screen->walls[3]));
+	ft_load_image(data->sprite, screen, &(screen->sprite));
+	// check that image loaded and is valid
 	return (screen);
 }
 
@@ -435,25 +457,13 @@ int		main(int argc, char **argv)
 		return (0); //Error
 	if (!map_parse)
 		return (0); // Error
-	screen = ft_load_screen(&player, map_parse);
-	if (!screen->mlx)
-		return (0); //Error
 	if (argc == 2)
-		ft_reset_resolution(screen);
-	
-	screen->buf.img  = mlx_new_image(screen->mlx, screen->width, screen->height);
-	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
-	screen->buf.width = screen->width;
-	screen->buf.height = screen->height;
-	ft_load_image(map_parse->textures[0], screen, &(screen->walls[0]));
-	ft_load_image(map_parse->textures[1], screen, &(screen->walls[1]));
-	ft_load_image(map_parse->textures[2], screen, &(screen->walls[2]));
-	ft_load_image(map_parse->textures[3], screen, &(screen->walls[3]));
-	ft_load_image(map_parse->sprite, screen, &(screen->sprite));
-	// check that image loaded and is valid
-
+		screen = ft_load_screen(&player, map_parse, FALSE);
+	else
+		screen = ft_load_screen(&player, map_parse, TRUE);
+	if (!screen)
+		return (0); //Error
 	map_parse = ft_free_map_data(map_parse);
-
 	if (argc > 2)
 	{
 		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
@@ -480,11 +490,7 @@ int		main(int argc, char **argv)
 	mlx_hook(screen->win, 2, 1L << 0, &ft_parse_keys, screen);
 	mlx_hook(screen->win, 33, 0L << 0, &ft_close_screen, &screen);
 	mlx_loop_hook(screen->mlx, &ft_draw, screen);
-
-	// Wait so user can see window
 	mlx_loop(screen->mlx);
-	
-//	mlx_destroy_window(screen.mlx, screen.win);
 	ft_close_screen(&screen);
 	exit(EXIT_SUCCESS);
 }

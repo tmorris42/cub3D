@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 13:28:53 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 14:54:10 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void				ft_print_map_data(t_map_data map);
 t_map_data			*ft_parse_file(char *filename);
 int					ft_save(t_screen *screen, char *filename);
 unsigned int		ft_get_pixel_from_image(t_img_data *img, int x, int y);
-t_screen			*ft_new_screen(void);
+t_screen			*ft_new_screen(t_player *player);
 int					ft_close_screen(t_screen **screen_addr);
 void				ft_free_int_array(int **arr, int y_max);
 

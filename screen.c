@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2020/12/30 12:44:27 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 14:53:57 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void		ft_init_screen(t_screen *screen)
 	}
 }
 
-t_screen	*ft_new_screen(void)
+t_screen	*ft_new_screen(t_player *player)
 {
 	t_screen	*screen;
 
@@ -78,5 +78,6 @@ t_screen	*ft_new_screen(void)
 	if (!screen)
 		return (NULL);
 	ft_init_screen(screen);
+	screen->player = player;
 	return (screen);
 }
