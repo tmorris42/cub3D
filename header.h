@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 14:54:10 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 18:13:17 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,7 @@ unsigned int		ft_get_pixel_from_image(t_img_data *img, int x, int y);
 t_screen			*ft_new_screen(t_player *player);
 int					ft_close_screen(t_screen **screen_addr);
 void				ft_free_int_array(int **arr, int y_max);
+void				ft_close_on_error(t_screen *screen, char *msg);
+void				ft_raycast(t_screen *screen);
 
 #endif

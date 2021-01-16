@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 14:53:57 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 17:41:28 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int			ft_close_screen(t_screen **screen_addr)
 	t_screen	*screen;
 	int			i;
 
+	if (!screen_addr || (!(*screen_addr)))
+		exit(EXIT_SUCCESS);
 	screen = *screen_addr;
 	ft_free_int_array(screen->map_data, screen->map_height);
 	i = 0;
