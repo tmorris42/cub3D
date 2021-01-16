@@ -395,24 +395,32 @@ int		ft_load_image(char *filename, t_screen *screen, t_img_data *image)
 	return (1);
 }
 
-int		ft_load_screen(t_screen *screen, t_player *player, t_map_data *data)
+t_screen	*ft_load_screen(t_player *player, t_map_data *data)
 {
-	player->pos_x = data->player_x + 0.01;
-	player->pos_y = data->player_y + 0.01;
-	player->rot_x = data->player_facing_x;
-	player->rot_y = data->player_facing_y;
-	screen->colors.ceiling = data->ceil;
-	screen->colors.floor = data->floor;
-	screen->map_height = data->map_height;
-	screen->map_width = data->map_width;
-	screen->map_data = data->map_grid;
-	data->map_grid = NULL;
-	screen->player = player;
-	screen->width = data->res_width;
-	screen->height = data->res_height;
-	screen->refresh = 1;
-	screen->mlx = mlx_init();
-	return (0);
+	t_screen	*screen;
+	
+	screen = ft_new_screen();
+	if (screen)
+	{
+		player->pos_x = data->player_x + 0.01;
+		player->pos_y = data->player_y + 0.01;
+		player->rot_x = data->player_facing_x;
+		player->rot_y = data->player_facing_y;
+		screen->colors.ceiling = data->ceil;
+		screen->colors.floor = data->floor;
+		screen->map_height = data->map_height;
+		screen->map_width = data->map_width;
+		screen->map_data = data->map_grid;
+		data->map_grid = NULL;
+		screen->player = player;
+		screen->width = data->res_width;
+		screen->height = data->res_height;
+		screen->refresh = 1;
+		screen->mlx = mlx_init();
+	}
+	else
+		perror("Error\nScreen could not be initialized");
+	return (screen);
 }
 
 int		main(int argc, char **argv)
@@ -424,20 +432,12 @@ int		main(int argc, char **argv)
 	if (argc > 1)
 		map_parse = ft_parse_file(argv[1]);
 	else
-		return (0);
-
-	if (map_parse)
-		ft_print_map_data(*map_parse);
-	else
-		return (-1);
-	screen = ft_new_screen();
-	if (!screen)
-		perror("Error\nScreen could not be initialized");
-	
-	ft_load_screen(screen, &player, map_parse);
-	
+		return (0); //Error
+	if (!map_parse)
+		return (0); // Error
+	screen = ft_load_screen(&player, map_parse);
 	if (!screen->mlx)
-		return (0);
+		return (0); //Error
 	if (argc == 2)
 		ft_reset_resolution(screen);
 	
@@ -445,7 +445,6 @@ int		main(int argc, char **argv)
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
 	screen->buf.height = screen->height;
-
 	ft_load_image(map_parse->textures[0], screen, &(screen->walls[0]));
 	ft_load_image(map_parse->textures[1], screen, &(screen->walls[1]));
 	ft_load_image(map_parse->textures[2], screen, &(screen->walls[2]));
@@ -453,15 +452,12 @@ int		main(int argc, char **argv)
 	ft_load_image(map_parse->sprite, screen, &(screen->sprite));
 	// check that image loaded and is valid
 
-	ft_free_map_data(map_parse);
-	map_parse = NULL;
+	map_parse = ft_free_map_data(map_parse);
 
 	if (argc > 2)
 	{
 		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 		{
-			//seperate drawing to the buffer and drawing to the screen, so that
-			//	this can avoid drawing to the screen
 			//also, since we're complaining, speed up the writing to file
 			//	process by not repeatedly calling get_pixel(x, y) and instead
 			//	just loop through all the pixels. It should be faster.

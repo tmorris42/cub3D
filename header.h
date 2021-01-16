@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 00:24:41 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 13:28:53 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ typedef struct		s_screen
 	int			refresh;
 }					t_screen;
 
-void				ft_free_map_data(t_map_data *map);
+t_map_data			*ft_free_map_data(t_map_data *map);
 void				ft_print_map_data(t_map_data map);
 t_map_data			*ft_parse_file(char *filename);
 int					ft_save(t_screen *screen, char *filename);

@@ -6,11 +6,13 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2020/12/26 18:41:52 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/16 13:28:10 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
+#include <stdio.h>
+#include <errno.h>
 
 void		ft_map_data_init(t_map_data *map)
 {
@@ -46,10 +48,9 @@ void		ft_free_int_array(int **arr, int y_max)
 		++i;
 	}
 	free(arr);
-
 }
 
-void		ft_free_map_data(t_map_data *map)
+t_map_data	*ft_free_map_data(t_map_data *map)
 {
 	int		i;
 	
@@ -65,7 +66,8 @@ void		ft_free_map_data(t_map_data *map)
 	ft_free_int_array(map->map_grid, map->map_height);
 	map->map_grid = NULL;
 	map->sprite = NULL;
-	free(map);		// right now map is not malloc'd but if that changes
+	free(map);
+	return (NULL);
 }
 
 
@@ -472,7 +474,7 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 	if (paths[str_index] == 'V')
 		return (0);
 	paths[str_index] = 'V';
-	ft_printf("arr[%d][%d] == %d\n", y, x, arr[y][x]);
+//	ft_printf("arr[%d][%d] == %d\n", y, x, arr[y][x]);
 	if (arr[y][x] == 1)
 		return (1);
 	if (ft_check_map_leaks(map, paths, x, y + 1) == -1)
@@ -517,6 +519,7 @@ t_map_data	*ft_parse_file(char *filename)
 
 	if (!(ft_convert_map_to_2d(map_data)))
 	{
+		perror("Error\nCould not parse map data");
 		ft_free_map_data(map_data);
 		return (NULL);
 	}
@@ -524,12 +527,15 @@ t_map_data	*ft_parse_file(char *filename)
 	line = (char*)ft_calloc(map_data->map_width * map_data->map_height, sizeof(char));
 	if (!line)
 	{
+		perror("Error\nCould not allocate space");
 		ft_free_map_data(map_data);
 		return (NULL);
 	}
 	if (ft_check_map_leaks(map_data, line, map_data->player_x, map_data->player_y) < 0)
 	{
+		errno = EINVAL;
 		ft_printf("Returned -1!! Illegal map.\n");
+		perror("Error\nMap must be surrounded by walls in all 8 directions");
 		ft_free_map_data(map_data);
 		map_data = NULL;
 	}
