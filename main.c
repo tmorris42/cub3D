@@ -269,7 +269,8 @@ int		ft_draw(t_screen *screen)
 	ft_draw_rectangle(screen, 0, screen->height / 2, screen->width, screen->height / 2, screen->colors.floor);
 //	mlx_clear_window(screen->mlx, screen->win);
 	ft_raycast(*screen);
-	mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
+	if (screen->win)
+		mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
 
 //	return (1);
 	print[5] = '\0';
@@ -433,9 +434,6 @@ int		main(int argc, char **argv)
 	ft_reset_resolution(screen);
 	if (!screen->mlx)
 		return (0);
-	screen->win = mlx_new_window(screen->mlx, screen->width, screen->height, "cub3D");
-	if (!screen->win)
-		return (0); // not freeing from mlx_init
 	screen->buf.img  = mlx_new_image(screen->mlx, screen->width, screen->height);
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
@@ -475,6 +473,10 @@ int		main(int argc, char **argv)
 		}
 	}
 
+	screen->win = mlx_new_window(screen->mlx, screen->width, screen->height, "cub3D");
+	if (!screen->win)
+		return (0); // not freeing from mlx_init
+	
 	mlx_expose_hook(screen->win, &ft_redraw, screen);
 	mlx_hook(screen->win, 2, 1L << 0, &ft_parse_keys, screen);
 	mlx_hook(screen->win, 33, 0L << 0, &ft_close_screen, &screen);
