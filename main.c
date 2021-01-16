@@ -395,12 +395,30 @@ int		ft_load_image(char *filename, t_screen *screen, t_img_data *image)
 	return (1);
 }
 
+int		ft_load_screen(t_screen *screen, t_player *player, t_map_data *data)
+{
+	player->pos_x = data->player_x + 0.01;
+	player->pos_y = data->player_y + 0.01;
+	player->rot_x = data->player_facing_x;
+	player->rot_y = data->player_facing_y;
+	screen->colors.ceiling = data->ceil;
+	screen->colors.floor = data->floor;
+	screen->map_height = data->map_height;
+	screen->map_width = data->map_width;
+	screen->map_data = data->map_grid;
+	data->map_grid = NULL;
+	screen->player = player;
+	screen->width = data->res_width;
+	screen->height = data->res_height;
+	screen->refresh = 1;
+	screen->mlx = mlx_init();
+	return (0);
+}
+
 int		main(int argc, char **argv)
 {
 	t_screen	*screen;
 	t_player	player;
-	int			texture_width;
-	int			texture_height;
 	t_map_data	*map_parse;
 
 	if (argc > 1)
@@ -416,32 +434,20 @@ int		main(int argc, char **argv)
 	screen = ft_new_screen();
 	if (!screen)
 		perror("Error\nScreen could not be initialized");
-	player.pos_x = map_parse->player_x + 0.01;
-	player.pos_y = map_parse->player_y + 0.01;
-	player.rot_x = map_parse->player_facing_x;
-	player.rot_y = map_parse->player_facing_y;
-	screen->colors.ceiling = map_parse->ceil;
-	screen->colors.floor = map_parse->floor;
-	screen->map_height = map_parse->map_height;
-	screen->map_width = map_parse->map_width;
-	screen->map_data = map_parse->map_grid;
-	map_parse->map_grid = NULL;
-	screen->player = &player;
-	screen->width = map_parse->res_width;
-	screen->height = map_parse->res_height;
-	screen->refresh = 1;
-	screen->mlx = mlx_init();
-	ft_reset_resolution(screen);
+	
+	ft_load_screen(screen, &player, map_parse);
+	
 	if (!screen->mlx)
 		return (0);
+	if (argc == 2)
+		ft_reset_resolution(screen);
+	
 	screen->buf.img  = mlx_new_image(screen->mlx, screen->width, screen->height);
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
 	screen->buf.height = screen->height;
 	ft_printf("BUFFER SIZE: %d,%d\n", screen->buf.width, screen->buf.height);
 
-	texture_width = 0;
-	texture_height = 0;
 
 	ft_load_image(map_parse->textures[0], screen, &(screen->walls[0]));
 	ft_load_image(map_parse->textures[1], screen, &(screen->walls[1]));
