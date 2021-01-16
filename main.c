@@ -193,11 +193,11 @@ void	ft_raycast(t_screen screen)
 		if (side_check == 0)
 		{
 			if (ray_dir_x < 0)
-				wall_num = 3; //0 == N, 1 == E, etc
+				wall_num = 1; //0 == N, 1 == E, etc
 			else
-				wall_num = 1;
+				wall_num = 3;
 		}
-		else if (ray_dir_y > 0)
+		else if (ray_dir_y < 0)
 			wall_num = 2;
 		int texture_width;
 		int		texture_height;
@@ -430,7 +430,6 @@ int		main(int argc, char **argv)
 		ft_print_map_data(*map_parse);
 	else
 		return (-1);
-	ft_printf("player x: %d\n", map_parse->player_x);
 	screen = ft_new_screen();
 	if (!screen)
 		perror("Error\nScreen could not be initialized");
@@ -446,8 +445,6 @@ int		main(int argc, char **argv)
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp, &screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
 	screen->buf.height = screen->height;
-	ft_printf("BUFFER SIZE: %d,%d\n", screen->buf.width, screen->buf.height);
-
 
 	ft_load_image(map_parse->textures[0], screen, &(screen->walls[0]));
 	ft_load_image(map_parse->textures[1], screen, &(screen->walls[1]));
