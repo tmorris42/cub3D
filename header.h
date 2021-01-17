@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 18:13:17 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/17 14:04:31 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
 # include "minilibx-linux/mlx.h"
 # include "libft/libft.h"
 
@@ -83,11 +85,14 @@ t_map_data			*ft_free_map_data(t_map_data *map);
 void				ft_print_map_data(t_map_data map);
 t_map_data			*ft_parse_file(char *filename);
 int					ft_save(t_screen *screen, char *filename);
+void				ft_pixel_put(t_img_data *img, int x, int y, int color);
 unsigned int		ft_get_pixel_from_image(t_img_data *img, int x, int y);
 t_screen			*ft_new_screen(t_player *player);
 int					ft_close_screen(t_screen **screen_addr);
 void				ft_free_int_array(int **arr, int y_max);
 void				ft_close_on_error(t_screen *screen, char *msg);
 void				ft_raycast(t_screen *screen);
+int					ft_draw(t_screen *screen);
+int					ft_redraw(t_screen *screen);
 
 #endif
