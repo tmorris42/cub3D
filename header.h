@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/17 14:04:31 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/22 19:49:31 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,25 @@
 # include <stdlib.h>
 # include "minilibx-linux/mlx.h"
 # include "libft/libft.h"
+
+# define K_ESCAPE	65307
+# define K_LEFT		65361
+# define K_UP		65362
+# define K_RIGHT	65363
+# define K_DOWN		65364
+# define K_W		119
+# define K_A		97
+# define K_S		115
+# define K_D		100
+
+# define RED		0xff0000
+# define GREEN		0x00ff00
+# define BLUE		0x0000ff
+# define DARKGRAY	1315860
+# define LIGHTGRAY	13158600
+
+# define TRUE		1
+# define FALSE		0
 
 typedef struct		s_map_data
 {
