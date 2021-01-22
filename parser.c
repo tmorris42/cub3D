@@ -6,12 +6,11 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 13:28:10 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/22 18:33:40 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
-#include <stdio.h>
 #include <errno.h>
 
 void		ft_map_data_init(t_map_data *map)
@@ -53,7 +52,9 @@ void		ft_free_int_array(int **arr, int y_max)
 t_map_data	*ft_free_map_data(t_map_data *map)
 {
 	int		i;
-	
+
+	if (!map)
+		return (NULL);
 	i = -1;
 	while (++i < 4)
 	{
@@ -429,6 +430,8 @@ int		ft_convert_map_to_2d(t_map_data *map)
 	int		i;
 	int		j;
 
+	if (!map)
+		return (-1);
 	index = map->map_layout;
 	grid = (int**)ft_calloc(map->map_height, sizeof(*grid));
 	if (!grid)
@@ -509,15 +512,18 @@ t_map_data	*ft_parse_file(char *filename)
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (ft_parse_line(line, map_data) < 0)
-			ft_printf("%s\n", line);
+		if (map_data && ft_parse_line(line, map_data) < 0)
+		{
+			ft_free_map_data(map_data);
+			map_data = NULL;
+		}
 		free(line);
 		line = NULL;
 		if (status == 0)	
 			break ;
 	}
 
-	if (!(ft_convert_map_to_2d(map_data)))
+	if (ft_convert_map_to_2d(map_data) == -1)
 	{
 		perror("Error\nCould not parse map data");
 		ft_free_map_data(map_data);
