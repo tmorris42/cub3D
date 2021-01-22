@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/22 18:33:40 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/01/22 18:43:27 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,31 +16,35 @@
 void		ft_map_data_init(t_map_data *map)
 {
 	int		i;
-	map->floor = 0;
-	map->ceil = 0;
-	map->res_width = 0;
-	map->res_height = 0;
-	map->map_width = 0;
-	map->map_height = 0;
-	i = -1;
-	while (++i < 4)
-		map->textures[i] = NULL;
-	map->sprite = NULL;
-	map->map_layout = NULL;
-	map->map_grid = NULL;
-	map->player_x = -1;
-	map->player_y = -1;
-	map->player_facing_x = -1;
-	map->player_facing_y = -1;
+
+	if (map)
+	{
+		map->floor = 0;
+		map->ceil = 0;
+		map->res_width = 0;
+		map->res_height = 0;
+		map->map_width = 0;
+		map->map_height = 0;
+		i = -1;
+		while (++i < 4)
+			map->textures[i] = NULL;
+		map->sprite = NULL;
+		map->map_layout = NULL;
+		map->map_grid = NULL;
+		map->player_x = -1;
+		map->player_y = -1;
+		map->player_facing_x = -1;
+		map->player_facing_y = -1;
+	}
 }
 
 void		ft_free_int_array(int **arr, int y_max)
 {
 	int		i;
 
-	i = 0;
 	if (!arr)
 		return ;
+	i = 0;
 	while (i < y_max)
 	{
 		free(arr[i]);
@@ -115,7 +119,7 @@ int	 		ft_get_chr_index(char c, char *str)
 	int		i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		if (str[i] == c)
 			return (i);
