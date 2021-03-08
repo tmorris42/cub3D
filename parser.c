@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/22 18:43:27 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/03/08 18:38:20 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void		ft_map_data_init(t_map_data *map)
 		while (++i < 4)
 			map->textures[i] = NULL;
 		map->sprite = NULL;
+		map->sprites[0].x = 0.0; //just for testing, will be a dynamic arrau
+		map->sprites[0].y = 0.0; //see above
 		map->map_layout = NULL;
 		map->map_grid = NULL;
 		map->player_x = -1;
@@ -76,42 +78,44 @@ t_map_data	*ft_free_map_data(t_map_data *map)
 }
 
 
-void		ft_print_map_data(t_map_data map)
+void		ft_print_map_data(t_map_data *map)
 {
 	int		i;
 	int		j;
 
 	t_list	*index;
-	ft_printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map.res_width,
-			map.res_height,	map.map_width, map.map_height);
+	printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map->res_width,
+			map->res_height,	map->map_width, map->map_height);
 	i = -1;
 	while (++i < 4)
-		ft_printf("\t%s\n", map.textures[i]);
-	ft_printf("Sprite:\n\t%s\n", map.sprite);
-	ft_printf("Floor Color: %u\nCeiling Color: %u\n", map.floor, map.ceil);
-	ft_printf("Player Location: %d, %d, <%d, %d>\n", map.player_x, map.player_y, map.player_facing_x, map.player_facing_y);
+		printf("\t%s\n", map->textures[i]);
+	printf("Sprite:\n\t%s\n", map->sprite);
+	printf("Sprite location: %f, %f\n", map->sprites[0].x, map->sprites[0].y);
+	printf("Floor Color: %u\nCeiling Color: %u\n", map->floor, map->ceil);
+	printf("Player Location: %d, %d, <%d, %d>\n", map->player_x, map->player_y, map->player_facing_x, map->player_facing_y);
 	ft_printf("Map Layout:\n");
-	index = map.map_layout;
+	index = map->map_layout;
 	while (index)
 	{
-		ft_printf("\t|%s|\n", index->content);
+		printf("\t|%s|\n", (char*)index->content);
 		index = index->next;
 	}
-	if (!map.map_grid)
+	if (!map->map_grid)
 		return ;
-	ft_printf("Map Grid:\n");
+	printf("Map Grid:\n");
 	j = 0;
-	while (j < map.map_height)
+	while (j < map->map_height)
 	{
 		i = 0;
-		while (i < map.map_width)
+		while (i < map->map_width)
 		{
-			ft_printf("%c", map.map_grid[j][i] + '0');
+			printf("%d", map->map_grid[j][i]);
 			++i;
 		}
-		ft_printf("\n");
+		printf("\n");
 		++j;
 	}
+	printf("Done printing map data\n");
 }
 
 int	 		ft_get_chr_index(char c, char *str)
@@ -454,6 +458,14 @@ int		ft_convert_map_to_2d(t_map_data *map)
 		while ((i < map->map_width) && (content)[i])
 		{
 			grid[j][i] = content[i] - '0';
+			//testing sprite
+			if (grid[j][i] == 2)
+			{
+				printf("found a sprite during parsing\n");
+				map->sprites[0].x = i * 1.0 + 0.5; //see below
+				map->sprites[0].y = j * 1.0 + 0.5; //not hardcoded to 0, must be dynamic
+				grid[j][i] = 0;
+			}
 			++i;
 		}
 		++j;
@@ -550,6 +562,7 @@ t_map_data	*ft_parse_file(char *filename)
 		map_data = NULL;
 	}
 	free(line);
+	ft_print_map_data(map_data);
 	return (map_data);
 }
 /*
@@ -559,7 +572,7 @@ int		main(void)
 	map = ft_parse_file("illegalmap.cub");
 
 	//ft_printf("MAP DATA\n");
-	//ft_print_map_data(*map);
+	//ft_print_map_data(map);
 	ft_printf("parse result pointer: %p\n", map);
 	if (map)
 		ft_free_map_data(map);
