@@ -6,11 +6,16 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/17 13:45:28 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/03/08 18:42:01 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
+
+void	ft_sort_sprites(int *order, double *dist, int amount)
+{
+	return ;
+}
 
 void	ft_raycast(t_screen *screen)
 {
@@ -34,6 +39,11 @@ void	ft_raycast(t_screen *screen)
 	
 
 	double	sprite_buffer[screen->width]; //must be malloc'd instead
+	int numSprites = 1; //can't be hardcoded
+	int	spriteOrder[numSprites]; //can't use numSprites.. malloc
+	double spriteDistance[numSprites]; //can't use numSprites.. malloc
+	int tempSpriteHit = 0; // just for debugging
+	
 //	plane_x = 0;
 //	plane_y = -0.66;
 	plane_x = -.50 * screen->player->rot_y;
@@ -41,7 +51,7 @@ void	ft_raycast(t_screen *screen)
 	printf("<%f, %f>\n", plane_x, plane_y);
 
 	x = 0;
-	printf("START LOOP\n");
+	printf("START LOOP with player location = < %f, %f >\n", screen->player->pos_x, screen->player->pos_y);
 	while (x < screen->width)
 	{
 		camera_x = 2 * x / (double)screen->width - 1;
@@ -102,12 +112,22 @@ void	ft_raycast(t_screen *screen)
 			}
 		//	if (screen.map_data[map_x][map_y] > 0)
 			if (map_y > screen->map_height || map_x > screen->map_width || map_x < 0 || map_y < 0)
-				ft_printf("About to crash from illegal map index");
+			{
+				ft_printf("About to crash from illegal map index\n");
+				printf("mapx,y = (%d, %d)\n", map_x, map_y);
+		//		printf("avoiding the crash\n");
+		//		break; //bad idea
+			}
 //			if (screen.map_data[map_y][map_x] > 0)
 			if (screen->map_data[map_y][map_x] == 1)
 			{
 				hit = 1;
 //				printf("GOT A HIT\n");
+			}
+			else if (screen->map_data[map_y][map_x] == 2)
+			{
+				//printf("GOT A SPRITE HIT\n");
+				tempSpriteHit = 2;
 			}
 		}
 
@@ -183,5 +203,67 @@ void	ft_raycast(t_screen *screen)
 
 		++x;
 	}
+	printf("Leaving raycast wall loop\n");
+//	if (tempSpriteHit != 2)
+//		return ;
+	printf("Trying to draw sprites\n");
 
+	x = 0;
+	while (x < numSprites) //can;t use numSprites
+	{
+		spriteOrder[x] = x;
+		spriteDistance[x] = ((screen->player->pos_x - screen->sprites[x].x) * (screen->player->pos_x - screen->sprites[x].x) + (screen->player->pos_y - screen->sprites[x].y) * (screen->player->pos_y - screen->sprites[x].y));
+		++x;
+	}
+	ft_sort_sprites(spriteOrder, spriteDistance, numSprites); //can't use these vars
+	int currentSprite = 0;
+	while (currentSprite < numSprites) //numSPrites can't use
+	{
+		double spriteX = screen->sprites[spriteOrder[currentSprite]].x - screen->player->pos_x;
+		double spriteY = screen->sprites[spriteOrder[currentSprite]].y - screen->player->pos_y;
+
+		double invDet = 1.0 / (plane_x * screen->player->rot_y - screen->player->rot_x * plane_y);
+		double transformX = invDet * (screen->player->rot_y * spriteX - screen->player->rot_x * spriteY);
+		double transformY = invDet * (-plane_y *spriteX + plane_x * spriteY);
+		int	spriteScreenX = (int)((screen->width / 2) * (1 + transformX / transformY));
+		int spriteHeight = (int)(abs(screen->height / transformY));
+		int drawStartY = -spriteHeight / 2 + screen->height / 2;
+		if (drawStartY < 0) drawStartY = 0;
+		int drawEndY = spriteHeight / 2 + screen->height / 2;
+		if (drawEndY >= screen->height) drawEndY = screen->height - 1;
+
+		int spriteWidth = (int)(abs(screen->height / transformY));
+		int drawStartX = (int)(-spriteWidth / 2 + spriteScreenX);
+		if (drawStartX < 0) drawStartX = 0;
+		int drawEndX = (int)(spriteWidth / 2 + spriteScreenX);
+		if (drawEndX >= screen->width) drawEndX = screen->width - 1;
+
+		printf("Drawing sprite #%d (spriteWidth=%d, drawStartX=%d, drawEndX=%d)\n", currentSprite, spriteWidth, drawStartX, drawEndX);
+		x = drawStartX;
+		while (x < drawEndX)
+		{
+			int texX = (256 * (x - (-spriteWidth / 2 + spriteScreenX)) * screen->sprite.width / spriteWidth) / 256;
+			//printf("checking if sprite is onscreen\n");
+			if (transformY > 0 && x > 0 && x < screen->width && transformY < sprite_buffer[x])
+			{
+				printf("Here we go!!! drawing the sprite\n");
+				int y = drawStartY;
+				while (y < drawEndY)
+				{
+					int d = y * 256 - screen->height * 128 + spriteHeight * 128;
+					int texY = ((d * screen->sprite.height) / spriteHeight) / 256;
+
+					int color = ft_get_pixel_from_image(&(screen->sprite), texX, texY);
+					if ((color & 0x00FFFFFF) != 0)
+					{
+						ft_pixel_put(&(screen->buf), x, y, color);
+					}
+					++y;
+				}
+			}
+			++x;
+		}
+		++currentSprite;
+	}
+	printf("done drawing sprites\n");
 }

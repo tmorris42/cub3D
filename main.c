@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/17 14:05:58 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/03/08 18:03:31 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->map_width = data->map_width;
 	screen->map_data = data->map_grid;
 	data->map_grid = NULL;
+	screen->sprites[0] = data->sprites[0]; // should be a dynamic malloc thing when finished. just for testing.
 	screen->player = player;
 	screen->width = data->res_width;
 	screen->height = data->res_height;
@@ -239,12 +240,15 @@ int				main(int argc, char **argv)
 		ft_close_on_error(screen, "Error\nUsage: ./cub3D <mapname.cub>");
 	if (!map_parse)
 		ft_close_on_error(screen, "Error\nCould not parse map");
+//	ft_print_map_data(map_parse);
+	printf("Made it out of second print map data\n");
 	if (argc == 2)
 		screen = ft_load_screen(&player, map_parse, FALSE);
 	else
 		screen = ft_load_screen(&player, map_parse, TRUE);
 	if (!screen)
 		ft_close_on_error(screen, "Error\nCould not initialize screen");
+	printf("Made it out of load_screen");
 	map_parse = ft_free_map_data(map_parse);
 	ft_parse_options(argc, argv, screen);
 	return (ft_run(screen));

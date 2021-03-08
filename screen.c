@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/16 17:41:28 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/03/08 18:12:22 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,9 @@ void		ft_init_screen(t_screen *screen)
 	screen->refresh = 1;
 	screen->mlx = NULL;
 	screen->win = NULL;
+	screen->sprites[0].x = -1;  //this needs to change when sprites becomes a dynamic malloc array
+	screen->sprites[0].y = -1; // see above
+	ft_init_image_data(&screen->sprite);
 	ft_init_image_data(&screen->buf);
 	i = 0;
 	while (i < 4)
@@ -76,7 +79,7 @@ t_screen	*ft_new_screen(t_player *player)
 {
 	t_screen	*screen;
 
-	screen = (t_screen*)malloc(sizeof(t_screen));
+	screen = (t_screen*)malloc(sizeof(t_screen)); //sizeof(*screen) ??
 	if (!screen)
 		return (NULL);
 	ft_init_screen(screen);
