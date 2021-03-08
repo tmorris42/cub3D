@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/01/22 19:49:31 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/03/08 23:08:38 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,14 @@
 # define TRUE		1
 # define FALSE		0
 
+typedef struct		s_sprite
+{
+	double	x;
+	double	y;
+//	int	x;
+//	int y;
+}					t_sprite;
+
 typedef struct		s_map_data
 {
 	unsigned int	floor;
@@ -49,6 +57,7 @@ typedef struct		s_map_data
 	int				map_height;
 	char			*textures[4];
 	char			*sprite;
+	t_sprite		sprites[1]; // should be dynamic, not limited to 1
 	t_list			*map_layout;
 	int				**map_grid;
 	int				player_x;
@@ -96,12 +105,13 @@ typedef struct		s_screen
 	t_player	*player;
 	t_img_data	walls[4];
 	t_img_data	sprite;
+	t_sprite	sprites[1]; //obviously should be a pointer to a dynamic malloc array (or linked lists)
 	t_colors	colors;
 	int			refresh;
 }					t_screen;
 
 t_map_data			*ft_free_map_data(t_map_data *map);
-void				ft_print_map_data(t_map_data map);
+void				ft_print_map_data(t_map_data *map);
 t_map_data			*ft_parse_file(char *filename);
 int					ft_save(t_screen *screen, char *filename);
 void				ft_pixel_put(t_img_data *img, int x, int y, int color);
