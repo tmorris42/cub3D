@@ -30,10 +30,7 @@ void		ft_map_data_init(t_map_data *map)
 			map->textures[i] = NULL;
 		map->sprite = NULL;
 		map->sprite_num = 0;
-		map->sprites[0].x = 0.0; //just for testing, will be a dynamic arrau
-		map->sprites[0].y = 0.0; //see above
-		map->sprites[1].x = 0.0;
-		map->sprites[1].y = 0.0; // see above
+		map->sprite_list = 0;
 		map->map_layout = NULL;
 		map->map_grid = NULL;
 		map->player_x = -1;
@@ -76,6 +73,7 @@ t_map_data	*ft_free_map_data(t_map_data *map)
 	ft_free_int_array(map->map_grid, map->map_height);
 	map->map_grid = NULL;
 	map->sprite = NULL;
+	ft_lstclear(&map->sprite_list, &free);
 	free(map);
 	return (NULL);
 }
@@ -93,7 +91,7 @@ void		ft_print_map_data(t_map_data *map)
 	while (++i < 4)
 		printf("\t%s\n", map->textures[i]);
 	printf("Sprite:\n\t%s\n", map->sprite);
-	printf("Sprite location: %f, %f\n", map->sprites[0].x, map->sprites[0].y);
+	printf("Sprite_num = %d\n", map->sprite_num);
 	printf("Floor Color: %u\nCeiling Color: %u\n", map->floor, map->ceil);
 	printf("Player Location: %d, %d, <%d, %d>\n", map->player_x, map->player_y, map->player_facing_x, map->player_facing_y);
 	ft_printf("Map Layout:\n");
@@ -464,11 +462,14 @@ int		ft_convert_map_to_2d(t_map_data *map)
 			//testing sprite
 			if (grid[j][i] == 2)
 			{
-				if (map->sprite_num > 1)
-					printf("Right now this is hardcoded to only allow 2, so, have fun");
+				t_sprite *temp_sprite;
+				temp_sprite = malloc(sizeof(*temp_sprite));
+				temp_sprite->x = i * 1.0 + 0.5;
+				temp_sprite->y = j * 1.0 + 0.5;
+				if (!temp_sprite)
+					return (-1); //is this sufficient?
+				ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite)); 
 				printf("found a sprite during parsing\n");
-				map->sprites[map->sprite_num].x = i * 1.0 + 0.5; //see below
-				map->sprites[map->sprite_num].y = j * 1.0 + 0.5; //not hardcoded to 0, must be dynamic
 				map->sprite_num++;
 				grid[j][i] = 0;
 			}

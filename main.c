@@ -138,8 +138,19 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->map_data = data->map_grid;
 	data->map_grid = NULL;
 	screen->sprite_num = data->sprite_num;
-	screen->sprites[0] = data->sprites[0]; // should be a dynamic malloc thing when finished. just for testing.
-	screen->sprites[1] = data->sprites[1]; // should be a dynamic malloc thing when finished. just for testing.
+	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_num);
+	if (!screen->sprites)
+		ft_close_screen(&screen); //ERROR HERE
+	int	i = 0;
+	t_list	*index = data->sprite_list;
+	while (i < screen->sprite_num)
+	{
+		t_sprite *node = (t_sprite*)index->content;
+		screen->sprites[i].x = node->x; // should be a dynamic malloc thing when finished. just for testing.
+		screen->sprites[i].y = node->y; // should be a dynamic malloc thing when finished. just for testing.
+		index = index->next;
+		i++;
+	}
 	screen->player = player;
 	screen->width = data->res_width;
 	screen->height = data->res_height;

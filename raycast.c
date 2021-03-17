@@ -239,6 +239,7 @@ void	ft_raycast(t_screen *screen)
 		if (drawEndX >= screen->width) drawEndX = screen->width - 1;
 
 		printf("Drawing sprite #%d (spriteWidth=%d, drawStartX=%d, drawEndX=%d)\n", currentSprite, spriteWidth, drawStartX, drawEndX);
+		printf("sprite x = %f, sprite y = %f\n", screen->sprites[currentSprite].x, screen->sprites[currentSprite].y);
 		x = drawStartX;
 		while (x < drawEndX)
 		{
