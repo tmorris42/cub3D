@@ -26,6 +26,8 @@ int			ft_close_screen(t_screen **screen_addr)
 		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
 	if ((screen->mlx) && (screen->buf.img))
 		mlx_destroy_image(screen->mlx, screen->buf.img);
+	if ((screen->mlx) && (screen->sprite.img))
+		mlx_destroy_image(screen->mlx, screen->sprite.img);
 	if (screen->mlx && screen->win)
 		mlx_destroy_window(screen->mlx, screen->win);
 	if (screen->mlx)
