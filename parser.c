@@ -29,8 +29,11 @@ void		ft_map_data_init(t_map_data *map)
 		while (++i < 4)
 			map->textures[i] = NULL;
 		map->sprite = NULL;
+		map->sprite_num = 0;
 		map->sprites[0].x = 0.0; //just for testing, will be a dynamic arrau
 		map->sprites[0].y = 0.0; //see above
+		map->sprites[1].x = 0.0;
+		map->sprites[1].y = 0.0; // see above
 		map->map_layout = NULL;
 		map->map_grid = NULL;
 		map->player_x = -1;
@@ -461,9 +464,12 @@ int		ft_convert_map_to_2d(t_map_data *map)
 			//testing sprite
 			if (grid[j][i] == 2)
 			{
+				if (map->sprite_num > 1)
+					printf("Right now this is hardcoded to only allow 2, so, have fun");
 				printf("found a sprite during parsing\n");
-				map->sprites[0].x = i * 1.0 + 0.5; //see below
-				map->sprites[0].y = j * 1.0 + 0.5; //not hardcoded to 0, must be dynamic
+				map->sprites[map->sprite_num].x = i * 1.0 + 0.5; //see below
+				map->sprites[map->sprite_num].y = j * 1.0 + 0.5; //not hardcoded to 0, must be dynamic
+				map->sprite_num++;
 				grid[j][i] = 0;
 			}
 			++i;

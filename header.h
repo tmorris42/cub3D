@@ -57,7 +57,8 @@ typedef struct		s_map_data
 	int				map_height;
 	char			*textures[4];
 	char			*sprite;
-	t_sprite		sprites[1]; // should be dynamic, not limited to 1
+	int			sprite_num;
+	t_sprite		sprites[2]; // should be dynamic, not limited to 1 or 2
 	t_list			*map_layout;
 	int				**map_grid;
 	int				player_x;
@@ -105,7 +106,8 @@ typedef struct		s_screen
 	t_player	*player;
 	t_img_data	walls[4];
 	t_img_data	sprite;
-	t_sprite	sprites[1]; //obviously should be a pointer to a dynamic malloc array (or linked lists)
+	int		sprite_num;
+	t_sprite	sprites[2]; //obviously should be a pointer to a dynamic malloc array (or linked lists)
 	t_colors	colors;
 	int			refresh;
 }					t_screen;

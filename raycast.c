@@ -39,7 +39,7 @@ void	ft_raycast(t_screen *screen)
 	
 
 	double	sprite_buffer[screen->width]; //must be malloc'd instead
-	int numSprites = 1; //can't be hardcoded
+	int numSprites = screen->sprite_num; //can't be hardcoded
 	int	spriteOrder[numSprites]; //can't use numSprites.. malloc
 	double spriteDistance[numSprites]; //can't use numSprites.. malloc
 	int tempSpriteHit = 0; // just for debugging
