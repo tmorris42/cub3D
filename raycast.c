@@ -14,6 +14,27 @@
 
 void	ft_sort_sprites(int *order, double *dist, int amount)
 {
+	int	i;
+	int hold_order;
+	double hold_dist;
+
+	i = 0;
+	while (i < amount - 1)
+	{
+		printf("i=%d, order=%d, dist=%f\n", i, order[i], dist[i]);
+		printf("i=%d, order=%d, dist=%f\n", i+1, order[i+1], dist[i+1]);
+		if (dist[i] < dist[i+1])
+		{
+			printf("swapping\n");
+			hold_order = order[i+1];
+			hold_dist = dist[i+1];
+			order[i+1] = order[i];
+			order[i] = hold_order;
+			dist[i+1] = dist[i];
+			dist[i] = hold_dist;
+		}
+		++i;
+	}
 	return ;
 }
 
@@ -247,7 +268,7 @@ void	ft_raycast(t_screen *screen)
 			//printf("checking if sprite is onscreen\n");
 			if (transformY > 0 && x > 0 && x < screen->width && transformY < sprite_buffer[x])
 			{
-				printf("Here we go!!! drawing the sprite\n");
+				//printf("Here we go!!! drawing the sprite\n");
 				int y = drawStartY;
 				while (y < drawEndY)
 				{
