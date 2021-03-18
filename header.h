@@ -43,8 +43,6 @@ typedef struct		s_sprite
 {
 	double	x;
 	double	y;
-//	int	x;
-//	int y;
 }					t_sprite;
 
 typedef struct		s_map_data
@@ -57,7 +55,7 @@ typedef struct		s_map_data
 	int				map_height;
 	char			*textures[4];
 	char			*sprite;
-	int			sprite_num;
+	int				sprite_num;
 	t_list			*sprite_list;
 	t_list			*map_layout;
 	int				**map_grid;
@@ -107,7 +105,7 @@ typedef struct		s_screen
 	int			player_move;
 	t_img_data	walls[4];
 	t_img_data	sprite;
-	int		sprite_num; //needs clearer name?
+	int			sprite_num; //needs clearer name?
 	t_sprite	*sprites;
 	t_colors	colors;
 	int			refresh;
