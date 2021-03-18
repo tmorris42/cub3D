@@ -61,6 +61,7 @@ void		ft_init_screen(t_screen *screen)
 	screen->map_width = 0;
 	screen->map_data = NULL;
 	screen->player = NULL;
+	screen->player_move = 0;
 	screen->width = 0;
 	screen->height = 0;
 	screen->refresh = 1;
