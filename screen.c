@@ -68,11 +68,7 @@ void		ft_init_screen(t_screen *screen)
 	screen->mlx = NULL;
 	screen->win = NULL;
 	screen->sprite_num = 0;
-	screen->sprites = 0;
-//	screen->sprites[0].x = -1;  //this needs to change when sprites becomes a dynamic malloc array
-//	screen->sprites[0].y = -1; // see above
-//	screen->sprites[1].x = -1;  //this needs to change when sprites becomes a dynamic malloc array
-//	screen->sprites[1].y = -1; // see above
+	screen->sprites = NULL;
 	ft_init_image_data(&screen->sprite);
 	ft_init_image_data(&screen->buf);
 	i = 0;
@@ -87,7 +83,7 @@ t_screen	*ft_new_screen(t_player *player)
 {
 	t_screen	*screen;
 
-	screen = (t_screen*)malloc(sizeof(t_screen)); //sizeof(*screen) ??
+	screen = (t_screen*)malloc(sizeof(*screen));
 	if (!screen)
 		return (NULL);
 	ft_init_screen(screen);
