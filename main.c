@@ -97,9 +97,17 @@ int				ft_parse_keys(int key, t_screen *screen)
 			screen->player_move += 1;
 	}
 	else if (key == K_RIGHT)
-		ft_rotate(M_PI / 6.0, screen);
+	{
+		if (!(screen->player_move & 32))
+			screen->player_move += 32;
+		//	ft_rotate(M_PI / 6.0, screen);
+	}
 	else if (key == K_LEFT)
-		ft_rotate(-M_PI / 6.0, screen);
+	{
+		if (!(screen->player_move & 16))
+			screen->player_move += 16;
+		//	ft_rotate(-M_PI / 6.0, screen);
+	}
 	else
 		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
 	screen->refresh = 1;
@@ -205,6 +213,8 @@ int				ft_update(t_screen *screen)
 {
 	t_player *p;
 	p = screen->player;
+	if (screen->player_move == 0)
+		return (ft_draw(screen));
 	if (screen->player_move & 8)
 		ft_move_relative(p->rot_x, p->rot_y, screen);
 	if (screen->player_move & 4)
@@ -213,14 +223,15 @@ int				ft_update(t_screen *screen)
 		ft_move_relative(-p->rot_x, -p->rot_y, screen);
 	if (screen->player_move & 1)
 		ft_move_relative(-p->rot_y, p->rot_x, screen);
-//	else if (key == K_RIGHT)
-//		ft_rotate(M_PI / 6.0, screen);
+//	else if (key == K_RIGHT)	
+	if (screen->player_move & 32)
+		ft_rotate(M_PI / 6.0, screen);
 //	else if (key == K_LEFT)
-//		ft_rotate(-M_PI / 6.0, screen);
+	if (screen->player_move & 16)
+		ft_rotate(-M_PI / 6.0, screen);
 	screen->player_move = 0;
 	screen->refresh = 1;	
-	ft_draw(screen);
-	return (1);
+	return (ft_draw(screen));
 }
 
 int				ft_run(t_screen *screen)
