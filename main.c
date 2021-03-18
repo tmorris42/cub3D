@@ -73,13 +73,29 @@ int				ft_parse_keys(int key, t_screen *screen)
 	if (key == K_ESCAPE)
 		ft_close_screen(&screen);
 	else if (key == K_UP || key == K_W)
-		ft_move_relative(p->rot_x, p->rot_y, screen);
-	else if (key == K_DOWN || key == K_S)
-		ft_move_relative(-p->rot_x, -p->rot_y, screen);
+	{
+//		ft_move_relative(p->rot_x, p->rot_y, screen);
+		if (!(screen->player_move & 8))
+			screen->player_move += 8;
+	}
 	else if (key == K_A)
-		ft_move_relative(p->rot_y, -p->rot_x, screen);
+	{
+	//	ft_move_relative(p->rot_y, -p->rot_x, screen);
+		if (!(screen->player_move & 4))
+			screen->player_move += 4;
+	}
+	else if (key == K_DOWN || key == K_S)
+	{
+	//	ft_move_relative(-p->rot_x, -p->rot_y, screen);
+		if (!(screen->player_move & 2))
+			screen->player_move += 2;
+	}
 	else if (key == K_D)
-		ft_move_relative(-p->rot_y, p->rot_x, screen);
+	{
+	//	ft_move_relative(-p->rot_y, p->rot_x, screen);
+		if (!(screen->player_move & 1))
+			screen->player_move += 1;
+	}
 	else if (key == K_RIGHT)
 		ft_rotate(M_PI / 6.0, screen);
 	else if (key == K_LEFT)
@@ -185,6 +201,28 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	return (screen);
 }
 
+int				ft_update(t_screen *screen)
+{
+	t_player *p;
+	p = screen->player;
+	if (screen->player_move & 8)
+		ft_move_relative(p->rot_x, p->rot_y, screen);
+	if (screen->player_move & 4)
+		ft_move_relative(p->rot_y, -p->rot_x, screen);
+	if (screen->player_move & 2)
+		ft_move_relative(-p->rot_x, -p->rot_y, screen);
+	if (screen->player_move & 1)
+		ft_move_relative(-p->rot_y, p->rot_x, screen);
+//	else if (key == K_RIGHT)
+//		ft_rotate(M_PI / 6.0, screen);
+//	else if (key == K_LEFT)
+//		ft_rotate(-M_PI / 6.0, screen);
+	screen->player_move = 0;
+	screen->refresh = 1;	
+	ft_draw(screen);
+	return (1);
+}
+
 int				ft_run(t_screen *screen)
 {
 	screen->win = mlx_new_window(screen->mlx, screen->width,
@@ -194,7 +232,7 @@ int				ft_run(t_screen *screen)
 	mlx_expose_hook(screen->win, &ft_redraw, screen);
 	mlx_hook(screen->win, 2, 1L << 0, &ft_parse_keys, screen);
 	mlx_hook(screen->win, 33, 0L << 0, &ft_close_screen, &screen);
-	mlx_loop_hook(screen->mlx, &ft_draw, screen);
+	mlx_loop_hook(screen->mlx, &ft_update, screen);
 	mlx_loop(screen->mlx);
 	return (ft_close_screen(&screen));
 }

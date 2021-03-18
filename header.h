@@ -104,10 +104,11 @@ typedef struct		s_screen
 	int			map_width;
 	int			map_height;
 	t_player	*player;
+	int			player_move;
 	t_img_data	walls[4];
 	t_img_data	sprite;
-	int		sprite_num;
-	t_sprite	*sprites; //obviously should be a pointer to a dynamic malloc array (or linked lists)
+	int		sprite_num; //needs clearer name?
+	t_sprite	*sprites;
 	t_colors	colors;
 	int			refresh;
 }					t_screen;
