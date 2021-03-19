@@ -591,7 +591,7 @@ t_map_data	*ft_parse_file(char *filename)
 		map_data = NULL;
 	}
 	free(line);
-	ft_print_map_data(map_data);
+	if (map_data) {ft_print_map_data(map_data);} //just for testing, deleted in production
 	return (map_data);
 }
 /*
