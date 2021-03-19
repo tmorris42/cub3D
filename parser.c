@@ -214,6 +214,8 @@ static int	ft_config_r(char *line, t_map_data *map_data)
 {
 	char	**arr;
 
+	if (map_data->res_width != 0 || map_data->res_height != 0)
+		return (-1); //error\n duplicate resolution
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
