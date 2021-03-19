@@ -224,6 +224,8 @@ static int	ft_config_r(char *line, t_map_data *map_data)
 	}
 	map_data->res_width = ft_atoi(arr[1]);
 	map_data->res_height = ft_atoi(arr[2]);
+	if (map_data->res_width <= 0 || map_data->res_height <= 0)
+		return (-1); //error, invalid resolution
 	//ft_printf("\tR: %d, %d\n", ft_atoi(arr[1]), ft_atoi(arr[2]));
 	// in reality, don't print, save to configuration struc, and verify that HEIGHT and WIDTH are both > 0
 	ft_free_array(arr);
