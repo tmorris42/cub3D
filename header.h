@@ -47,6 +47,7 @@ typedef struct		s_sprite
 
 typedef struct		s_map_data
 {
+	int				colors_set;
 	unsigned int	floor;
 	unsigned int	ceil;
 	int				res_width;

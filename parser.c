@@ -19,6 +19,7 @@ void		ft_map_data_init(t_map_data *map)
 
 	if (map)
 	{
+		map->colors_set = 0;
 		map->floor = 0;
 		map->ceil = 0;
 		map->res_width = 0;
@@ -276,6 +277,8 @@ static int	ft_config_f(char *line, t_map_data *map_data)
 	unsigned int	rgb_i;
 	int				status;
 
+	if (map_data->colors_set & 1)
+		return (-1); //error, floor already set.
 	rgb_i = 0;
 	status = 0;
 	arr = ft_split(line, ' ');
@@ -295,6 +298,7 @@ static int	ft_config_f(char *line, t_map_data *map_data)
 	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->floor = rgb_i;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
+	map_data->colors_set += 1;
 	ft_free_array(arr);
 	return (1);
 }
@@ -305,6 +309,8 @@ static int	ft_config_c(char *line, t_map_data *map_data)
 	unsigned int	rgb_i;
 	int				status;
 
+	if (map_data->colors_set & 2)
+		return (-1); //error, floor already set.
 	rgb_i = 0;
 	status = 0;
 	arr = ft_split(line, ' ');
@@ -324,6 +330,7 @@ static int	ft_config_c(char *line, t_map_data *map_data)
 	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->ceil = rgb_i;
 	// in reality, don't print, save to configuration struc, verify filename if necc.
+	map_data->colors_set += 2;
 	ft_free_array(arr);
 	return (1);
 }
