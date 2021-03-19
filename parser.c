@@ -244,6 +244,13 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	int		temp;
 
 	(*rgb) = 0;
+	i = 0;
+	while (line && line[i])
+	{
+		if (!(ft_isdigit(line[i])) && line[i] != ',')
+			return (-1); //invalid RGB value
+		++i;
+	}
 	arr = ft_split(line, ',');
 	if (!arr)
 		return (-1);
