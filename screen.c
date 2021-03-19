@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.h"
+#include "cub3D.h"
 
 int			ft_close_screen(t_screen **screen_addr)
 {

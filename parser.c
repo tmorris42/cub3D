@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.h"
+#include "cub3D.h"
 #include <errno.h>
 
 void		ft_map_data_init(t_map_data *map)

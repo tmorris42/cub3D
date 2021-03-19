@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.h"
+#include "cub3D.h"
 
 static int	ft_puthex_pair_fd(int x, int fd)
 {

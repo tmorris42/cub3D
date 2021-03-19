@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.h"
+#include "cub3D.h"
 
 int				ft_get_color(int r, int g, int b, int alpha)
 {

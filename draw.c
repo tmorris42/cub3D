@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.h"
+#include "cub3D.h"
 
 static void	ft_draw_rect(t_screen *screen, int starty, int leny, int color)
 {
