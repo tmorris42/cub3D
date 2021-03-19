@@ -4,7 +4,7 @@ SO ./textures/so.xpm
 WE ./textures/we.xpm
 EA ./textures/ea.xpm
 
-S ./textures/sprite.xmp
+S ./textures/sprite.xpm
 F 220,100,0
 C 112,0,112
 

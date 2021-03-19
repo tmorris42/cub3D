@@ -4,7 +4,7 @@ SO ./textures/so.xpm
 WE ./textures/we.xpm
 EA ./textures/ea.xpm
 
-S ./textures/sprite.xmp
+S ./textures/sprite.xpm
 F 100,100,100
 C 0,30,100
 C 0,30,100
