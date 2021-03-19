@@ -536,6 +536,24 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 	return (0);
 }
 
+int			ft_verify_data(t_map_data *map_data)
+{
+	int		i;
+
+	i = 0;
+	while (i < 4)
+	{
+		if (!map_data->textures[i])
+			return (-1); //error, missing texture information
+		++i;
+	}
+	if (!map_data->sprite)
+		return (-1); //error, missing sprite texture information
+	//verify that the texture files are valid??
+	//verify the rest too
+	return (1);
+}
+
 t_map_data	*ft_parse_file(char *filename)
 {
 	int		fd;
@@ -566,6 +584,12 @@ t_map_data	*ft_parse_file(char *filename)
 		line = NULL;
 		if (status == 0)	
 			break ;
+	}
+	if (ft_verify_data(map_data) == -1)
+	{
+		ft_free_map_data(map_data);
+		perror("Error\nMissing or invalid map data detected");
+		return (NULL); //error, missing or incorrect information
 	}
 
 	if (ft_convert_map_to_2d(map_data) == -1)
