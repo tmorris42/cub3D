@@ -550,6 +550,11 @@ int			ft_verify_data(t_map_data *map_data)
 	if (!map_data->sprite)
 		return (-1); //error, missing sprite texture information
 	//verify that the texture files are valid??
+	if (map_data->res_width <= 0 || map_data->res_height <= 0)
+		return (-1); //error, missing or illegal resolution
+	if (map_data->colors_set != 3)
+		return (-1); //error, floor or ceiling color is missing
+	
 	//verify the rest too
 	return (1);
 }
