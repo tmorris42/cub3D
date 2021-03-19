@@ -352,7 +352,8 @@ static int ft_config_nesw(char *line, t_map_data *map_data, char *code)
 	else
 		return (-1);
 
-
+	if (map_data->textures[index])
+		return (-1); //error, texture already supplied
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
