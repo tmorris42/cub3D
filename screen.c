@@ -20,8 +20,8 @@ int			ft_close_screen(t_screen **screen_addr)
 	if (!screen_addr || (!(*screen_addr)))
 		exit(EXIT_SUCCESS);
 	screen = *screen_addr;
-	if (screen->map_data)
-		ft_free_int_array(screen->map_data, screen->map_height);
+	if (screen->map)
+		ft_free_int_array(screen->map, screen->map_height);
 	i = 0;
 	while (screen->mlx && screen->walls && i < 4 && screen->walls[i].img)
 		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
@@ -60,7 +60,7 @@ void		ft_init_screen(t_screen *screen)
 	screen->colors.floor = 0;
 	screen->map_height = 0;
 	screen->map_width = 0;
-	screen->map_data = NULL;
+	screen->map = NULL;
 	screen->player = NULL;
 	screen->player_move = 0;
 	screen->width = 0;
@@ -68,7 +68,7 @@ void		ft_init_screen(t_screen *screen)
 	screen->refresh = 1;
 	screen->mlx = NULL;
 	screen->win = NULL;
-	screen->sprite_num = 0;
+	screen->sprite_count = 0;
 	screen->sprites = NULL;
 	ft_init_image_data(&screen->sprite);
 	ft_init_image_data(&screen->buf);

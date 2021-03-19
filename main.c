@@ -59,9 +59,9 @@ void			ft_move_relative(double x, double y, t_screen *screen)
 	t_player	*p;
 
 	p = screen->player;
-	if (screen->map_data[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
+	if (screen->map[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
 		p->pos_x += x;
-	if (screen->map_data[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
+	if (screen->map[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
 		p->pos_y += y;
 }
 
@@ -163,15 +163,15 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->colors.floor = data->floor;
 	screen->map_height = data->map_height;
 	screen->map_width = data->map_width;
-	screen->map_data = data->map_grid;
+	screen->map = data->map_grid;
 	data->map_grid = NULL;
-	screen->sprite_num = data->sprite_num;
-	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_num);
+	screen->sprite_count = data->sprite_count;
+	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
 	if (!screen->sprites)
 		ft_free_map_and_close(screen, data, "Could not allocate space for sprites");
 	int	i = 0;
 	t_list	*index = data->sprite_list;
-	while (i < screen->sprite_num)
+	while (i < screen->sprite_count)
 	{
 		t_sprite *node = (t_sprite*)index->content;
 		screen->sprites[i].x = node->x;

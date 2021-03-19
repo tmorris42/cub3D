@@ -60,7 +60,7 @@ void	ft_raycast(t_screen *screen)
 	
 
 	double	sprite_buffer[screen->width]; //must be malloc'd instead
-	int numSprites = screen->sprite_num; //can't be hardcoded
+	int numSprites = screen->sprite_count;
 	int	spriteOrder[numSprites]; //can't use numSprites.. malloc
 	double spriteDistance[numSprites]; //can't use numSprites.. malloc
 	int tempSpriteHit = 0; // just for debugging
@@ -139,13 +139,12 @@ void	ft_raycast(t_screen *screen)
 		//		printf("avoiding the crash\n");
 		//		break; //bad idea
 			}
-//			if (screen.map_data[map_y][map_x] > 0)
-			if (screen->map_data[map_y][map_x] == 1)
+			if (screen->map[map_y][map_x] == 1)
 			{
 				hit = 1;
 //				printf("GOT A HIT\n");
 			}
-			else if (screen->map_data[map_y][map_x] == 2)
+			else if (screen->map[map_y][map_x] == 2)
 			{
 				//printf("GOT A SPRITE HIT\n");
 				tempSpriteHit = 2;

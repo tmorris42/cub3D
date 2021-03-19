@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_HEADER_H
-# define CUB3D_HEADER_H
+#ifndef CUB3D_H
+# define CUB3D_H
 # include <unistd.h>
 # include <fcntl.h>
 # include <math.h>
@@ -56,7 +56,7 @@ typedef struct		s_map_data
 	int				map_height;
 	char			*textures[4];
 	char			*sprite;
-	int				sprite_num;
+	int				sprite_count;
 	t_list			*sprite_list;
 	t_list			*map_layout;
 	int				**map_grid;
@@ -99,14 +99,14 @@ typedef struct		s_screen
 	t_img_data	buf;
 	int			width;
 	int			height;
-	int			**map_data; //rename to map, please
+	int			**map;
 	int			map_width;
 	int			map_height;
 	t_player	*player;
 	int			player_move;
 	t_img_data	walls[4];
 	t_img_data	sprite;
-	int			sprite_num; //needs clearer name?
+	int			sprite_count;
 	t_sprite	*sprites;
 	t_colors	colors;
 	int			refresh;

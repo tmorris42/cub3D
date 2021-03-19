@@ -30,7 +30,7 @@ void		ft_map_data_init(t_map_data *map)
 		while (++i < 4)
 			map->textures[i] = NULL;
 		map->sprite = NULL;
-		map->sprite_num = 0;
+		map->sprite_count = 0;
 		map->sprite_list = 0;
 		map->map_layout = NULL;
 		map->map_grid = NULL;
@@ -92,7 +92,7 @@ void		ft_print_map_data(t_map_data *map)
 	while (++i < 4)
 		printf("\t%s\n", map->textures[i]);
 	printf("Sprite:\n\t%s\n", map->sprite);
-	printf("Sprite_num = %d\n", map->sprite_num);
+	printf("Number of Sprites = %d\n", map->sprite_count);
 	printf("Floor Color: %u\nCeiling Color: %u\n", map->floor, map->ceil);
 	printf("Player Location: %d, %d, <%d, %d>\n", map->player_x, map->player_y, map->player_facing_x, map->player_facing_y);
 	ft_printf("Map Layout:\n");
@@ -492,7 +492,7 @@ int		ft_convert_map_to_2d(t_map_data *map)
 					return (-1); //is this sufficient?
 				ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite)); 
 				printf("found a sprite during parsing\n");
-				map->sprite_num++;
+				map->sprite_count++;
 				grid[j][i] = 0;
 			}
 			++i;
