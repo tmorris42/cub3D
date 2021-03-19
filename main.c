@@ -162,14 +162,17 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->sprite_num = data->sprite_num;
 	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_num);
 	if (!screen->sprites)
+	{
+		ft_free_map_data(data);
 		ft_close_screen(&screen); //ERROR HERE
+	}
 	int	i = 0;
 	t_list	*index = data->sprite_list;
 	while (i < screen->sprite_num)
 	{
 		t_sprite *node = (t_sprite*)index->content;
-		screen->sprites[i].x = node->x; // should be a dynamic malloc thing when finished. just for testing.
-		screen->sprites[i].y = node->y; // should be a dynamic malloc thing when finished. just for testing.
+		screen->sprites[i].x = node->x;
+		screen->sprites[i].y = node->y;
 		index = index->next;
 		i++;
 	}
@@ -178,6 +181,11 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->height = data->res_height;
 	screen->refresh = 1;
 	screen->mlx = mlx_init();
+	if (!screen->mlx)
+	{
+		ft_free_map_data(data);
+		ft_close_screen(&screen); //error creating connection of X server
+	}
 }
 
 t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
@@ -188,12 +196,14 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	if (!screen)
 		return (NULL);
 	ft_parse_to_screen(screen, data);
-	if (!screen->mlx)
+	if (!screen->mlx) //redundant check?
 		ft_close_screen(&screen);
 	if (save == FALSE)
 		ft_reset_resolution(screen);
 	screen->buf.img = mlx_new_image(screen->mlx, screen->width,
 			screen->height);
+	if (!screen->buf.img)
+		return (NULL);
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp,
 			&screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
@@ -285,10 +295,10 @@ int				main(int argc, char **argv)
 		screen = ft_load_screen(&player, map_parse, FALSE);
 	else
 		screen = ft_load_screen(&player, map_parse, TRUE);
+	map_parse = ft_free_map_data(map_parse);
 	if (!screen)
 		ft_close_on_error(screen, "Error\nCould not initialize screen");
 	printf("Made it out of load_screen");
-	map_parse = ft_free_map_data(map_parse);
 	ft_parse_options(argc, argv, screen);
 	return (ft_run(screen));
 }
