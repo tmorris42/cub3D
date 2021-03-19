@@ -20,9 +20,10 @@ int			ft_close_screen(t_screen **screen_addr)
 	if (!screen_addr || (!(*screen_addr)))
 		exit(EXIT_SUCCESS);
 	screen = *screen_addr;
-	ft_free_int_array(screen->map_data, screen->map_height);
+	if (screen->map_data)
+		ft_free_int_array(screen->map_data, screen->map_height);
 	i = 0;
-	while (screen->mlx && screen->walls && i < 4)
+	while (screen->mlx && screen->walls && i < 4 && screen->walls[i].img)
 		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
 	if ((screen->mlx) && (screen->buf.img))
 		mlx_destroy_image(screen->mlx, screen->buf.img);

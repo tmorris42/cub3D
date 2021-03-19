@@ -1,5 +1,5 @@
 R 300 200
-NO ./textures/column.png
+NO ./textures/corrupt.xpm
 SO ./textures/so.xpm
 WE ./textures/we.xpm
 EA ./textures/ea.xpm
