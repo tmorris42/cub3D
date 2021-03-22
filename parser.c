@@ -159,53 +159,43 @@ static void	ft_free_array(char **array)
 	free(array);
 }
 
-static int	ft_config_other(char *line, t_map_data *map_data)
+static int	ft_config_other(char **line_addr, t_map_data *map_data)
 {
 	int		i;
-	char	*mapline;
 	t_list	*new;
 
 	i = 0;
-	while (line && line[i])
+	while ((*line_addr) && (*line_addr)[i])
 	{
-		if (ft_strchr("NESW", line[i]))
+		if (ft_strchr("NESW", (*line_addr)[i]))
 		{
 			if (map_data->player_x != -1 || map_data->player_y != -1)
 				return (-1); // error, duplicate player symobls
-			else
-			{
-				map_data->player_x = i;
-				map_data->player_y = map_data->map_height;
-				map_data->player_facing_x = ft_get_direction_vector(line[i], 0);
-				map_data->player_facing_y = ft_get_direction_vector(line[i], 1);
-				line[i] = '0';
-			}
-			// else, set it and facing  (remember height is not yet increased
+			map_data->player_x = i;
+			map_data->player_y = map_data->map_height;
+			map_data->player_facing_x = ft_get_direction_vector((*line_addr)[i], 0);
+			map_data->player_facing_y = ft_get_direction_vector((*line_addr)[i], 1);
+			(*line_addr)[i] = '0';
 		}
-		else if (ft_strchr(" 012", line[i]) == NULL)
+		else if (ft_strchr(" 012", (*line_addr)[i]) == NULL)
 			return (-1);
 		++i;
 	}
-	// if here, then only legal chars were found. //still have to check for mapleaks though
-	mapline = ft_strdup(line);
-	if (!mapline)
+	if (!(new = ft_lstnew((*line_addr))))
 		return (-1);
-	new = ft_lstnew(mapline);
-	if (!new)
-	{
-		free(mapline);
-		return (-1);
-	}
 	ft_lstadd_back(&(map_data->map_layout), new);
-	map_data->map_width = ft_max(map_data->map_width, ft_strlen(mapline));
+	map_data->map_width = ft_max(map_data->map_width, ft_strlen((*line_addr)));
 	map_data->map_height += 1;
+	*line_addr = NULL;
 	return (1);
 }
 
-static int	ft_config_r(char *line, t_map_data *map_data)
+static int	ft_config_r(char **line_addr, t_map_data *map_data)
 {
 	char	**arr;
+	char	*line;
 
+	line = *line_addr;
 	if (map_data->res_width != 0 || map_data->res_height != 0)
 		return (-1); //error\n duplicate resolution
 	arr = ft_split(line, ' ');
@@ -223,8 +213,6 @@ static int	ft_config_r(char *line, t_map_data *map_data)
 		ft_free_array(arr);
 		return (-1); //error, invalid resolution
 	}
-	//ft_printf("\tR: %d, %d\n", ft_atoi(arr[1]), ft_atoi(arr[2]));
-	// in reality, don't print, save to configuration struc, and verify that HEIGHT and WIDTH are both > 0
 	ft_free_array(arr);
 	return (1);
 }
@@ -235,19 +223,16 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	int		i;
 	int		temp;
 
-	(*rgb) = 0;
-	i = 0;
-	while (line && line[i])
+	i = -1;
+	while (line && line[++i])
 	{
 		if (!(ft_isdigit(line[i])) && line[i] != ',')
 			return (-1); //invalid RGB value
-		++i;
 	}
-	arr = ft_split(line, ',');
-	if (!arr)
+	if (!(arr = ft_split(line, ',')))
 		return (-1);
-	i = 0;
-	while (arr[i])
+	i = -1;
+	while (arr[++i])
 	{
 		temp = ft_atoi(arr[i]);
 		if (i > 2 || temp < 0 || temp > 255)
@@ -256,17 +241,19 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 			return (-1);
 		}
 		(*rgb) = ((*rgb) << 8) + temp;
-		++i;
 	}
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_f(char *line, t_map_data *map_data)
+static int	ft_config_f(char **line_addr, t_map_data *map_data)
 {
 	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
+	char	*line;
+
+	line = *line_addr;
 
 	if (map_data->colors_set & 1)
 		return (-1); //error, floor already set.
@@ -286,19 +273,20 @@ static int	ft_config_f(char *line, t_map_data *map_data)
 		ft_free_array(arr);
 		return (-1); //err, invalid rgb
 	}
-	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->floor = rgb_i;
-	// in reality, don't print, save to configuration struc, verify filename if necc.
 	map_data->colors_set += 1;
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_c(char *line, t_map_data *map_data)
+static int	ft_config_c(char **line_addr, t_map_data *map_data)
 {
 	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
+	char	*line;
+
+	line = *line_addr;
 
 	if (map_data->colors_set & 2)
 		return (-1); //error, floor already set.
@@ -318,19 +306,20 @@ static int	ft_config_c(char *line, t_map_data *map_data)
 		ft_free_array(arr);
 		return (-1); //err, invalid rgb
 	}
-	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->ceil = rgb_i;
-	// in reality, don't print, save to configuration struc, verify filename if necc.
 	map_data->colors_set += 2;
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
+static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 {
 	char	**arr;
 	char	*filename;
 	int		index;
+	char	*line;
+
+	line = *line_addr;
 
 	if (code[0] == 'N' && code[1] == 'O')
 		index = 0;
@@ -354,35 +343,36 @@ static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
 		return (-1); //error, invalid NO configuration
 	}
 	filename = ft_strdup(arr[1]);
-	//ft_printf("\t%s: %s\n", code, filename);
 	map_data->textures[index] = filename;
-	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
 	return (1);
 }
 
-static int	ft_config_n(char *line, t_map_data *map_data)
+static int	ft_config_n(char **line_addr, t_map_data *map_data)
 {
-	return (ft_config_nesw(line, map_data, "NO"));
+	return (ft_config_nesw(line_addr, map_data, "NO"));
 }
 
-static int	ft_config_e(char *line, t_map_data *map_data)
+static int	ft_config_e(char **line_addr, t_map_data *map_data)
 {
-	return (ft_config_nesw(line, map_data, "EA"));
+	return (ft_config_nesw(line_addr, map_data, "EA"));
 }
 
-static int	ft_config_w(char *line, t_map_data *map_data)
+static int	ft_config_w(char **line_addr, t_map_data *map_data)
 {
-	return (ft_config_nesw(line, map_data, "WE"));
+	return (ft_config_nesw(line_addr, map_data, "WE"));
 }
 
-static int	ft_config_s(char *line, t_map_data *map_data)
+static int	ft_config_s(char **line_addr, t_map_data *map_data)
 {
 	char	**arr;
 	char	*filename;
+	char	*line;
+
+	line = *line_addr;
 
 	if (line[0] == 'S' && line[1] == 'O')
-		return (ft_config_nesw(line, map_data, "SO"));
+		return (ft_config_nesw(line_addr, map_data, "SO"));
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
@@ -397,12 +387,13 @@ static int	ft_config_s(char *line, t_map_data *map_data)
 	return (1);
 }
 
-static int	ft_parse_line(char *line, t_map_data *map_data)
+static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 {
 	int		i;
-	int		(*config[8]) (char *map_line, t_map_data *map_data);
-	int		parsing_map;
+	int		(*config[8]) (char **map_line, t_map_data *map_data);
+	char	*line;
 
+	line = *line_addr;
 	config[0] = ft_config_other;
 	config[1] = ft_config_r;
 	config[2] = ft_config_f;
@@ -411,30 +402,18 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 	config[5] = ft_config_e;
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
-	parsing_map = 0;
 	i = 0;
-	if (!line || (parsing_map && line[0] == '\0'))
+	if (!line)
 		return (-1);
 	else if (line[0] == '\0')
 		return (0);
 	// check to make sure you don't seg fault by assuming len of string
 	i = ft_get_chr_index(line[0], "RFCNEWS");
-	i = (*config[i + 1])(line, map_data);
+	i = (*config[i + 1])(line_addr, map_data);
 	if (i == -1)
 	{
 		ft_printf("PARSING ERROR\n");
 	}
-	// if i == 0, assume that it was an empty line. 0 means nothing illegal, but not useful
-	// if i == 1, something was found to be legal and useful
-	//
-	// in config_other, first check if it is an empty line, which is legal if not in map
-	// then check if it is a map line, which is legal if in map
-	// otherwise, return -1
-	//
-	// when parsing map lines, save each line into a linked lst
-	// 		set a variable in the struct (map_width?) to be the maximum foudn value as you go
-	// 		once true, max map_width is known, we can convert the linked list into a 2d array
-	// 		using malloc, height = number of nodes, width = max_width
 	return (i);
 }
 
@@ -490,17 +469,11 @@ int		ft_convert_map_to_2d(t_map_data *map)
 int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 {
 	int		**arr;
-	int		max_x;
-	int		max_y;
 	int		str_index;
 
 	arr = map->map_grid;
-	max_x = map->map_width;
-	max_y = map->map_height;
-	str_index = (max_x * y) + x;
-	if (x >= max_x || y >= max_y)
-		return (-1);
-	if (arr[y][x] == ' ' - '0')
+	str_index = (map->map_width * y) + x;
+	if (x >= map->map_width || y >= map->map_height || (arr[y][x] == ' ' - '0'))
 		return (-1);
 	if (paths[str_index] == 'V')
 		return (0);
@@ -561,7 +534,7 @@ t_map_data	*ft_parse_file(char *filename)
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (map_data && ft_parse_line(line, map_data) < 0)
+		if (map_data && ft_parse_line(&line, map_data) < 0)
 		{
 			ft_free_map_data(map_data);
 			map_data = NULL;
@@ -595,6 +568,7 @@ t_map_data	*ft_parse_file(char *filename)
 		errno = EINVAL;
 		ft_printf("Returned -1!! Illegal map.\n");
 		perror("Error\nMap must be surrounded by walls in all 8 directions");
+		ft_print_map_data(map_data);
 		ft_free_map_data(map_data);
 		map_data = NULL;
 	}
