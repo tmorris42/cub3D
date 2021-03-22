@@ -29,9 +29,9 @@ static int	ft_puthex_pair_fd(int x, int fd)
 static int	ft_print_header(int fd)
 {
 	ft_putstr_fd("BM", fd);
-	ft_putint_fd(124, fd);
 	ft_putint_fd(0, fd);
-	ft_putchar_fd(26, fd);
+	ft_putint_fd(0, fd);
+	ft_putchar_fd(54, fd);
 	ft_putchar_fd(0, fd);
 	ft_putchar_fd(0, fd);
 	ft_putchar_fd(0, fd);
@@ -40,13 +40,26 @@ static int	ft_print_header(int fd)
 
 static int	ft_print_info(int fd, t_screen *screen)
 {
-	ft_putint_fd(12, fd);
+	ft_putchar_fd(40, fd);
+	ft_putchar_fd(0, fd);
+	ft_putchar_fd(0, fd);
+	ft_putchar_fd(0, fd);
 	ft_puthex_pair_fd(screen->width, fd);
+	ft_putchar_fd(0, fd);
+	ft_putchar_fd(0, fd);
 	ft_puthex_pair_fd(screen->height, fd);
+	ft_putchar_fd(0, fd);
+	ft_putchar_fd(0, fd);
 	ft_putchar_fd(1, fd);
 	ft_putchar_fd(0, fd);
 	ft_putchar_fd(24, fd);
 	ft_putchar_fd(0, fd);
+	ft_putint_fd(0, fd);
+	ft_putint_fd(0, fd);
+	ft_putint_fd(0, fd);
+	ft_putint_fd(0, fd);
+	ft_putint_fd(0, fd);
+	ft_putint_fd(0, fd);
 	return (1);
 }
 
@@ -57,8 +70,12 @@ static int	ft_print_pixels(int fd, t_screen *screen)
 	int				x;
 	int				y;
 	unsigned int	pixel;
+	int				padding;
 
-	max = screen->width * screen->height;
+	padding = (screen->width * 3) % 4;
+	if (padding)
+		padding = 4 - padding;
+//	printf("height: %d\nwidth: %d\nbytes per line: %d\npadding: %d\n", screen->height, screen->width, screen->width * 3, padding);
 	x = 0;
 	y = screen->height - 1;
 	while (y >= 0)
@@ -70,7 +87,7 @@ static int	ft_print_pixels(int fd, t_screen *screen)
 		x++;
 		if (x >= screen->width)
 		{
-			x = (4 - ((max * 3) % 4)) * ((max * 3) % 4 != 0) + 1;
+			x = padding + 1;
 			while (--x > 0)
 				ft_putchar_fd(0, fd);
 			--y;
@@ -90,8 +107,6 @@ int			ft_save(t_screen *screen, char *filename)
 	ft_print_header(fd);
 	ft_print_info(fd, screen);
 	ft_print_pixels(fd, screen);
-	ft_putchar_fd(0, fd);
-	ft_putchar_fd(0, fd);
 	close(fd);
 	return (1);
 }
