@@ -24,12 +24,6 @@ void			ft_reset_resolution(t_screen *screen)
 	screen->height = ft_min(screen->height, y);
 }
 
-void			ft_free_map_and_close(t_screen *screen, t_map_data *map, char *msg)
-{
-	ft_free_map_data(map);
-	ft_close_on_error(screen, msg);
-}
-
 void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 {
 	t_player	*player;
@@ -156,12 +150,6 @@ void			ft_parse_options(int argc, char **argv, t_screen *screen)
 		else
 			ft_close_on_error(screen, "Error\nInvalid Options");
 	}
-}
-
-void			ft_close_on_error(t_screen *screen, char *msg)
-{
-	perror(msg);
-	ft_close_screen(&screen);
 }
 
 int				main(int argc, char **argv)
