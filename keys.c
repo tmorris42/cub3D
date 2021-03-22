@@ -1,0 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   keys.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
+/*   Updated: 2021/03/08 23:07:50 by tmorris          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void	ft_rotate(double rad, t_screen *screen)
+{
+	double		old_rx;
+	t_player	*p;
+
+	rad = rad / 6;
+	p = screen->player;
+	old_rx = p->rot_x;
+	p->rot_x = (cos(rad) * old_rx) - (p->rot_y * sin(rad));
+	p->rot_y = (sin(rad) * old_rx) + (cos(rad) * p->rot_y);
+}
+
+void	ft_move_relative(double x, double y, t_screen *screen)
+{
+	t_player	*p;
+
+	x = x / 50;
+	y = y / 50;
+	p = screen->player;
+	if (screen->map[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
+		p->pos_x += x;
+	if (screen->map[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
+		p->pos_y += y;
+}
+
+int		ft_parse_keys(int key, t_screen *screen, int pressed)
+{
+	if (key == K_ESCAPE)
+		ft_close_screen(&screen);
+	else if (key == K_UP || key == K_W)
+		screen->player_move += 8 * pressed;
+	else if (key == K_A)
+		screen->player_move += 4 * pressed;
+	else if (key == K_DOWN || key == K_S)
+		screen->player_move += 2 * pressed;
+	else if (key == K_D)
+		screen->player_move += 1 * pressed;
+	else if (key == K_RIGHT)
+		screen->player_move += 32 * pressed;
+	else if (key == K_LEFT)
+		screen->player_move += 16 * pressed;
+	else
+		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
+	screen->refresh = 1;
+	return (1);
+}
+
+int		ft_press_keys(int key, t_screen *screen)
+{
+	return (ft_parse_keys(key, screen, 1));
+}
+
+int		ft_lift_keys(int key, t_screen *screen)
+{
+	return (ft_parse_keys(key, screen, -1));
+}

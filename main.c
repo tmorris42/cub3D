@@ -12,103 +12,6 @@
 
 #include "cub3d.h"
 
-int				ft_get_color(int r, int g, int b, int alpha)
-{
-	return ((alpha << 24) + (r << 16) + (g << 8) + (b));
-}
-
-void			ft_pixel_put(t_img_data *img, int x, int y, int color)
-{
-	char			*img_addr;
-	int				offset;
-	unsigned int	*pixel;
-
-	offset = (y * img->len) + (x * img->bpp / 8);
-	img_addr = img->addr + offset;
-	pixel = (unsigned int*)img_addr;
-	*pixel = color;
-}
-
-unsigned int	ft_get_pixel_from_image(t_img_data *img, int x, int y)
-{
-	char			*img_addr;
-	int				offset;
-	unsigned int	*color;
-
-	if (x < 0 || y < 0 || x >= img->width || y >= img->height)
-		return (0);
-	offset = (y * img->len) + (x * img->bpp / 8);
-	img_addr = img->addr + offset;
-	color = (unsigned int*)img_addr;
-	return (*color);
-}
-
-void			ft_rotate(double rad, t_screen *screen)
-{
-	double		old_rx;
-	t_player	*p;
-
-	p = screen->player;
-	old_rx = p->rot_x;
-	p->rot_x = (cos(rad) * old_rx) - (p->rot_y * sin(rad));
-	p->rot_y = (sin(rad) * old_rx) + (cos(rad) * p->rot_y);
-}
-
-void			ft_move_relative(double x, double y, t_screen *screen)
-{
-	t_player	*p;
-
-	p = screen->player;
-	if (screen->map[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
-		p->pos_x += x;
-	if (screen->map[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
-		p->pos_y += y;
-}
-
-int				ft_parse_keys(int key, t_screen *screen, int pressed)
-{
-	if (key == K_ESCAPE)
-		ft_close_screen(&screen);
-	else if (key == K_UP || key == K_W)
-	{
-		screen->player_move += 8 * pressed;
-	}
-	else if (key == K_A)
-	{
-		screen->player_move += 4 * pressed;
-	}
-	else if (key == K_DOWN || key == K_S)
-	{
-		screen->player_move += 2 * pressed;
-	}
-	else if (key == K_D)
-	{
-		screen->player_move += 1 * pressed;
-	}
-	else if (key == K_RIGHT)
-	{
-		screen->player_move += 32 * pressed;
-	}
-	else if (key == K_LEFT)
-	{
-		screen->player_move += 16 * pressed;
-	}
-	else
-		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
-	screen->refresh = 1;
-	return (1);
-}
-
-int				ft_press_keys(int key, t_screen *screen)
-{
-	return (ft_parse_keys(key, screen, 1));
-}
-
-int				ft_lift_keys(int key, t_screen *screen)
-{
-	return (ft_parse_keys(key, screen, -1));
-}
-
 void			ft_reset_resolution(t_screen *screen)
 {
 	int	x;
@@ -119,26 +22,6 @@ void			ft_reset_resolution(t_screen *screen)
 	mlx_get_screen_size(screen->mlx, &x, &y);
 	screen->width = ft_min(screen->width, x);
 	screen->height = ft_min(screen->height, y);
-}
-
-int				ft_load_image(char *filename, t_screen *screen, t_img_data *image)
-{
-	image->img = mlx_xpm_file_to_image(screen->mlx, filename, &(image->width),
-			&(image->height));
-	if (image->img)
-	{
-		image->addr = mlx_get_data_addr(image->img, &image->bpp, &image->len,
-				&image->endian);
-		if (!(image->addr))
-		{
-			mlx_destroy_image(screen->mlx, image->img);
-			image->img = NULL;
-			return (-1);
-		}
-	}
-	else
-		return (-1);
-	return (1);
 }
 
 void			ft_free_map_and_close(t_screen *screen, t_map_data *map, char *msg)
