@@ -65,17 +65,12 @@ static int	ft_print_info(int fd, t_screen *screen)
 
 static int	ft_print_pixels(int fd, t_screen *screen)
 {
-	int				max;
-	char			c;
 	int				x;
 	int				y;
 	unsigned int	pixel;
 	int				padding;
 
-	padding = (screen->width * 3) % 4;
-	if (padding)
-		padding = 4 - padding;
-//	printf("height: %d\nwidth: %d\nbytes per line: %d\npadding: %d\n", screen->height, screen->width, screen->width * 3, padding);
+	padding = ((screen->width * 3) % 4);
 	x = 0;
 	y = screen->height - 1;
 	while (y >= 0)
@@ -87,7 +82,7 @@ static int	ft_print_pixels(int fd, t_screen *screen)
 		x++;
 		if (x >= screen->width)
 		{
-			x = padding + 1;
+			x = (4 - padding) * (padding != 0) + 1;
 			while (--x > 0)
 				ft_putchar_fd(0, fd);
 			--y;
