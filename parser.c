@@ -79,15 +79,14 @@ t_map_data	*ft_free_map_data(t_map_data *map)
 	return (NULL);
 }
 
-
 void		ft_print_map_data(t_map_data *map)
 {
 	int		i;
 	int		j;
-
 	t_list	*index;
+
 	printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map->res_width,
-			map->res_height,	map->map_width, map->map_height);
+			map->res_height, map->map_width, map->map_height);
 	i = -1;
 	while (++i < 4)
 		printf("\t%s\n", map->textures[i]);
@@ -120,7 +119,7 @@ void		ft_print_map_data(t_map_data *map)
 	printf("Done printing map data\n");
 }
 
-int	 		ft_get_chr_index(char c, char *str)
+int			ft_get_chr_index(char c, char *str)
 {
 	int		i;
 
@@ -145,7 +144,6 @@ int			ft_get_direction_vector(char dir, int xy)
 	if (dir == 'E' || dir == 'S')
 		return (1);
 	return (0);
-
 }
 
 static void	ft_free_array(char **array)
@@ -172,7 +170,6 @@ static int	ft_config_other(char *line, t_map_data *map_data)
 	{
 		if (ft_strchr("NESW", line[i]))
 		{
-			// if player loc set ==> error
 			if (map_data->player_x != -1 || map_data->player_y != -1)
 				return (-1); // error, duplicate player symobls
 			else
@@ -202,12 +199,6 @@ static int	ft_config_other(char *line, t_map_data *map_data)
 	ft_lstadd_back(&(map_data->map_layout), new);
 	map_data->map_width = ft_max(map_data->map_width, ft_strlen(mapline));
 	map_data->map_height += 1;
-
-	// Idea for parsing the map for leaks (lack of outer wall)
-	// 		verify that a space is only adjacent to another space or a '1'
-	// 			if it is next to a zero, that's probably a leak
-	// 						unless the zero is just outside the map... hm
-	// 							READ SUBJECT TO SEE IF THAT'S ALLOWED
 	return (1);
 }
 
@@ -335,7 +326,7 @@ static int	ft_config_c(char *line, t_map_data *map_data)
 	return (1);
 }
 
-static int ft_config_nesw(char *line, t_map_data *map_data, char *code)
+static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
 {
 	char	**arr;
 	char	*filename;
@@ -389,7 +380,7 @@ static int	ft_config_s(char *line, t_map_data *map_data)
 {
 	char	**arr;
 	char	*filename;
-	
+
 	if (line[0] == 'S' && line[1] == 'O')
 		return (ft_config_nesw(line, map_data, "SO"));
 	arr = ft_split(line, ' ');
@@ -401,9 +392,7 @@ static int	ft_config_s(char *line, t_map_data *map_data)
 		return (-1); //error, invalid NO configuration
 	}
 	filename = ft_strdup(arr[1]);
-	//ft_printf("\tS: %s\n", filename);
 	map_data->sprite = filename;
-	// in reality, don't print, save to configuration struc, verify filename if necc.
 	ft_free_array(arr);
 	return (1);
 }
@@ -422,7 +411,6 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 	config[5] = ft_config_e;
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
-
 	parsing_map = 0;
 	i = 0;
 	if (!line || (parsing_map && line[0] == '\0'))
@@ -431,7 +419,7 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 		return (0);
 	// check to make sure you don't seg fault by assuming len of string
 	i = ft_get_chr_index(line[0], "RFCNEWS");
-	i = (*config[i + 1]) (line, map_data);
+	i = (*config[i + 1])(line, map_data);
 	if (i == -1)
 	{
 		ft_printf("PARSING ERROR\n");
@@ -447,19 +435,17 @@ static int	ft_parse_line(char *line, t_map_data *map_data)
 	// 		set a variable in the struct (map_width?) to be the maximum foudn value as you go
 	// 		once true, max map_width is known, we can convert the linked list into a 2d array
 	// 		using malloc, height = number of nodes, width = max_width
-	//
-	//
-	
 	return (i);
 }
 
 int		ft_convert_map_to_2d(t_map_data *map)
 {
-	int		**grid;
-	t_list	*index;
-	char	*content;
-	int		i;
-	int		j;
+	int			**grid;
+	t_list		*index;
+	char		*content;
+	int			i;
+	int			j;
+	t_sprite	*temp_sprite;
 
 	if (!map)
 		return (-1);
@@ -481,17 +467,14 @@ int		ft_convert_map_to_2d(t_map_data *map)
 		while ((i < map->map_width) && (content)[i])
 		{
 			grid[j][i] = content[i] - '0';
-			//testing sprite
 			if (grid[j][i] == 2)
 			{
-				t_sprite *temp_sprite;
 				temp_sprite = malloc(sizeof(*temp_sprite));
-				temp_sprite->x = i * 1.0 + 0.5;
-				temp_sprite->y = j * 1.0 + 0.5;
 				if (!temp_sprite)
 					return (-1); //is this sufficient?
-				ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite)); 
-				printf("found a sprite during parsing\n");
+				temp_sprite->x = i * 1.0 + 0.5;
+				temp_sprite->y = j * 1.0 + 0.5;
+				ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite));
 				map->sprite_count++;
 				grid[j][i] = 0;
 			}
@@ -522,7 +505,6 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 	if (paths[str_index] == 'V')
 		return (0);
 	paths[str_index] = 'V';
-//	ft_printf("arr[%d][%d] == %d\n", y, x, arr[y][x]);
 	if (arr[y][x] == 1)
 		return (1);
 	if (ft_check_map_leaks(map, paths, x, y + 1) == -1)
@@ -553,18 +535,17 @@ int			ft_verify_data(t_map_data *map_data)
 	if (map_data->res_width <= 0 || map_data->res_height <= 0)
 		return (-1); //error, missing or illegal resolution
 	if (map_data->colors_set != 3)
-		return (-1); //error, floor or ceiling color is missing
-	
+		return (-1); //error, floor or ceiling color is missing	
 	//verify the rest too
 	return (1);
 }
 
 t_map_data	*ft_parse_file(char *filename)
 {
-	int		fd;
-	int		status;
-	char	*line;
-	t_map_data *map_data;
+	int			fd;
+	int			status;
+	char		*line;
+	t_map_data	*map_data;
 
 	map_data = malloc(sizeof(*map_data));
 	if (!map_data)
@@ -575,7 +556,7 @@ t_map_data	*ft_parse_file(char *filename)
 	if (fd == -1)
 	{
 		ft_free_map_data(map_data);
-		return (NULL); //free map_data
+		return (NULL);
 	}
 	while (status >= 0)
 	{
@@ -587,7 +568,7 @@ t_map_data	*ft_parse_file(char *filename)
 		}
 		free(line);
 		line = NULL;
-		if (status == 0)	
+		if (status == 0)
 			break ;
 	}
 	if (ft_verify_data(map_data) == -1)
@@ -596,14 +577,12 @@ t_map_data	*ft_parse_file(char *filename)
 		perror("Error\nMissing or invalid map data detected");
 		return (NULL); //error, missing or incorrect information
 	}
-
 	if (ft_convert_map_to_2d(map_data) == -1)
 	{
 		perror("Error\nCould not parse map data");
 		ft_free_map_data(map_data);
 		return (NULL);
 	}
-//	ft_printf("TESTING INDEXING:\n\n\t%c\n", map_data->map_layout[2][3]);
 	line = (char*)ft_calloc(map_data->map_width * map_data->map_height, sizeof(char));
 	if (!line)
 	{
@@ -620,21 +599,5 @@ t_map_data	*ft_parse_file(char *filename)
 		map_data = NULL;
 	}
 	free(line);
-	if (map_data) {ft_print_map_data(map_data);} //just for testing, deleted in production
 	return (map_data);
 }
-/*
-int		main(void)
-{
-	t_map_data	*map;
-	map = ft_parse_file("illegalmap.cub");
-
-	//ft_printf("MAP DATA\n");
-	//ft_print_map_data(map);
-	ft_printf("parse result pointer: %p\n", map);
-	if (map)
-		ft_free_map_data(map);
-
-	return (0);
-}
-*/
