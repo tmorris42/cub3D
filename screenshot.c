@@ -12,7 +12,7 @@
 
 #include "cub3d.h"
 
-static int	ft_puthex_pair_fd(int x, int fd)
+static void	ft_puthex_pair_fd(int x, int fd)
 {
 	if (x < 256)
 	{

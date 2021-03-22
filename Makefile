@@ -18,10 +18,10 @@ $(MLX_DIR)$(MLX):
 	$(MAKE) -C $(MLX_DIR)
 
 $(NAME): $(OBJS) $(LIBFT_DIR)$(LIBFT) $(MLX_DIR)$(MLX)
-	gcc $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
+	gcc -Wall -Wextra -Werror $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
 
 $(OBJS): %.o : %.c
-	gcc -c $< -o $@
+	gcc -Wall -Wextra -Werror -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

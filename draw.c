@@ -32,10 +32,6 @@ static void	ft_draw_rect(t_screen *screen, int starty, int leny, int color)
 
 int			ft_draw(t_screen *screen)
 {
-	int		x;
-	int		y;
-	char	print[6];
-
 	if (screen->refresh == 0)
 		return (0);
 	screen->refresh = 0;

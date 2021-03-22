@@ -67,9 +67,6 @@ void			ft_move_relative(double x, double y, t_screen *screen)
 
 int				ft_parse_keys(int key, t_screen *screen, int pressed)
 {
-	t_player	*p;
-
-	p = screen->player;
 	if (key == K_ESCAPE)
 		ft_close_screen(&screen);
 	else if (key == K_UP || key == K_W)
@@ -105,11 +102,13 @@ int				ft_parse_keys(int key, t_screen *screen, int pressed)
 int				ft_press_keys(int key, t_screen *screen)
 {
 	ft_parse_keys(key, screen, 1);
+	return (1); //ret correct? and/or should be void?
 }
 
 int				ft_lift_keys(int key, t_screen *screen)
 {
 	ft_parse_keys(key, screen, -1);
+	return (1); //ret correct? should be void?
 }
 
 void			ft_reset_resolution(t_screen *screen)
@@ -272,6 +271,7 @@ int				ft_parse_options(int argc, char **argv, t_screen *screen)
 		else
 			ft_close_on_error(screen, "Error\nInvalid Options");
 	}
+	return (1); //is this value correct? should this be a void func?
 }
 
 void			ft_close_on_error(t_screen *screen, char *msg)

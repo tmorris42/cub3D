@@ -63,7 +63,7 @@ void	ft_raycast(t_screen *screen)
 	int numSprites = screen->sprite_count;
 	int	spriteOrder[numSprites]; //can't use numSprites.. malloc
 	double spriteDistance[numSprites]; //can't use numSprites.. malloc
-	int tempSpriteHit = 0; // just for debugging
+	//int tempSpriteHit; // just for debugging
 	
 //	plane_x = 0;
 //	plane_y = -0.66;
@@ -147,7 +147,7 @@ void	ft_raycast(t_screen *screen)
 			else if (screen->map[map_y][map_x] == 2)
 			{
 				//printf("GOT A SPRITE HIT\n");
-				tempSpriteHit = 2;
+				//tempSpriteHit = 2;
 			}
 		}
 
