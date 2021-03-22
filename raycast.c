@@ -14,28 +14,24 @@
 
 void	ft_sort_sprites(int *order, double *dist, int amount)
 {
-	int	i;
-	int hold_order;
-	double hold_dist;
+	int		i;
+	int		hold_order;
+	double	hold_dist;
 
 	i = 0;
 	while (i < amount - 1)
 	{
-		printf("i=%d, order=%d, dist=%f\n", i, order[i], dist[i]);
-		printf("i=%d, order=%d, dist=%f\n", i+1, order[i+1], dist[i+1]);
-		if (dist[i] < dist[i+1])
+		if (dist[i] < dist[i + 1])
 		{
-			printf("swapping\n");
-			hold_order = order[i+1];
-			hold_dist = dist[i+1];
-			order[i+1] = order[i];
+			hold_order = order[i + 1];
+			hold_dist = dist[i + 1];
+			order[i + 1] = order[i];
 			order[i] = hold_order;
-			dist[i+1] = dist[i];
+			dist[i + 1] = dist[i];
 			dist[i] = hold_dist;
 		}
 		++i;
 	}
-	return ;
 }
 
 void	ft_raycast(t_screen *screen)
@@ -57,20 +53,13 @@ void	ft_raycast(t_screen *screen)
 	int		step_y;
 	int		hit;
 	int		side_check;
-	
-
 	double	sprite_buffer[screen->width]; //must be malloc'd instead
-	int numSprites = screen->sprite_count;
-	int	spriteOrder[numSprites]; //can't use numSprites.. malloc
-	double spriteDistance[numSprites]; //can't use numSprites.. malloc
-	//int tempSpriteHit; // just for debugging
+	int		spriteOrder[screen->sprite_count]; //can't use numSprites.. malloc
+	double	spriteDistance[screen->sprite_count]; //can't use numSprites.. malloc
 	
-//	plane_x = 0;
-//	plane_y = -0.66;
 	plane_x = -.50 * screen->player->rot_y;
 	plane_y = (-.50 *  (-screen->player->rot_x));
 	printf("<%f, %f>\n", plane_x, plane_y);
-
 	x = 0;
 	printf("START LOOP with player location = < %f, %f >\n", screen->player->pos_x, screen->player->pos_y);
 	while (x < screen->width)
@@ -115,7 +104,7 @@ void	ft_raycast(t_screen *screen)
 			step_y = 1;
 			dist_y = (map_y + 1.0 - screen->player->pos_y) * delta_dist_y;
 		}
-//		printf("CHECKING FOR HITS\n");
+//		printf("CHECVING FOR HITS\n");
 		hit = 0;
 		while (hit == 0)
 		{
@@ -217,27 +206,21 @@ void	ft_raycast(t_screen *screen)
 			ft_pixel_put(&(screen->buf), x, y, color);
 			++y;
 		}
-		
 		sprite_buffer[x] = wall_dist;
-		//sort the sprites into distance order here, skipping for now
-
 		++x;
 	}
 	printf("Leaving raycast wall loop\n");
-//	if (tempSpriteHit != 2)
-//		return ;
 	printf("Trying to draw sprites\n");
-
 	x = 0;
-	while (x < numSprites) //can;t use numSprites
+	while (x < screen->sprite_count) 
 	{
 		spriteOrder[x] = x;
 		spriteDistance[x] = ((screen->player->pos_x - screen->sprites[x].x) * (screen->player->pos_x - screen->sprites[x].x) + (screen->player->pos_y - screen->sprites[x].y) * (screen->player->pos_y - screen->sprites[x].y));
 		++x;
 	}
-	ft_sort_sprites(spriteOrder, spriteDistance, numSprites); //can't use these vars
+	ft_sort_sprites(spriteOrder, spriteDistance, screen->sprite_count); //can't use these vars
 	int currentSprite = 0;
-	while (currentSprite < numSprites) //numSPrites can't use
+	while (currentSprite < screen->sprite_count)
 	{
 		double spriteX = screen->sprites[spriteOrder[currentSprite]].x - screen->player->pos_x;
 		double spriteY = screen->sprites[spriteOrder[currentSprite]].y - screen->player->pos_y;
