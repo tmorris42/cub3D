@@ -71,27 +71,27 @@ int				ft_parse_keys(int key, t_screen *screen, int pressed)
 		ft_close_screen(&screen);
 	else if (key == K_UP || key == K_W)
 	{
-			screen->player_move += 8 * pressed;
+		screen->player_move += 8 * pressed;
 	}
 	else if (key == K_A)
 	{
-			screen->player_move += 4 * pressed;
+		screen->player_move += 4 * pressed;
 	}
 	else if (key == K_DOWN || key == K_S)
 	{
-			screen->player_move += 2 * pressed;
+		screen->player_move += 2 * pressed;
 	}
 	else if (key == K_D)
 	{
-			screen->player_move += 1 * pressed;
+		screen->player_move += 1 * pressed;
 	}
 	else if (key == K_RIGHT)
 	{
-			screen->player_move += 32 * pressed;
+		screen->player_move += 32 * pressed;
 	}
 	else if (key == K_LEFT)
 	{
-			screen->player_move += 16 * pressed;
+		screen->player_move += 16 * pressed;
 	}
 	else
 		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
@@ -101,14 +101,12 @@ int				ft_parse_keys(int key, t_screen *screen, int pressed)
 
 int				ft_press_keys(int key, t_screen *screen)
 {
-	ft_parse_keys(key, screen, 1);
-	return (1); //ret correct? and/or should be void?
+	return (ft_parse_keys(key, screen, 1));
 }
 
 int				ft_lift_keys(int key, t_screen *screen)
 {
-	ft_parse_keys(key, screen, -1);
-	return (1); //ret correct? should be void?
+	return (ft_parse_keys(key, screen, -1));
 }
 
 void			ft_reset_resolution(t_screen *screen)
@@ -152,6 +150,9 @@ void			ft_free_map_and_close(t_screen *screen, t_map_data *map, char *msg)
 void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 {
 	t_player	*player;
+	int			i;
+	t_list		*index;
+	t_sprite	*node;
 
 	player = screen->player;
 	player->pos_x = data->player_x + 0.01;
@@ -167,12 +168,12 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->sprite_count = data->sprite_count;
 	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
 	if (!screen->sprites)
-		ft_free_map_and_close(screen, data, "Could not allocate space for sprites");
-	int	i = 0;
-	t_list	*index = data->sprite_list;
+		ft_free_map_and_close(screen, data, "Could not allocate sprite array");
+	i = 0;
+	index = data->sprite_list;
 	while (i < screen->sprite_count)
 	{
-		t_sprite *node = (t_sprite*)index->content;
+		node = (t_sprite*)index->content;
 		screen->sprites[i].x = node->x;
 		screen->sprites[i].y = node->y;
 		index = index->next;
@@ -196,7 +197,8 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	if (!screen)
 		return (NULL);
 	ft_parse_to_screen(screen, data);
-	if (!screen->mlx) //redundant check?
+	// is the below screen->mlx check redundant?
+	if (!screen->mlx)
 		ft_free_map_and_close(screen, data, "Could not connect to X Server");
 	if (save == FALSE)
 		ft_reset_resolution(screen);
@@ -216,13 +218,13 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	}
 	if (ft_load_image(data->sprite, screen, &(screen->sprite)) == -1)
 		ft_free_map_and_close(screen, data, "Could not load sprite texture");
-	// check that image loaded and is valid
 	return (screen);
 }
 
 int				ft_update(t_screen *screen)
 {
 	t_player *p;
+
 	p = screen->player;
 	if (screen->player_move == 0)
 		return (ft_draw(screen));
@@ -238,7 +240,7 @@ int				ft_update(t_screen *screen)
 		ft_rotate(M_PI / 48.0, screen);
 	if (screen->player_move & 16)
 		ft_rotate(-M_PI / 48.0, screen);
-	screen->refresh = 1;	
+	screen->refresh = 1;
 	return (ft_draw(screen));
 }
 
@@ -257,7 +259,7 @@ int				ft_run(t_screen *screen)
 	return (ft_close_screen(&screen));
 }
 
-int				ft_parse_options(int argc, char **argv, t_screen *screen)
+void			ft_parse_options(int argc, char **argv, t_screen *screen)
 {
 	if (argc > 2)
 	{
@@ -271,7 +273,6 @@ int				ft_parse_options(int argc, char **argv, t_screen *screen)
 		else
 			ft_close_on_error(screen, "Error\nInvalid Options");
 	}
-	return (1); //is this value correct? should this be a void func?
 }
 
 void			ft_close_on_error(t_screen *screen, char *msg)
@@ -293,8 +294,6 @@ int				main(int argc, char **argv)
 		ft_close_on_error(screen, "Error\nUsage: ./cub3D <mapname.cub>");
 	if (!map_parse)
 		ft_close_on_error(screen, "Error\nCould not parse map");
-//	ft_print_map_data(map_parse);
-	printf("Made it out of second print map data\n");
 	if (argc == 2)
 		screen = ft_load_screen(&player, map_parse, FALSE);
 	else
@@ -302,7 +301,6 @@ int				main(int argc, char **argv)
 	map_parse = ft_free_map_data(map_parse);
 	if (!screen)
 		ft_close_on_error(screen, "Error\nCould not initialize screen");
-	printf("Made it out of load_screen");
 	ft_parse_options(argc, argv, screen);
 	return (ft_run(screen));
 }
