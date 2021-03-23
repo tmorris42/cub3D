@@ -49,6 +49,14 @@ typedef struct	s_wall_data
 	double	dist;
 }				t_wall_data;
 
+typedef struct	s_texture
+{
+	int		x;
+	int		y;
+	t_pt	dim;
+	double	pos;
+}				t_texture;
+
 void	ft_sort_sprites(t_sprite_data *sprite_data, int amount)
 {
 	int		i;
@@ -257,11 +265,50 @@ t_wall_data	ft_get_wall(t_screen *screen, t_camera *cam, int side_check)
 	return (wall);
 }
 
+void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int side_check)
+{
+		t_texture	text;	
+		unsigned int color;
+		text.dim.x = screen->walls[wall->num].width;
+		text.dim.y = screen->walls[wall->num].height;
+
+		text.x = (int)(wall->x * (double)text.dim.x);
+//		ft_printf("texture_x = %d\n", texture_x);
+		if (side_check == 0 && cam->ray_dir.x > 0)
+			text.x = text.dim.x - text.x - 1;
+		else if (side_check == 1 && cam->ray_dir.y < 0)
+			text.x = text.dim.x - text.x - 1;
+//		ft_printf("iafter texture_x = %d\n", texture_x);
+
+		double	step;
+		int		line_height;
+		int		draw_start;
+		int		draw_end;
+		line_height = (int)(screen->height / wall->dist);
+		step = 1.0 * text.dim.y / line_height;
+		draw_start = (screen->height - line_height) / 2;
+		draw_end = (screen->height + line_height) / 2;
+		if (draw_start < 0)
+			draw_start = 0;
+		if (draw_end >= screen->height)
+			draw_end = screen->height - 1;
+		text.pos = (draw_start - (screen->height - line_height) / 2) * step;
+		int y;
+		y = draw_start;
+		while (y < draw_end)
+		{
+			text.y = (int)text.pos & (text.dim.y - 1); //what's this masking doing?
+			text.pos += step;
+			color = ft_get_pixel_from_image(&(screen->walls[wall->num]), text.x, text.y);
+			ft_pixel_put(&(screen->buf), x, y, color);
+			++y;
+		}
+}
+
 int		ft_raycast(t_screen *screen)
 {
 	int		x;
 	t_camera	cam;
-	t_d_pt	ray_dir;
 	t_wall_data		wall;
 	int		side_check;
 	t_sprite_data	sprite_data;
@@ -279,49 +326,7 @@ int		ft_raycast(t_screen *screen)
 		ft_init_camera(screen, &cam, x);
 		side_check = ft_find_next_wall(screen, &cam);
 		wall = ft_get_wall(screen, &cam, side_check);
-		
-		ray_dir = cam.ray_dir;
-
-		int texture_width;
-		int		texture_height;
-		unsigned int color;
-		texture_width = screen->walls[wall.num].width;
-		texture_height = screen->walls[wall.num].height;
-
-		int texture_x;
-		texture_x = (int)(wall.x * (double)texture_width);
-//		ft_printf("texture_x = %d\n", texture_x);
-		if (side_check == 0 && ray_dir.x > 0)
-			texture_x = texture_width - texture_x - 1;
-		else if (side_check == 1 && ray_dir.y < 0)
-			texture_x = texture_width - texture_x - 1;
-//		ft_printf("iafter texture_x = %d\n", texture_x);
-
-		double	step;
-		int		line_height;
-		int		draw_start;
-		int		draw_end;
-		double	texture_pos;
-		line_height = (int)(screen->height / wall.dist);
-		step = 1.0 * texture_height / line_height;
-		draw_start = (screen->height - line_height) / 2;
-		draw_end = (screen->height + line_height) / 2;
-		if (draw_start < 0)
-			draw_start = 0;
-		if (draw_end >= screen->height)
-			draw_end = screen->height - 1;
-		texture_pos = (draw_start - (screen->height - line_height) / 2) * step;
-		int y;
-		int texture_y;
-		y = draw_start;
-		while (y < draw_end)
-		{
-			texture_y = (int)texture_pos & (texture_height - 1); //what's this masking doing?
-			texture_pos += step;
-			color = ft_get_pixel_from_image(&(screen->walls[wall.num]), texture_x, texture_y);
-			ft_pixel_put(&(screen->buf), x, y, color);
-			++y;
-		}
+		ft_draw_wall(screen, &cam, &wall, side_check);
 		sprite_data.buffer[x] = wall.dist;
 		++x;
 	}
