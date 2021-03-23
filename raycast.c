@@ -138,78 +138,61 @@ void	ft_draw_sprite(t_screen *screen, t_sprite_data *data, int *i)
 	*i += 1;
 }
 
-int		ft_cast_sprites(t_screen *screen, t_d_pt plane, double *sprite_buffer)
+int		ft_cast_sprites(t_screen *scr, t_d_pt plane, t_sprite_data *data)
 {
-	t_sprite_data	sprite_data;
-	int		i;
+	int				i;
 
-	sprite_data.buffer = sprite_buffer;
-	sprite_data.plane = plane;
-	if (!(sprite_data.order = (int*)malloc(sizeof(*sprite_data.order) * screen->sprite_count)))
+	data->plane = plane;
+	if (!(data->order = (int*)malloc(sizeof(*data->order) * scr->sprite_count)))
 		return (-1);
-	if (!(sprite_data.dist = (double*)malloc(sizeof(*sprite_data.dist) * screen->sprite_count)))
+	if (!(data->dist = (double*)malloc(sizeof(*data->dist) * scr->sprite_count)))
 	{
-		free(sprite_data.order);
+		free(data->order);
 		return (-1);
 	}
 	i = 0;
-	while (i < screen->sprite_count)
+	while (i < scr->sprite_count)
 	{
-		sprite_data.order[i] = i;
-		sprite_data.dist[i] = ((screen->player->pos_x - screen->sprites[i].x) * (screen->player->pos_x - screen->sprites[i].x) + (screen->player->pos_y - screen->sprites[i].y) * (screen->player->pos_y - screen->sprites[i].y));
+		data->order[i] = i;
+		data->dist[i] = ((scr->player->pos_x - scr->sprites[i].x) * (scr->player->pos_x - scr->sprites[i].x) + (scr->player->pos_y - scr->sprites[i].y) * (scr->player->pos_y - scr->sprites[i].y));
 		++i;
 	}
-	ft_sort_sprites(&sprite_data, screen->sprite_count);
+	ft_sort_sprites(data, scr->sprite_count);
 	i = 0;
-	while (i < screen->sprite_count)
-		ft_draw_sprite(screen, &sprite_data, &i);
-	printf("done drawing sprites\n");
-	free(sprite_data.order);
-	free(sprite_data.dist);
+	while (i < scr->sprite_count)
+		ft_draw_sprite(scr, data, &i);
+	free(data->order);
+	free(data->dist);
 	return (0);
 }
 
-void	ft_init_camera(t_screen *screen, t_camera *cam, int x)
+void	ft_init_camera(t_screen *scr, t_camera *cam, int x)
 {
 	double	cam_x;
 
-	cam_x = 2 * x / (double)screen->width - 1;
-	cam->ray_dir.x = screen->player->rot_x + cam->plane.x * cam_x;
-	cam->ray_dir.y = screen->player->rot_y + cam->plane.y * cam_x;
-	cam->map.x = (int)(screen->player->pos_x);
-	cam->map.y = (int)(screen->player->pos_y);
+	cam_x = 2 * x / (double)scr->width - 1;
+	cam->ray_dir.x = scr->player->rot_x + cam->plane.x * cam_x;
+	cam->ray_dir.y = scr->player->rot_y + cam->plane.y * cam_x;
+	cam->map.x = (int)(scr->player->pos_x);
+	cam->map.y = (int)(scr->player->pos_y);
+	cam->delta_dist.x = fabs(1 / cam->ray_dir.x);
 	if (cam->ray_dir.y == 0)
 		cam->delta_dist.x = 0;
 	else if (cam->ray_dir.x == 0)
 		cam->delta_dist.x = 1;
-	else
-		cam->delta_dist.x = fabs(1 / cam->ray_dir.x);
+	cam->delta_dist.y = fabs(1 / cam->ray_dir.y);
 	if (cam->ray_dir.x == 0)
 		cam->delta_dist.y = 0;
 	else if (cam->ray_dir.y == 0)
 		cam->delta_dist.y = 1;
-	else
-		cam->delta_dist.y = fabs(1 / cam->ray_dir.y);
+	cam->step.x = (-2 * (cam->ray_dir.x < 0)) + 1;
+	cam->dist.x = (cam->map.x + 1.0 - scr->player->pos_x) * cam->delta_dist.x;
 	if (cam->ray_dir.x < 0)
-	{
-		cam->step.x = -1;
-		cam->dist.x = (screen->player->pos_x - cam->map.x) * cam->delta_dist.x;
-	}
-	else
-	{
-		cam->step.x = 1;
-		cam->dist.x = (cam->map.x + 1.0 - screen->player->pos_x) * cam->delta_dist.x;
-	}
+		cam->dist.x = (scr->player->pos_x - cam->map.x) * cam->delta_dist.x;
+	cam->step.y = (-2 * (cam->ray_dir.y < 0)) + 1;
+	cam->dist.y = (cam->map.y + 1.0 - scr->player->pos_y) * cam->delta_dist.y;
 	if (cam->ray_dir.y < 0)
-	{
-		cam->step.y = -1;
-		cam->dist.y = (screen->player->pos_y - cam->map.y) * cam->delta_dist.y;
-	}
-	else
-	{
-		cam->step.y = 1;
-		cam->dist.y = (cam->map.y + 1.0 - screen->player->pos_y) * cam->delta_dist.y;
-	}
+		cam->dist.y = (scr->player->pos_y - cam->map.y) * cam->delta_dist.y;
 }
 
 int		ft_raycast(t_screen *screen)
@@ -224,8 +207,11 @@ int		ft_raycast(t_screen *screen)
 	double	wall_dist;
 	int		hit;
 	int		side_check;
-	double	sprite_buffer[screen->width]; //must be malloc'd instead
+	t_sprite_data	sprite_data;
 
+	sprite_data.buffer = (double*)malloc(sizeof(double) * screen->width);
+	if (!sprite_data.buffer)
+		return (-1); //make sure we're checking for raycast failure
 	cam.plane.x = -.50 * screen->player->rot_y;
 	cam.plane.y = (-.50 * (-screen->player->rot_x));
 	printf("<%f, %f>\n", cam.plane.x, cam.plane.y);
@@ -331,12 +317,16 @@ int		ft_raycast(t_screen *screen)
 			ft_pixel_put(&(screen->buf), x, y, color);
 			++y;
 		}
-		sprite_buffer[x] = wall_dist;
+		sprite_data.buffer[x] = wall_dist;
 		++x;
 	}
 	printf("Leaving raycast wall loop\n");
 	printf("Trying to draw sprites\n");
-	if (ft_cast_sprites(screen, cam.plane, sprite_buffer) == -1)
+	if (ft_cast_sprites(screen, cam.plane, &sprite_data) == -1)
+	{
+		free(sprite_data.buffer);
 		return (-1); //THIS IS AN ERROR, probably malloc fail make sure when draw() calls raycast it checks for this problm
+	}
+	free(sprite_data.buffer);
 	return (0);
 }
