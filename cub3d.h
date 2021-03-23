@@ -135,7 +135,7 @@ t_screen			*ft_new_screen(t_player *player);
 int					ft_close_screen(t_screen **screen_addr);
 void				ft_free_int_array(int **arr, int y_max);
 void				ft_close_on_error(t_screen *screen, char *msg);
-void				ft_raycast(t_screen *screen);
+int					ft_raycast(t_screen *screen);
 int					ft_draw(t_screen *screen);
 int					ft_redraw(t_screen *screen);
 void				ft_rotate(double rad, t_screen *screen);

@@ -38,7 +38,8 @@ int			ft_draw(t_screen *screen)
 	ft_draw_rect(screen, 0, screen->height, screen->colors.ceiling);
 	ft_draw_rect(screen, screen->height / 2, screen->height / 2,
 			screen->colors.floor);
-	ft_raycast(screen);
+	if (ft_raycast(screen) == -1)
+		return (-1); //error, probably failed malloc. make sure that main.c is checking for error here
 	if (!(screen->win))
 		return (1);
 	mlx_put_image_to_window(screen->mlx, screen->win, screen->buf.img, 0, 0);
