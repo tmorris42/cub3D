@@ -42,6 +42,13 @@ typedef struct	s_camera
 	t_d_pt	delta_dist;
 }				t_camera;
 
+typedef struct	s_wall_data
+{
+	int		num;
+	double	x;
+	double	dist;
+}				t_wall_data;
+
 void	ft_sort_sprites(t_sprite_data *sprite_data, int amount)
 {
 	int		i;
@@ -195,17 +202,67 @@ void	ft_init_camera(t_screen *scr, t_camera *cam, int x)
 		cam->dist.y = (scr->player->pos_y - cam->map.y) * cam->delta_dist.y;
 }
 
+int		ft_find_next_wall(t_screen *screen, t_camera *cam)
+{
+	int		hit;
+	int		side_check;
+
+	hit = 0;
+	while (hit == 0)
+	{
+		if (cam->dist.x < cam->dist.y)
+		{
+			cam->dist.x += cam->delta_dist.x;
+			cam->map.x += cam->step.x;
+			side_check = 0;
+		}
+		else
+		{
+			cam->dist.y += cam->delta_dist.y;
+			cam->map.y += cam->step.y;
+			side_check = 1;
+		}
+		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width || cam->map.x < 0 || cam->map.y < 0)
+			return (-1); //Error, no wall found;
+		if (screen->map[cam->map.y][cam->map.x] == 1)
+			hit = 1;
+	}
+	return (side_check);
+}
+
+t_wall_data	ft_get_wall(t_screen *screen, t_camera *cam, int side_check)
+{
+	t_wall_data		wall;
+
+	if (side_check == 0)
+		wall.dist = (cam->map.x - screen->player->pos_x + (1 - cam->step.x) / 2) / cam->ray_dir.x;
+	else
+		wall.dist = (cam->map.y - screen->player->pos_y + (1 - cam->step.y) / 2) / cam->ray_dir.y;
+	if (side_check == 0)
+		wall.x = screen->player->pos_y + wall.dist * cam->ray_dir.y;
+	else
+		wall.x = screen->player->pos_x + wall.dist * cam->ray_dir.x;
+	wall.x -= floor((wall.x));
+
+	wall.num = 0;
+	if (side_check == 0)
+	{
+		if (cam->ray_dir.x < 0)
+			wall.num = 1; //0 == N, 1 == E, etc
+		else
+			wall.num = 3;
+	}
+	else if (cam->ray_dir.y < 0)
+		wall.num = 2;
+	return (wall);
+}
+
 int		ft_raycast(t_screen *screen)
 {
 	int		x;
 	t_camera	cam;
 	t_d_pt	ray_dir;
-	t_d_pt	delta_dist;
-	t_pt	map;
-	t_d_pt	dist; //side_dist
-	t_pt	step;
-	double	wall_dist;
-	int		hit;
+	t_wall_data		wall;
 	int		side_check;
 	t_sprite_data	sprite_data;
 
@@ -220,71 +277,19 @@ int		ft_raycast(t_screen *screen)
 	while (x < screen->width)
 	{
 		ft_init_camera(screen, &cam, x);
+		side_check = ft_find_next_wall(screen, &cam);
+		wall = ft_get_wall(screen, &cam, side_check);
+		
 		ray_dir = cam.ray_dir;
-		map = cam.map;
-		delta_dist = cam.delta_dist;
-		dist = cam.dist;
-		step = cam.step;
-//		printf("CHECKING FOR HITS\n");
-		hit = 0;
-		while (hit == 0)
-		{
-			if (dist.x < dist.y)
-			{
-				dist.x += delta_dist.x;
-				map.x += step.x;
-				side_check = 0;
-			}
-			else
-			{
-				dist.y += delta_dist.y;
-				map.y += step.y;
-				side_check = 1;
-			}
-			//	if (screen.map_data[map.x][map.y] > 0)
-			if (map.y > screen->map_height || map.x > screen->map_width || map.x < 0 || map.y < 0)
-			{
-				ft_printf("About to crash from illegal map index\n");
-				printf("mapx,y = (%d, %d)\n", map.x, map.y);
-				//		printf("avoiding the crash\n");
-				//		break; //bad idea
-			}
-			if (screen->map[map.y][map.x] == 1)
-			{
-				hit = 1;
-//				printf("GOT A HIT\n");
-			}
-		}
-		if (side_check == 0)
-			wall_dist = (map.x - screen->player->pos_x + (1 - step.x) / 2) / ray_dir.x;
-		else
-			wall_dist = (map.y - screen->player->pos_y + (1 - step.y) / 2) / ray_dir.y;
-		double wall_x; //where on wall hit occured
-		if (side_check == 0)
-			wall_x = screen->player->pos_y + wall_dist * ray_dir.y;
-		else
-			wall_x = screen->player->pos_x + wall_dist * ray_dir.x;
-//		printf("WALL_X = %f  (%f)\n", wall_x, floor(wall_x));
-		wall_x -= floor((wall_x));
 
-		int	wall_num = 0;
-		if (side_check == 0)
-		{
-			if (ray_dir.x < 0)
-				wall_num = 1; //0 == N, 1 == E, etc
-			else
-				wall_num = 3;
-		}
-		else if (ray_dir.y < 0)
-			wall_num = 2;
 		int texture_width;
 		int		texture_height;
 		unsigned int color;
-		texture_width = screen->walls[wall_num].width;
-		texture_height = screen->walls[wall_num].height;
+		texture_width = screen->walls[wall.num].width;
+		texture_height = screen->walls[wall.num].height;
 
 		int texture_x;
-		texture_x = (int)(wall_x * (double)texture_width);
+		texture_x = (int)(wall.x * (double)texture_width);
 //		ft_printf("texture_x = %d\n", texture_x);
 		if (side_check == 0 && ray_dir.x > 0)
 			texture_x = texture_width - texture_x - 1;
@@ -297,7 +302,7 @@ int		ft_raycast(t_screen *screen)
 		int		draw_start;
 		int		draw_end;
 		double	texture_pos;
-		line_height = (int)(screen->height / wall_dist);
+		line_height = (int)(screen->height / wall.dist);
 		step = 1.0 * texture_height / line_height;
 		draw_start = (screen->height - line_height) / 2;
 		draw_end = (screen->height + line_height) / 2;
@@ -313,11 +318,11 @@ int		ft_raycast(t_screen *screen)
 		{
 			texture_y = (int)texture_pos & (texture_height - 1); //what's this masking doing?
 			texture_pos += step;
-			color = ft_get_pixel_from_image(&(screen->walls[wall_num]), texture_x, texture_y);
+			color = ft_get_pixel_from_image(&(screen->walls[wall.num]), texture_x, texture_y);
 			ft_pixel_put(&(screen->buf), x, y, color);
 			++y;
 		}
-		sprite_data.buffer[x] = wall_dist;
+		sprite_data.buffer[x] = wall.dist;
 		++x;
 	}
 	printf("Leaving raycast wall loop\n");
