@@ -39,6 +39,18 @@
 # define TRUE		1
 # define FALSE		0
 
+typedef struct		s_point
+{
+	int		x;
+	int		y;
+}					t_pt;
+
+typedef struct		s_double_point
+{
+	double x;
+	double y;
+}					t_d_pt;
+
 typedef struct		s_sprite
 {
 	double	x;

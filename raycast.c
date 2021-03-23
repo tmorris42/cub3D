@@ -37,103 +37,97 @@ void	ft_sort_sprites(int *order, double *dist, int amount)
 void	ft_raycast(t_screen *screen)
 {
 	int		x;
-	double	plane_x; //camera plane
-	double	plane_y; //camera plane
+	t_d_pt	plane; //camera plane
 	double	camera_x;
-	double	ray_dir_x;
-	double	ray_dir_y;
-	double	delta_dist_x;
-	double	delta_dist_y;
-	int		map_x;
-	int		map_y;
-	double	dist_x; //side_dist_x
-	double	dist_y;
+	t_d_pt	ray_dir;
+	t_d_pt	delta_dist;
+	t_pt	map;
+	t_d_pt	dist; //side_dist
+	t_pt	step;
 	double	wall_dist;
-	int		step_x;
-	int		step_y;
 	int		hit;
 	int		side_check;
 	double	sprite_buffer[screen->width]; //must be malloc'd instead
 	int		spriteOrder[screen->sprite_count]; //can't use numSprites.. malloc
 	double	spriteDistance[screen->sprite_count]; //can't use numSprites.. malloc
 	
-	plane_x = -.50 * screen->player->rot_y;
-	plane_y = (-.50 *  (-screen->player->rot_x));
-	printf("<%f, %f>\n", plane_x, plane_y);
+	plane.x = -.50 * screen->player->rot_y;
+	plane.y = (-.50 *  (-screen->player->rot_x));
+	printf("<%f, %f>\n", plane.x, plane.y);
 	x = 0;
 	printf("START LOOP with player location = < %f, %f >\n", screen->player->pos_x, screen->player->pos_y);
 	while (x < screen->width)
 	{
 		camera_x = 2 * x / (double)screen->width - 1;
-		ray_dir_x = screen->player->rot_x + plane_x * camera_x;
-		ray_dir_y = screen->player->rot_y + plane_y * camera_x;
+		ray_dir.x = screen->player->rot_x + plane.x * camera_x;
+		ray_dir.y = screen->player->rot_y + plane.y * camera_x;
 
-		map_x = (int)(screen->player->pos_x);
-		map_y = (int)(screen->player->pos_y);
+		map.x = (int)(screen->player->pos_x);
+		map.y = (int)(screen->player->pos_y);
 		
-		if (ray_dir_y == 0)
-			delta_dist_x = 0;
-		else if (ray_dir_x == 0)
-			delta_dist_x = 1;
+		if (ray_dir.y == 0)
+			delta_dist.x = 0;
+		else if (ray_dir.x == 0)
+			delta_dist.x = 1;
 		else
-			delta_dist_x = fabs(1 / ray_dir_x);
-		if (ray_dir_x == 0)
-			delta_dist_y = 0;
-		else if (ray_dir_y == 0)
-			delta_dist_y = 1;
+			delta_dist.x = fabs(1 / ray_dir.x);
+		if (ray_dir.x == 0)
+			delta_dist.y = 0;
+		else if (ray_dir.y == 0)
+			delta_dist.y = 1;
 		else
-			delta_dist_y = fabs(1 / ray_dir_y);
+			delta_dist.y = fabs(1 / ray_dir.y);
 		
-		if (ray_dir_x < 0)
+		if (ray_dir.x < 0)
 		{
-			step_x = -1;
-			dist_x = (screen->player->pos_x - map_x) * delta_dist_x;
+			step.x = -1;
+			dist.x = (screen->player->pos_x - map.x) * delta_dist.x;
 		}
 		else
 		{
-			step_x = 1;
-			dist_x = (map_x + 1.0 - screen->player->pos_x) * delta_dist_x;
+			step.x = 1;
+			dist.x = (map.x + 1.0 - screen->player->pos_x) * delta_dist.x;
 		}
-		if (ray_dir_y < 0)
+		if (ray_dir.y < 0)
 		{
-			step_y = -1;
-			dist_y = (screen->player->pos_y - map_y) * delta_dist_y;
+			step.y = -1;
+			dist.y = (screen->player->pos_y - map.y) * delta_dist.y;
 		}
 		else
 		{
-			step_y = 1;
-			dist_y = (map_y + 1.0 - screen->player->pos_y) * delta_dist_y;
+			step.y = 1;
+			dist.y = (map.y + 1.0 - screen->player->pos_y) * delta_dist.y;
 		}
 //		printf("CHECVING FOR HITS\n");
 		hit = 0;
 		while (hit == 0)
 		{
-			if (dist_x < dist_y)
+			if (dist.x < dist.y)
 			{
-				dist_x += delta_dist_x;
-				map_x += step_x;
+				dist.x += delta_dist.x;
+				map.x += step.x;
 				side_check = 0;
 			}
 			else
 			{
-				dist_y += delta_dist_y;
-				map_y += step_y;
+				dist.y += delta_dist.y;
+				map.y += step.y;
 				side_check = 1;
 			}
-		//	if (screen.map_data[map_x][map_y] > 0)
-			if (map_y > screen->map_height || map_x > screen->map_width || map_x < 0 || map_y < 0)
+		//	if (screen.map_data[map.x][map.y] > 0)
+			if (map.y > screen->map_height || map.x > screen->map_width || map.x < 0 || map.y < 0)
 			{
 				ft_printf("About to crash from illegal map index\n");
-				printf("mapx,y = (%d, %d)\n", map_x, map_y);
+				printf("mapx,y = (%d, %d)\n", map.x, map.y);
 		//		printf("avoiding the crash\n");
 		//		break; //bad idea
 			}
-			if (screen->map[map_y][map_x] == 1)
+			if (screen->map[map.y][map.x] == 1)
 			{
 				hit = 1;
 //				printf("GOT A HIT\n");
 			}
-			else if (screen->map[map_y][map_x] == 2)
+			else if (screen->map[map.y][map.x] == 2)
 			{
 				//printf("GOT A SPRITE HIT\n");
 				//tempSpriteHit = 2;
@@ -141,27 +135,27 @@ void	ft_raycast(t_screen *screen)
 		}
 
 		if (side_check == 0)
-			wall_dist = (map_x - screen->player->pos_x + (1 - step_x) / 2) / ray_dir_x;
+			wall_dist = (map.x - screen->player->pos_x + (1 - step.x) / 2) / ray_dir.x;
 		else
-			wall_dist = (map_y - screen->player->pos_y + (1 - step_y) / 2) / ray_dir_y;
+			wall_dist = (map.y - screen->player->pos_y + (1 - step.y) / 2) / ray_dir.y;
 		
 		double wall_x; //where on wall hit occured
 		if (side_check == 0)
-			wall_x = screen->player->pos_y + wall_dist * ray_dir_y;
+			wall_x = screen->player->pos_y + wall_dist * ray_dir.y;
 		else
-			wall_x = screen->player->pos_x + wall_dist * ray_dir_x;
+			wall_x = screen->player->pos_x + wall_dist * ray_dir.x;
 //		printf("WALL_X = %f  (%f)\n", wall_x, floor(wall_x));
 		wall_x -= floor((wall_x));
 
 		int	wall_num = 0;
 		if (side_check == 0)
 		{
-			if (ray_dir_x < 0)
+			if (ray_dir.x < 0)
 				wall_num = 1; //0 == N, 1 == E, etc
 			else
 				wall_num = 3;
 		}
-		else if (ray_dir_y < 0)
+		else if (ray_dir.y < 0)
 			wall_num = 2;
 		int texture_width;
 		int		texture_height;
@@ -172,9 +166,9 @@ void	ft_raycast(t_screen *screen)
 		int texture_x;
 		texture_x = (int)(wall_x * (double)texture_width);
 //		ft_printf("texture_x = %d\n", texture_x);
-		if (side_check == 0 && ray_dir_x > 0)
+		if (side_check == 0 && ray_dir.x > 0)
 			texture_x = texture_width - texture_x - 1;
-		else if (side_check == 1 && ray_dir_y < 0)
+		else if (side_check == 1 && ray_dir.y < 0)
 			texture_x = texture_width - texture_x - 1;
 //		ft_printf("iafter texture_x = %d\n", texture_x);
 
@@ -225,9 +219,9 @@ void	ft_raycast(t_screen *screen)
 		double spriteX = screen->sprites[spriteOrder[currentSprite]].x - screen->player->pos_x;
 		double spriteY = screen->sprites[spriteOrder[currentSprite]].y - screen->player->pos_y;
 
-		double invDet = 1.0 / (plane_x * screen->player->rot_y - screen->player->rot_x * plane_y);
+		double invDet = 1.0 / (plane.x * screen->player->rot_y - screen->player->rot_x * plane.y);
 		double transformX = invDet * (screen->player->rot_y * spriteX - screen->player->rot_x * spriteY);
-		double transformY = invDet * (-plane_y *spriteX + plane_x * spriteY);
+		double transformY = invDet * (-plane.y *spriteX + plane.x * spriteY);
 		int	spriteScreenX = (int)((screen->width / 2) * (1 + transformX / transformY));
 		int spriteHeight = (int)(abs(screen->height / transformY));
 		int drawStartY = -spriteHeight / 2 + screen->height / 2;
