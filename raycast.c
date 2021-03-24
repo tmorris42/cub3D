@@ -89,17 +89,16 @@ void	ft_render_sprite(t_screen *scr, t_sprite_data *data)
 	pixel.x = data->draw.start.x;
 	while (pixel.x < data->draw.end.x)
 	{
-		text.x = (256 *
-				(pixel.x - (-data->dim.x / 2 + data->screen_x)) *
-				scr->sprite.width / data->dim.x) / 256;
+		text.x = ((pixel.x - (-data->dim.x / 2 + data->screen_x)) *
+					scr->sprite.width / data->dim.x);
 		if (pixel.x > 0 && pixel.x < scr->width &&
 			data->transform.y > 0 && data->transform.y < data->buffer[pixel.x])
 		{
 			pixel.y = data->draw.start.y;
 			while (pixel.y < data->draw.end.y)
 			{
-				d = pixel.y * 256 - scr->height * 128 + data->dim.y * 128;
-				text.y = ((d * scr->sprite.height) / data->dim.y) / 256;
+				d = pixel.y * 2 - scr->height + data->dim.y;
+				text.y = ((d * scr->sprite.height) / data->dim.y) / 2;
 				color = ft_get_pixel_from_image(&(scr->sprite), text.x, text.y);
 				if ((color & 0x00FFFFFF) != 0)
 					ft_pixel_put(&(scr->buf), pixel.x, pixel.y, color);
