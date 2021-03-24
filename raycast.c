@@ -47,13 +47,13 @@ typedef struct	s_wall_data
 	int		num;
 	double	x;
 	double	dist;
+	int		side_check;
 }				t_wall_data;
 
 typedef struct	s_texture
 {
 	int		x;
 	int		y;
-	t_pt	dim;
 	double	pos;
 }				t_texture;
 
@@ -210,10 +210,9 @@ void	ft_init_camera(t_screen *scr, t_camera *cam, int x)
 		cam->dist.y = (scr->player->pos_y - cam->map.y) * cam->delta_dist.y;
 }
 
-int		ft_find_next_wall(t_screen *screen, t_camera *cam)
+void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 {
 	int		hit;
-	int		side_check;
 
 	hit = 0;
 	while (hit == 0)
@@ -222,120 +221,97 @@ int		ft_find_next_wall(t_screen *screen, t_camera *cam)
 		{
 			cam->dist.x += cam->delta_dist.x;
 			cam->map.x += cam->step.x;
-			side_check = 0;
+			wall->side_check = 0;
 		}
 		else
 		{
 			cam->dist.y += cam->delta_dist.y;
 			cam->map.y += cam->step.y;
-			side_check = 1;
+			wall->side_check = 1;
 		}
 		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width || cam->map.x < 0 || cam->map.y < 0)
 			return (-1); //Error, no wall found;
 		if (screen->map[cam->map.y][cam->map.x] == 1)
 			hit = 1;
 	}
-	return (side_check);
 }
 
-t_wall_data	ft_get_wall(t_screen *screen, t_camera *cam, int side_check)
+void	ft_get_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 {
-	t_wall_data		wall;
-
-	if (side_check == 0)
-		wall.dist = (cam->map.x - screen->player->pos_x + (1 - cam->step.x) / 2) / cam->ray_dir.x;
+	if (wall->side_check == 0)
+		wall->dist = (cam->map.x - screen->player->pos_x + (1 - cam->step.x) / 2) / cam->ray_dir.x;
 	else
-		wall.dist = (cam->map.y - screen->player->pos_y + (1 - cam->step.y) / 2) / cam->ray_dir.y;
-	if (side_check == 0)
-		wall.x = screen->player->pos_y + wall.dist * cam->ray_dir.y;
+		wall->dist = (cam->map.y - screen->player->pos_y + (1 - cam->step.y) / 2) / cam->ray_dir.y;
+	if (wall->side_check == 0)
+		wall->x = screen->player->pos_y + wall->dist * cam->ray_dir.y;
 	else
-		wall.x = screen->player->pos_x + wall.dist * cam->ray_dir.x;
-	wall.x -= floor((wall.x));
+		wall->x = screen->player->pos_x + wall->dist * cam->ray_dir.x;
+	wall->x -= floor((wall->x));
 
-	wall.num = 0;
-	if (side_check == 0)
+	wall->num = 0;
+	if (wall->side_check == 0)
 	{
 		if (cam->ray_dir.x < 0)
-			wall.num = 1; //0 == N, 1 == E, etc
+			wall->num = 1; //0 == N, 1 == E, etc
 		else
-			wall.num = 3;
+			wall->num = 3;
 	}
 	else if (cam->ray_dir.y < 0)
-		wall.num = 2;
-	return (wall);
+		wall->num = 2;
 }
 
-void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int side_check)
+void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int x)
 {
-		t_texture	text;	
-		unsigned int color;
-		text.dim.x = screen->walls[wall->num].width;
-		text.dim.y = screen->walls[wall->num].height;
+	t_texture		text;
+	unsigned int	color;
+	t_pt			draw;
+	double			step;
+	int				line_height;
 
-		text.x = (int)(wall->x * (double)text.dim.x);
-//		ft_printf("texture_x = %d\n", texture_x);
-		if (side_check == 0 && cam->ray_dir.x > 0)
-			text.x = text.dim.x - text.x - 1;
-		else if (side_check == 1 && cam->ray_dir.y < 0)
-			text.x = text.dim.x - text.x - 1;
-//		ft_printf("iafter texture_x = %d\n", texture_x);
-
-		double	step;
-		int		line_height;
-		int		draw_start;
-		int		draw_end;
-		line_height = (int)(screen->height / wall->dist);
-		step = 1.0 * text.dim.y / line_height;
-		draw_start = (screen->height - line_height) / 2;
-		draw_end = (screen->height + line_height) / 2;
-		if (draw_start < 0)
-			draw_start = 0;
-		if (draw_end >= screen->height)
-			draw_end = screen->height - 1;
-		text.pos = (draw_start - (screen->height - line_height) / 2) * step;
-		int y;
-		y = draw_start;
-		while (y < draw_end)
-		{
-			text.y = (int)text.pos & (text.dim.y - 1); //what's this masking doing?
-			text.pos += step;
-			color = ft_get_pixel_from_image(&(screen->walls[wall->num]), text.x, text.y);
-			ft_pixel_put(&(screen->buf), x, y, color);
-			++y;
-		}
+	text.x = (int)(wall->x * (double)screen->walls[wall->num].width);
+	if (wall->side_check == 0 && cam->ray_dir.x > 0)
+		text.x = screen->walls[wall->num].width - text.x - 1;
+	else if (wall->side_check == 1 && cam->ray_dir.y < 0)
+		text.x = screen->walls[wall->num].width - text.x - 1;
+	line_height = (int)(screen->height / wall->dist);
+	step = 1.0 * screen->walls[wall->num].height / line_height;
+	draw.x = ft_max(((screen->height - line_height) / 2), 0);
+	draw.y = ft_min((screen->height + line_height) / 2, screen->height - 1);
+	text.pos = (draw.x - (screen->height - line_height) / 2) * step;
+	while (draw.x < draw.y)
+	{
+		text.y = (int)text.pos & (screen->walls[wall->num].height - 1); //what's this masking do?
+		text.pos += step;
+		color = ft_get_pixel_from_image(&(screen->walls[wall->num]), text.x, text.y);
+		ft_pixel_put(&(screen->buf), x, draw.x, color);
+		++draw.x;
+	}
 }
 
 int		ft_raycast(t_screen *screen)
 {
-	int		x;
-	t_camera	cam;
+	int				x;
+	t_camera		cam;
 	t_wall_data		wall;
-	int		side_check;
 	t_sprite_data	sprite_data;
 
-	sprite_data.buffer = (double*)malloc(sizeof(double) * screen->width);
-	if (!sprite_data.buffer)
+	if (!(sprite_data.buffer = (double*)malloc(sizeof(double) * screen->width)))
 		return (-1); //make sure we're checking for raycast failure
 	cam.plane.x = -.50 * screen->player->rot_y;
 	cam.plane.y = (-.50 * (-screen->player->rot_x));
-	printf("<%f, %f>\n", cam.plane.x, cam.plane.y);
-	x = 0;
-	printf("START LOOP with player location = < %f, %f >\n", screen->player->pos_x, screen->player->pos_y);
-	while (x < screen->width)
+	x = -1;
+	while (++x < screen->width)
 	{
 		ft_init_camera(screen, &cam, x);
-		side_check = ft_find_next_wall(screen, &cam);
-		wall = ft_get_wall(screen, &cam, side_check);
-		ft_draw_wall(screen, &cam, &wall, side_check);
+		ft_find_next_wall(screen, &cam, &wall);
+		ft_get_wall(screen, &cam, &wall);
+		ft_draw_wall(screen, &cam, &wall, x);
 		sprite_data.buffer[x] = wall.dist;
-		++x;
 	}
-	printf("Leaving raycast wall loop\n");
-	printf("Trying to draw sprites\n");
 	if (ft_cast_sprites(screen, cam.plane, &sprite_data) == -1)
 	{
 		free(sprite_data.buffer);
-		return (-1); //THIS IS AN ERROR, probably malloc fail make sure when draw() calls raycast it checks for this problm
+		return (-1); //ERROR make sure draw() checks for this on raycast() call
 	}
 	free(sprite_data.buffer);
 	return (0);
