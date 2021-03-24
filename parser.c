@@ -133,17 +133,20 @@ int			ft_get_chr_index(char c, char *str)
 	return (-1);
 }
 
-int			ft_get_direction_vector(char dir, int xy)
+void		ft_set_player_start(t_map_data *map_data, char dir, int x)
 {
-	if (xy == 0 && (dir == 'N' || dir == 'S'))
-		return (0);
-	if (xy == 1 && (dir == 'W' || dir == 'E'))
-		return (0);
-	if (dir == 'W' || dir == 'N')
-		return (-1);
-	if (dir == 'E' || dir == 'S')
-		return (1);
-	return (0);
+	map_data->player_x = x;
+	map_data->player_y = map_data->map_height;
+	map_data->player_facing_x = 0;
+	map_data->player_facing_y = 0;
+	if (dir == 'W')
+		map_data->player_facing_x = -1;
+	else if (dir == 'N')
+		map_data->player_facing_y = -1;
+	if (dir == 'E')
+		map_data->player_facing_x = 1;
+	if (dir == 'S')
+		map_data->player_facing_y = 1;
 }
 
 static void	ft_free_array(char **array)
@@ -171,10 +174,7 @@ static int	ft_config_other(char **line_addr, t_map_data *map_data)
 		{
 			if (map_data->player_x != -1 || map_data->player_y != -1)
 				return (-1); // error, duplicate player symobls
-			map_data->player_x = i;
-			map_data->player_y = map_data->map_height;
-			map_data->player_facing_x = ft_get_direction_vector((*line_addr)[i], 0);
-			map_data->player_facing_y = ft_get_direction_vector((*line_addr)[i], 1);
+			ft_set_player_start(map_data, (*line_addr)[i], i);
 			(*line_addr)[i] = '0';
 		}
 		else if (ft_strchr(" 012", (*line_addr)[i]) == NULL)
