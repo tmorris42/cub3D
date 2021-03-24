@@ -45,7 +45,7 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->sprite_count = data->sprite_count;
 	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
 	if (!screen->sprites)
-		ft_free_map_and_close(screen, data, "Could not allocate sprite array");
+		ft_free_map_exit(screen, data, "Could not allocate sprite array");
 	i = 0;
 	index = data->sprite_list;
 	while (i < screen->sprite_count)
@@ -62,7 +62,7 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->refresh = 1;
 	screen->mlx = mlx_init();
 	if (!screen->mlx)
-		ft_free_map_and_close(screen, data, "Could not connect to X server");
+		ft_free_map_exit(screen, data, "Could not connect to X server");
 }
 
 t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
@@ -76,13 +76,13 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	ft_parse_to_screen(screen, data);
 	// is the below screen->mlx check redundant?
 	if (!screen->mlx)
-		ft_free_map_and_close(screen, data, "Could not connect to X Server");
+		ft_free_map_exit(screen, data, "Could not connect to X Server");
 	if (save == FALSE)
 		ft_reset_resolution(screen);
 	screen->buf.img = mlx_new_image(screen->mlx, screen->width,
 			screen->height);
 	if (!screen->buf.img)
-		ft_free_map_and_close(screen, data, "Could not create buffer image");
+		ft_free_map_exit(screen, data, "Could not create buffer image");
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp,
 			&screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;
@@ -91,10 +91,10 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	while (++i < 4)
 	{
 		if (ft_load_image(data->textures[i], screen, &(screen->walls[i])) == -1)
-			ft_free_map_and_close(screen, data, "Could not load wall texture");
+			ft_free_map_exit(screen, data, "Could not load wall texture");
 	}
 	if (ft_load_image(data->sprite, screen, &(screen->sprite)) == -1)
-		ft_free_map_and_close(screen, data, "Could not load sprite texture");
+		ft_free_map_exit(screen, data, "Could not load sprite texture");
 	return (screen);
 }
 

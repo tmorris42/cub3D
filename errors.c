@@ -12,7 +12,7 @@
 
 #include "cub3d.h"
 
-void	ft_free_map_and_close(t_screen *screen, t_map_data *map, char *msg)
+void	ft_free_map_exit(t_screen *screen, t_map_data *map, char *msg)
 {
 	ft_free_map_data(map);
 	ft_close_on_error(screen, msg);

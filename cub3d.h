@@ -142,7 +142,7 @@ void				ft_rotate(double rad, t_screen *screen);
 void				ft_move_relative(double x, double y, t_screen *screen);
 int					ft_press_keys(int key, t_screen *screen);
 int					ft_lift_keys(int key, t_screen *screen);
-void				ft_free_map_and_close(t_screen *scr, t_map_data *map, char *msg);
+void				ft_free_map_exit(t_screen *scr, t_map_data *map, char *msg);
 void				ft_close_on_error(t_screen *screen, char *msg);
 
 #endif
