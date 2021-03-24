@@ -11,51 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
-
-typedef struct	s_segment
-{
-	t_pt	start;
-	t_pt	end;
-}				t_seg;
-
-typedef struct	s_sprite_data
-{
-	t_pt	dim;
-	t_d_pt	pos;
-	double	screen_x;
-	double	*buffer;
-	int		*order;
-	double	*dist;
-	t_d_pt	plane;
-	t_seg	draw;
-	t_d_pt	transform;
-}				t_sprite_data;
-
-typedef struct	s_camera
-{
-//	double	x;
-	t_d_pt	plane;
-	t_d_pt	ray_dir;
-	t_pt	map;
-	t_pt	step;
-	t_d_pt	dist;
-	t_d_pt	delta_dist;
-}				t_camera;
-
-typedef struct	s_wall_data
-{
-	int		num;
-	double	x;
-	double	dist;
-	int		side_check;
-}				t_wall_data;
-
-typedef struct	s_texture
-{
-	int		x;
-	int		y;
-	double	pos;
-}				t_texture;
+#include "raycast.h"
 
 void	ft_sort_sprites(t_sprite_data *sprite_data, int amount)
 {
@@ -215,7 +171,7 @@ void	ft_init_camera(t_screen *scr, t_camera *cam, int x)
 		cam->dist.y = (scr->player->pos_y - cam->map.y) * cam->delta_dist.y;
 }
 
-void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
+int		ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 {
 	int		hit;
 
@@ -236,10 +192,11 @@ void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 		}
 		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width
 				|| cam->map.x < 0 || cam->map.y < 0)
-			return ; //Error, no wall found //this will crash;
+			return (-1);
 		if (screen->map[cam->map.y][cam->map.x] == 1)
 			hit = 1;
 	}
+	return (0);
 }
 
 void	ft_get_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
@@ -296,7 +253,7 @@ void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int x)
 	}
 }
 
-void	ft_free_sprite_data(t_sprite_data *data)
+int		ft_free_sprite_data(t_sprite_data *data)
 {
 	free(data->order);
 	free(data->dist);
@@ -304,6 +261,7 @@ void	ft_free_sprite_data(t_sprite_data *data)
 	data->order = NULL;
 	data->dist = NULL;
 	data->buffer = NULL;
+	return (-1);
 }
 
 void	ft_init_sprite_data(t_sprite_data *data)
@@ -335,22 +293,22 @@ int		ft_raycast(t_screen *screen)
 
 	ft_init_sprite_data(&sprite_data);
 	if (!(sprite_data.buffer = (double*)malloc(sizeof(double) * screen->width)))
-		return (-1); //make sure we're checking for raycast failure
+		return (-1);
 	cam.plane.x = -.50 * screen->player->rot_y;
 	cam.plane.y = (-.50 * (-screen->player->rot_x));
 	x = -1;
 	while (++x < screen->width)
 	{
 		ft_init_camera(screen, &cam, x);
-		ft_find_next_wall(screen, &cam, &wall);
+		if ((ft_find_next_wall(screen, &cam, &wall)) == -1)
+			return (ft_free_sprite_data(&sprite_data));
 		ft_get_wall(screen, &cam, &wall);
 		ft_draw_wall(screen, &cam, &wall, x);
 		sprite_data.buffer[x] = wall.dist;
 	}
-	x = 0;
 	sprite_data.plane = cam.plane;
 	if (ft_cast_sprites(screen, &sprite_data) == -1)
-		x = -1; //ERROR make sure draw() checks for this on raycast() call
+		return (ft_free_sprite_data(&sprite_data));
 	ft_free_sprite_data(&sprite_data);
-	return (x);
+	return (0);
 }
