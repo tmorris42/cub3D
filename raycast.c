@@ -74,8 +74,11 @@ void	ft_sort_sprites(t_sprite_data *sprite_data, int amount)
 			sprite_data->order[i] = hold_order;
 			sprite_data->dist[i + 1] = sprite_data->dist[i];
 			sprite_data->dist[i] = hold_dist;
+			if (i > 0)
+				--i;
 		}
-		++i;
+		else
+			++i;
 	}
 }
 
