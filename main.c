@@ -24,28 +24,12 @@ void			ft_reset_resolution(t_screen *screen)
 	screen->height = ft_min(screen->height, y);
 }
 
-void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
+void			ft_sprite_list_to_array(t_screen *screen, t_map_data *data)
 {
-	t_player	*player;
 	int			i;
 	t_list		*index;
 	t_sprite	*node;
 
-	player = screen->player;
-	player->pos_x = data->player_x + 0.01;
-	player->pos_y = data->player_y + 0.01;
-	player->rot_x = data->player_facing_x;
-	player->rot_y = data->player_facing_y;
-	screen->colors.ceiling = data->ceil;
-	screen->colors.floor = data->floor;
-	screen->map_height = data->map_height;
-	screen->map_width = data->map_width;
-	screen->map = data->map_grid;
-	data->map_grid = NULL;
-	screen->sprite_count = data->sprite_count;
-	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
-	if (!screen->sprites)
-		ft_free_map_exit(screen, data, "Could not allocate sprite array");
 	i = 0;
 	index = data->sprite_list;
 	while (i < screen->sprite_count)
@@ -56,7 +40,25 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 		index = index->next;
 		i++;
 	}
-	screen->player = player;
+}
+
+void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
+{
+	screen->player->pos_x = data->player_x + 0.01;
+	screen->player->pos_y = data->player_y + 0.01;
+	screen->player->rot_x = data->player_facing_x;
+	screen->player->rot_y = data->player_facing_y;
+	screen->colors.ceiling = data->ceil;
+	screen->colors.floor = data->floor;
+	screen->map_height = data->map_height;
+	screen->map_width = data->map_width;
+	screen->map = data->map_grid;
+	data->map_grid = NULL;
+	screen->sprite_count = data->sprite_count;
+	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
+	if (!screen->sprites)
+		ft_free_map_exit(screen, data, "Could not allocate sprite array");
+	ft_sprite_list_to_array(screen, data);
 	screen->width = data->res_width;
 	screen->height = data->res_height;
 	screen->refresh = 1;
@@ -70,13 +72,9 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	int			i;
 	t_screen	*screen;
 
-	screen = ft_new_screen(player);
-	if (!screen)
+	if (!(screen = ft_new_screen(player)))
 		return (NULL);
 	ft_parse_to_screen(screen, data);
-	// is the below screen->mlx check redundant?
-	if (!screen->mlx)
-		ft_free_map_exit(screen, data, "Could not connect to X Server");
 	if (save == FALSE)
 		ft_reset_resolution(screen);
 	screen->buf.img = mlx_new_image(screen->mlx, screen->width,
