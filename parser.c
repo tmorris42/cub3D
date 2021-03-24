@@ -373,7 +373,7 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	if (!line_addr || !(*line_addr))
 		return (-1);
 	line = *line_addr;
-	else if (line[0] == '\0')
+	if (line[0] == '\0')
 		return (0);
 	i = ft_get_chr_index(line[0], "RFCNEWS");
 	i = (*config[i + 1])(line_addr, map_data);
