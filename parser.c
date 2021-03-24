@@ -149,7 +149,7 @@ void		ft_set_player_start(t_map_data *map_data, char dir, int x)
 		map_data->player_facing_y = 1;
 }
 
-static void	ft_free_array(char **array)
+static int	ft_free_array(char **array)
 {
 	int		i;
 
@@ -160,6 +160,7 @@ static void	ft_free_array(char **array)
 		i++;
 	}
 	free(array);
+	return (-1);
 }
 
 static int	ft_config_other(char **line_addr, t_map_data *map_data)
@@ -202,17 +203,11 @@ static int	ft_config_r(char **line_addr, t_map_data *map_data)
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
 	if (ft_strncmp(arr[0], "R", 2) || !arr[1] || !arr[2] || arr[3])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid R configuration
-	}
+		return (ft_free_array(arr)); //error, invalid R configuration
 	map_data->res_width = ft_atoi(arr[1]);
 	map_data->res_height = ft_atoi(arr[2]);
 	if (map_data->res_width <= 0 || map_data->res_height <= 0)
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid resolution
-	}
+		return (ft_free_array(arr)); //error, invalid resolution
 	ft_free_array(arr);
 	return (1);
 }
@@ -223,6 +218,7 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	int		i;
 	int		temp;
 
+	(*rgb) = 0;
 	i = -1;
 	while (line && line[++i])
 	{
@@ -236,10 +232,7 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	{
 		temp = ft_atoi(arr[i]);
 		if (i > 2 || temp < 0 || temp > 255)
-		{
-			ft_free_array(arr);
-			return (-1);
-		}
+			return (ft_free_array(arr));
 		(*rgb) = ((*rgb) << 8) + temp;
 	}
 	ft_free_array(arr);
@@ -251,28 +244,19 @@ static int	ft_config_f(char **line_addr, t_map_data *map_data)
 	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
-	char	*line;
+	char			*line;
 
 	line = *line_addr;
-
 	if (map_data->colors_set & 1)
 		return (-1); //error, floor already set.
-	rgb_i = 0;
 	status = 0;
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
 	if (ft_strncmp(arr[0], "F", 2) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
-	status = ft_parse_rgb(arr[1], &rgb_i);
-	if (status == -1)
-	{
-		ft_free_array(arr);
-		return (-1); //err, invalid rgb
-	}
+		return (ft_free_array(arr)); //error, invalid NO configuration
+	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
+		return (ft_free_array(arr)); //err, invalid rgb
 	map_data->floor = rgb_i;
 	map_data->colors_set += 1;
 	ft_free_array(arr);
@@ -284,10 +268,9 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
-	char	*line;
+	char			*line;
 
 	line = *line_addr;
-
 	if (map_data->colors_set & 2)
 		return (-1); //error, floor already set.
 	rgb_i = 0;
@@ -296,16 +279,9 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
 	if (ft_strncmp(arr[0], "C", 2) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
-	status = ft_parse_rgb(arr[1], &rgb_i);
-	if (status == -1)
-	{
-		ft_free_array(arr);
-		return (-1); //err, invalid rgb
-	}
+		return (ft_free_array(arr)); //error, invalid NO configuration
+	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
+		return (ft_free_array(arr)); //err, invalid rgb
 	map_data->ceil = rgb_i;
 	map_data->colors_set += 2;
 	ft_free_array(arr);
@@ -317,9 +293,6 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 	char	**arr;
 	char	*filename;
 	int		index;
-	char	*line;
-
-	line = *line_addr;
 
 	if (code[0] == 'N' && code[1] == 'O')
 		index = 0;
@@ -331,17 +304,13 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 		index = 3;
 	else
 		return (-1);
-
 	if (map_data->textures[index])
 		return (-1); //error, texture already supplied
-	arr = ft_split(line, ' ');
+	arr = ft_split(*line_addr, ' ');
 	if (!arr)
 		return (-1); //error msg split failed / error parsing map
 	if (ft_strncmp(arr[0], code, 3) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
-	}
+		return (ft_free_array(arr)); //error, invalid NO configuration
 	filename = ft_strdup(arr[1]);
 	map_data->textures[index] = filename;
 	ft_free_array(arr);
@@ -370,7 +339,6 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 	char	*line;
 
 	line = *line_addr;
-
 	if (line[0] == 'S' && line[1] == 'O')
 		return (ft_config_nesw(line_addr, map_data, "SO"));
 	arr = ft_split(line, ' ');
@@ -393,7 +361,6 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	int		(*config[8]) (char **map_line, t_map_data *map_data);
 	char	*line;
 
-	line = *line_addr;
 	config[0] = ft_config_other;
 	config[1] = ft_config_r;
 	config[2] = ft_config_f;
@@ -403,28 +370,51 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
 	i = 0;
-	if (!line)
+	if (!line_addr || !(*line_addr))
 		return (-1);
+	line = *line_addr;
 	else if (line[0] == '\0')
 		return (0);
-	// check to make sure you don't seg fault by assuming len of string
 	i = ft_get_chr_index(line[0], "RFCNEWS");
 	i = (*config[i + 1])(line_addr, map_data);
 	if (i == -1)
-	{
-		ft_printf("PARSING ERROR\n");
-	}
+		printf("PARSING ERROR\n"); //be more explicit
 	return (i);
+}
+
+int		ft_copy_map_line(t_map_data *map, int **grid, char *content, int j)
+{
+	int			i;
+	t_sprite	*temp_sprite;
+
+	grid[j] = (int*)ft_calloc(map->map_width, sizeof(**grid));
+	if (!(grid[j]))
+		return (-1);
+	i = 0;
+	while ((i < map->map_width) && (content)[i])
+	{
+		grid[j][i] = content[i] - '0';
+		if (grid[j][i] == 2)
+		{
+			temp_sprite = malloc(sizeof(*temp_sprite));
+			if (!temp_sprite)
+				return (-1);
+			temp_sprite->x = i * 1.0 + 0.5;
+			temp_sprite->y = j * 1.0 + 0.5;
+			ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite));
+			map->sprite_count++;
+			grid[j][i] = 0;
+		}
+		++i;
+	}
+	return (0);
 }
 
 int		ft_convert_map_to_2d(t_map_data *map)
 {
 	int			**grid;
 	t_list		*index;
-	char		*content;
-	int			i;
 	int			j;
-	t_sprite	*temp_sprite;
 
 	if (!map)
 		return (-1);
@@ -435,29 +425,10 @@ int		ft_convert_map_to_2d(t_map_data *map)
 	j = 0;
 	while (j < map->map_height)
 	{
-		grid[j] = (int*)ft_calloc(map->map_width, sizeof(**grid));
-		if (!(grid[j]))
+		if (ft_copy_map_line(map, grid, (char*)index->content, j) == -1)
 		{
 			ft_free_int_array(grid, map->map_height);
 			return (-1);
-		}
-		i = 0;
-		content = (char*)index->content;
-		while ((i < map->map_width) && (content)[i])
-		{
-			grid[j][i] = content[i] - '0';
-			if (grid[j][i] == 2)
-			{
-				temp_sprite = malloc(sizeof(*temp_sprite));
-				if (!temp_sprite)
-					return (-1); //is this sufficient?
-				temp_sprite->x = i * 1.0 + 0.5;
-				temp_sprite->y = j * 1.0 + 0.5;
-				ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite));
-				map->sprite_count++;
-				grid[j][i] = 0;
-			}
-			++i;
 		}
 		++j;
 		index = index->next;
@@ -504,11 +475,10 @@ int			ft_verify_data(t_map_data *map_data)
 	}
 	if (!map_data->sprite)
 		return (-1); //error, missing sprite texture information
-	//verify that the texture files are valid??
 	if (map_data->res_width <= 0 || map_data->res_height <= 0)
 		return (-1); //error, missing or illegal resolution
 	if (map_data->colors_set != 3)
-		return (-1); //error, floor or ceiling color is missing	
+		return (-1); //error, floor or ceiling color is missing
 	//verify the rest too
 	return (1);
 }
