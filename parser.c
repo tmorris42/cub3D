@@ -466,6 +466,8 @@ int			ft_verify_data(t_map_data *map_data)
 {
 	int		i;
 
+	if (!map_data)
+		return (-1);
 	i = 0;
 	while (i < 4)
 	{
@@ -483,6 +485,35 @@ int			ft_verify_data(t_map_data *map_data)
 	return (1);
 }
 
+void		*ft_verify_all(t_map_data *data)
+{
+	char	*line;
+
+	if (ft_verify_data(data) == -1)
+	{
+		perror("Error\nMissing or invalid map data detected");
+		return (ft_free_map_data(data)); //error, missing or incorrect info
+	}
+	if (ft_convert_map_to_2d(data) == -1)
+	{
+		perror("Error\nCould not parse map data");
+		return (ft_free_map_data(data));
+	}
+	line = (char*)ft_calloc(data->map_width * data->map_height, sizeof(char));
+	if (!line)
+	{
+		perror("Error\nCould not allocate space");
+		return (ft_free_map_data(data));
+	}
+	if (ft_check_map_leaks(data, line, data->player_x, data->player_y) < 0)
+	{
+		perror("Error\nMap must be surrounded by walls in all 8 directions");
+		data = ft_free_map_data(data);
+	}
+	free(line);
+	return (data);
+}
+
 t_map_data	*ft_parse_file(char *filename)
 {
 	int			fd;
@@ -490,58 +521,21 @@ t_map_data	*ft_parse_file(char *filename)
 	char		*line;
 	t_map_data	*map_data;
 
-	map_data = malloc(sizeof(*map_data));
-	if (!map_data)
+	if (!(map_data = malloc(sizeof(*map_data))))
 		return (NULL);
 	ft_map_data_init(map_data);
 	status = 0;
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
-	{
-		ft_free_map_data(map_data);
-		return (NULL);
-	}
+	if ((fd = open(filename, O_RDONLY)) == -1)
+		return (ft_free_map_data(map_data));
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
 		if (map_data && ft_parse_line(&line, map_data) < 0)
-		{
-			ft_free_map_data(map_data);
-			map_data = NULL;
-		}
+			map_data = ft_free_map_data(map_data);
 		free(line);
 		line = NULL;
 		if (status == 0)
 			break ;
 	}
-	if (ft_verify_data(map_data) == -1)
-	{
-		ft_free_map_data(map_data);
-		perror("Error\nMissing or invalid map data detected");
-		return (NULL); //error, missing or incorrect information
-	}
-	if (ft_convert_map_to_2d(map_data) == -1)
-	{
-		perror("Error\nCould not parse map data");
-		ft_free_map_data(map_data);
-		return (NULL);
-	}
-	line = (char*)ft_calloc(map_data->map_width * map_data->map_height, sizeof(char));
-	if (!line)
-	{
-		perror("Error\nCould not allocate space");
-		ft_free_map_data(map_data);
-		return (NULL);
-	}
-	if (ft_check_map_leaks(map_data, line, map_data->player_x, map_data->player_y) < 0)
-	{
-		errno = EINVAL;
-		ft_printf("Returned -1!! Illegal map.\n");
-		perror("Error\nMap must be surrounded by walls in all 8 directions");
-		ft_print_map_data(map_data);
-		ft_free_map_data(map_data);
-		map_data = NULL;
-	}
-	free(line);
-	return (map_data);
+	return (ft_verify_all(map_data));
 }
