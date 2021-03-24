@@ -79,12 +79,27 @@ void	ft_sort_sprites(t_sprite_data *sprite_data, int amount)
 	}
 }
 
+void	ft_draw_col(t_screen *scr, t_sprite_data *data, t_pt *text, t_pt *pixel)
+{
+	int		color;
+	int		d;
+
+	pixel->y = data->draw.start.y;
+	while (pixel->y < data->draw.end.y)
+	{
+		d = pixel->y * 2 - scr->height + data->dim.y;
+		text->y = ((d * scr->sprite.height) / data->dim.y) / 2;
+		color = ft_get_pixel_from_image(&(scr->sprite), text->x, text->y);
+		if ((color & 0x00FFFFFF) != 0)
+			ft_pixel_put(&(scr->buf), pixel->x, pixel->y, color);
+		++pixel->y;
+	}
+}
+
 void	ft_render_sprite(t_screen *scr, t_sprite_data *data)
 {
 	t_pt	pixel;
 	t_pt	text;
-	int		color;
-	int		d; //what isthis? needs better name
 
 	pixel.x = data->draw.start.x;
 	while (pixel.x < data->draw.end.x)
@@ -94,16 +109,7 @@ void	ft_render_sprite(t_screen *scr, t_sprite_data *data)
 		if (pixel.x > 0 && pixel.x < scr->width &&
 			data->transform.y > 0 && data->transform.y < data->buffer[pixel.x])
 		{
-			pixel.y = data->draw.start.y;
-			while (pixel.y < data->draw.end.y)
-			{
-				d = pixel.y * 2 - scr->height + data->dim.y;
-				text.y = ((d * scr->sprite.height) / data->dim.y) / 2;
-				color = ft_get_pixel_from_image(&(scr->sprite), text.x, text.y);
-				if ((color & 0x00FFFFFF) != 0)
-					ft_pixel_put(&(scr->buf), pixel.x, pixel.y, color);
-				++pixel.y;
-			}
+			ft_draw_col(scr, data, &text, &pixel);
 		}
 		++pixel.x;
 	}
@@ -152,31 +158,28 @@ void	ft_draw_sprite(t_screen *screen, t_sprite_data *data, int *i)
 	*i += 1;
 }
 
-int		ft_cast_sprites(t_screen *scr, t_d_pt plane, t_sprite_data *data)
+int		ft_cast_sprites(t_screen *scr, t_sprite_data *data)
 {
-	int				i;
+	int		i;
 
-	data->plane = plane;
 	if (!(data->order = (int*)malloc(sizeof(*data->order) * scr->sprite_count)))
 		return (-1);
-	if (!(data->dist = (double*)malloc(sizeof(*data->dist) * scr->sprite_count)))
-	{
-		free(data->order);
+	if (!(data->dist = (double*)malloc(sizeof(double) * scr->sprite_count)))
 		return (-1);
-	}
 	i = 0;
 	while (i < scr->sprite_count)
 	{
 		data->order[i] = i;
-		data->dist[i] = ((scr->player->pos_x - scr->sprites[i].x) * (scr->player->pos_x - scr->sprites[i].x) + (scr->player->pos_y - scr->sprites[i].y) * (scr->player->pos_y - scr->sprites[i].y));
+		data->dist[i] = ((scr->player->pos_x - scr->sprites[i].x) *
+				(scr->player->pos_x - scr->sprites[i].x) +
+				(scr->player->pos_y - scr->sprites[i].y) *
+				(scr->player->pos_y - scr->sprites[i].y));
 		++i;
 	}
 	ft_sort_sprites(data, scr->sprite_count);
 	i = 0;
 	while (i < scr->sprite_count)
 		ft_draw_sprite(scr, data, &i);
-	free(data->order);
-	free(data->dist);
 	return (0);
 }
 
@@ -228,7 +231,8 @@ void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 			cam->map.y += cam->step.y;
 			wall->side_check = 1;
 		}
-		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width || cam->map.x < 0 || cam->map.y < 0)
+		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width
+				|| cam->map.x < 0 || cam->map.y < 0)
 			return ; //Error, no wall found //this will crash;
 		if (screen->map[cam->map.y][cam->map.x] == 1)
 			hit = 1;
@@ -238,15 +242,16 @@ void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 void	ft_get_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 {
 	if (wall->side_check == 0)
-		wall->dist = (cam->map.x - screen->player->pos_x + (1 - cam->step.x) / 2) / cam->ray_dir.x;
+		wall->dist = (cam->map.x - screen->player->pos_x +
+				(1 - cam->step.x) / 2) / cam->ray_dir.x;
 	else
-		wall->dist = (cam->map.y - screen->player->pos_y + (1 - cam->step.y) / 2) / cam->ray_dir.y;
+		wall->dist = (cam->map.y - screen->player->pos_y +
+				(1 - cam->step.y) / 2) / cam->ray_dir.y;
 	if (wall->side_check == 0)
 		wall->x = screen->player->pos_y + wall->dist * cam->ray_dir.y;
 	else
 		wall->x = screen->player->pos_x + wall->dist * cam->ray_dir.x;
 	wall->x -= floor((wall->x));
-
 	wall->num = 0;
 	if (wall->side_check == 0)
 	{
@@ -281,10 +286,41 @@ void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int x)
 	{
 		text.y = (int)text.pos & (screen->walls[wall->num].height - 1);
 		text.pos += step;
-		color = ft_get_pixel_from_image(&(screen->walls[wall->num]), text.x, text.y);
+		color = ft_get_pixel_from_image(&(screen->walls[wall->num]),
+				text.x, text.y);
 		ft_pixel_put(&(screen->buf), x, draw.x, color);
 		++draw.x;
 	}
+}
+
+void	ft_free_sprite_data(t_sprite_data *data)
+{
+	free(data->order);
+	free(data->dist);
+	free(data->buffer);
+	data->order = NULL;
+	data->dist = NULL;
+	data->buffer = NULL;
+}
+
+void	ft_init_sprite_data(t_sprite_data *data)
+{
+	data->dim.x = 0;
+	data->dim.y = 0;
+	data->pos.x = 0.0;
+	data->pos.y = 0.0;
+	data->screen_x = 0.0;
+	data->buffer = NULL;
+	data->order = NULL;
+	data->dist = NULL;
+	data->plane.x = 0.0;
+	data->plane.y = 0.0;
+	data->draw.start.x = 0;
+	data->draw.start.y = 0;
+	data->draw.end.x = 0;
+	data->draw.end.y = 0;
+	data->transform.x = 0.0;
+	data->transform.y = 0.0;
 }
 
 int		ft_raycast(t_screen *screen)
@@ -294,6 +330,7 @@ int		ft_raycast(t_screen *screen)
 	t_wall_data		wall;
 	t_sprite_data	sprite_data;
 
+	ft_init_sprite_data(&sprite_data);
 	if (!(sprite_data.buffer = (double*)malloc(sizeof(double) * screen->width)))
 		return (-1); //make sure we're checking for raycast failure
 	cam.plane.x = -.50 * screen->player->rot_y;
@@ -307,11 +344,10 @@ int		ft_raycast(t_screen *screen)
 		ft_draw_wall(screen, &cam, &wall, x);
 		sprite_data.buffer[x] = wall.dist;
 	}
-	if (ft_cast_sprites(screen, cam.plane, &sprite_data) == -1)
-	{
-		free(sprite_data.buffer);
-		return (-1); //ERROR make sure draw() checks for this on raycast() call
-	}
-	free(sprite_data.buffer);
-	return (0);
+	x = 0;
+	sprite_data.plane = cam.plane;
+	if (ft_cast_sprites(screen, &sprite_data) == -1)
+		x = -1; //ERROR make sure draw() checks for this on raycast() call
+	ft_free_sprite_data(&sprite_data);
+	return (x);
 }
