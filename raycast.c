@@ -230,7 +230,7 @@ void	ft_find_next_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 			wall->side_check = 1;
 		}
 		if (cam->map.y > screen->map_height || cam->map.x > screen->map_width || cam->map.x < 0 || cam->map.y < 0)
-			return (-1); //Error, no wall found;
+			return ; //Error, no wall found //this will crash;
 		if (screen->map[cam->map.y][cam->map.x] == 1)
 			hit = 1;
 	}
@@ -252,7 +252,7 @@ void	ft_get_wall(t_screen *screen, t_camera *cam, t_wall_data *wall)
 	if (wall->side_check == 0)
 	{
 		if (cam->ray_dir.x < 0)
-			wall->num = 1; //0 == N, 1 == E, etc
+			wall->num = 1;
 		else
 			wall->num = 3;
 	}
@@ -280,7 +280,7 @@ void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int x)
 	text.pos = (draw.x - (screen->height - line_height) / 2) * step;
 	while (draw.x < draw.y)
 	{
-		text.y = (int)text.pos & (screen->walls[wall->num].height - 1); //what's this masking do?
+		text.y = (int)text.pos & (screen->walls[wall->num].height - 1);
 		text.pos += step;
 		color = ft_get_pixel_from_image(&(screen->walls[wall->num]), text.x, text.y);
 		ft_pixel_put(&(screen->buf), x, draw.x, color);
