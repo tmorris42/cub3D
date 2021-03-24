@@ -103,8 +103,6 @@ int				ft_update(t_screen *screen)
 	t_player *p;
 
 	p = screen->player;
-	if (screen->player_move == 0)
-		return (ft_draw(screen));
 	if (screen->player_move & 8)
 		ft_move_relative(p->rot_x, p->rot_y, screen);
 	if (screen->player_move & 4)
@@ -118,7 +116,9 @@ int				ft_update(t_screen *screen)
 	if (screen->player_move & 16)
 		ft_rotate(-M_PI / 48.0, screen);
 	screen->refresh = 1;
-	return (ft_draw(screen));
+	if (ft_draw(screen) == -1)
+		ft_close_on_error(screen, "Memory Error, could not allocate memory");
+	return (0);
 }
 
 int				ft_run(t_screen *screen)
