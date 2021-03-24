@@ -94,7 +94,7 @@ void		ft_print_map_data(t_map_data *map)
 	printf("Number of Sprites = %d\n", map->sprite_count);
 	printf("Floor Color: %u\nCeiling Color: %u\n", map->floor, map->ceil);
 	printf("Player Location: %d, %d, <%d, %d>\n", map->player_x, map->player_y, map->player_facing_x, map->player_facing_y);
-	ft_printf("Map Layout:\n");
+	printf("Map Layout:\n");
 	index = map->map_layout;
 	while (index)
 	{

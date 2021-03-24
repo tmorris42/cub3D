@@ -98,7 +98,7 @@ int			ft_save(t_screen *screen, char *filename)
 	fd = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (fd == -1)
 		return (-1);
-	ft_printf("SAVING to '%s'\n", filename);
+	printf("SAVING to '%s'\n", filename);
 	ft_print_header(fd);
 	ft_print_info(fd, screen);
 	ft_print_pixels(fd, screen);
