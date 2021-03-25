@@ -378,7 +378,7 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	i = ft_get_chr_index(line[0], "RFCNEWS");
 	i = (*config[i + 1])(line_addr, map_data);
 	if (i == -1)
-		printf("PARSING ERROR\n"); //be more explicit
+		ft_error("PARSING ERROR"); //be more explicit
 	return (i);
 }
 
@@ -437,7 +437,7 @@ int		ft_convert_map_to_2d(t_map_data *map)
 	return (1);
 }
 
-int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
+int			ft_check_map_void(t_map_data *map, char *paths, int x, int y)
 {
 	int		**arr;
 	int		str_index;
@@ -460,58 +460,58 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 	{
 		j = -2;
 		while (++j < 2)
-			if ((i || j) && (ft_check_map_leaks(map, paths, x + i, y + j) == -1))
+			if ((i || j) && (ft_check_map_void(map, paths, x + i, y + j) == -1))
 				return (-1);
 	}
 	return (0);
 }
 
-int			ft_verify_data(t_map_data *map_data)
+char		*ft_verify_data(t_map_data *map_data)
 {
 	int		i;
 
 	if (!map_data)
-		return (-1);
+		return ("Map incomplete or non-existant");
 	i = 0;
 	while (i < 4)
 	{
 		if (!map_data->textures[i])
-			return (-1); //error, missing texture information
+			return ("Missing one or more wall textures");
 		++i;
 	}
 	if (!map_data->sprite)
-		return (-1); //error, missing sprite texture information
+		return ("Missing sprite texture");
 	if (map_data->res_width <= 0 || map_data->res_height <= 0)
-		return (-1); //error, missing or illegal resolution
+		return ("Missing or invalid resolution");
 	if (map_data->colors_set != 3)
-		return (-1); //error, floor or ceiling color is missing
+		return ("Floor or ceiling color is missing");
+	if (map_data->player_x == -1 || map_data->player_y == -1)
+		return ("No starting location found");
 	//verify the rest too
-	return (1);
+	return (NULL);
 }
 
 void		*ft_verify_all(t_map_data *data)
 {
 	char	*line;
+	char	*msg;
 
-	if (ft_verify_data(data) == -1)
-	{
-		perror("Error\nMissing or invalid map data detected");
-		return (ft_free_map_data(data)); //error, missing or incorrect info
-	}
+	if ((msg = ft_verify_data(data)))
+		return (ft_free_map_error(data, msg));
 	if (ft_convert_map_to_2d(data) == -1)
 	{
-		perror("Error\nCould not parse map data");
+		ft_error("Could not parse map data");
 		return (ft_free_map_data(data));
 	}
 	line = (char*)ft_calloc(data->map_width * data->map_height, sizeof(char));
 	if (!line)
 	{
-		perror("Error\nCould not allocate space");
+		ft_error("Could not allocate space");
 		return (ft_free_map_data(data));
 	}
-	if (ft_check_map_leaks(data, line, data->player_x, data->player_y) < 0)
+	if (ft_check_map_void(data, line, data->player_x, data->player_y) < 0)
 	{
-		perror("Error\nMap must be surrounded by walls in all 8 directions");
+		ft_error("Map must be surrounded by walls in all 8 directions");
 		data = ft_free_map_data(data);
 	}
 	free(line);

@@ -115,7 +115,7 @@ int				ft_update(t_screen *screen)
 		ft_rotate(-M_PI / 48.0, screen);
 	screen->refresh = 1;
 	if (ft_draw(screen) == -1)
-		ft_close_on_error(screen, "Error\nCouldn't allocate memory");
+		ft_close_on_error(screen, "Couldn't allocate memory");
 	return (0);
 }
 
@@ -142,11 +142,11 @@ void			ft_parse_options(int argc, char **argv, t_screen *screen)
 		{
 			ft_redraw(screen);
 			if (ft_save(screen, "save.bmp") == -1)
-				perror("Error\nCould not save screenshot");
+				ft_error("Could not save screenshot");
 			ft_close_screen(&screen);
 		}
 		else
-			ft_close_on_error(screen, "Error\nInvalid Options");
+			ft_close_on_error(screen, "Invalid Options");
 	}
 }
 
@@ -160,16 +160,16 @@ int				main(int argc, char **argv)
 	if (argc > 1)
 		map_parse = ft_parse_file(argv[1]);
 	else
-		ft_close_on_error(screen, "Error\nUsage: ./cub3D <mapname.cub>");
+		ft_close_on_error(screen, "Usage: ./cub3D <mapname.cub>");
 	if (!map_parse)
-		ft_close_on_error(screen, "Error\nCould not parse map");
+		ft_close_on_error(screen, "Could not parse map");
 	if (argc == 2)
 		screen = ft_load_screen(&player, map_parse, FALSE);
 	else
 		screen = ft_load_screen(&player, map_parse, TRUE);
 	map_parse = ft_free_map_data(map_parse);
 	if (!screen)
-		ft_close_on_error(screen, "Error\nCould not initialize screen");
+		ft_close_on_error(screen, "Could not initialize screen");
 	ft_parse_options(argc, argv, screen);
 	return (ft_run(screen));
 }
