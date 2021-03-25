@@ -174,16 +174,16 @@ static int	ft_config_other(char **line_addr, t_map_data *map_data)
 		if (ft_strchr("NESW", (*line_addr)[i]))
 		{
 			if (map_data->player_x != -1 || map_data->player_y != -1)
-				return (-1); // error, duplicate player symobls
+				return (ft_error("Multiple player symbols found"));
 			ft_set_player_start(map_data, (*line_addr)[i], i);
 			(*line_addr)[i] = '0';
 		}
 		else if (ft_strchr(" 012", (*line_addr)[i]) == NULL)
-			return (-1);
+			return (ft_error("Illegal variable or illegal character in map"));
 		++i;
 	}
 	if (!(new = ft_lstnew((*line_addr))))
-		return (-1);
+		return (ft_error("Malloc failed during map parsing"));
 	ft_lstadd_back(&(map_data->map_layout), new);
 	map_data->map_width = ft_max(map_data->map_width, ft_strlen((*line_addr)));
 	map_data->map_height += 1;
@@ -198,10 +198,9 @@ static int	ft_config_r(char **line_addr, t_map_data *map_data)
 
 	line = *line_addr;
 	if (map_data->res_width != 0 || map_data->res_height != 0)
-		return (-1); //error\n duplicate resolution
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
+		return (ft_error("Duplicate resolution configuration"));
+	if (!(arr = ft_split(line, ' ')))
+		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], "R", 2) || !arr[1] || !arr[2] || arr[3])
 		return (ft_free_array(arr)); //error, invalid R configuration
 	map_data->res_width = ft_atoi(arr[1]);
@@ -223,10 +222,10 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	while (line && line[++i])
 	{
 		if (!(ft_isdigit(line[i])) && line[i] != ',')
-			return (-1); //invalid RGB value
+			return (ft_error("Invalid RGB value given"));
 	}
 	if (!(arr = ft_split(line, ',')))
-		return (-1);
+		return (ft_error("Malloc failed during split"));
 	i = -1;
 	while (arr[++i])
 	{
@@ -248,11 +247,10 @@ static int	ft_config_f(char **line_addr, t_map_data *map_data)
 
 	line = *line_addr;
 	if (map_data->colors_set & 1)
-		return (-1); //error, floor already set.
+		return (ft_error("Duplicate floor color configuration"));
 	status = 0;
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
+	if (!(arr = ft_split(line, ' ')))
+		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], "F", 2) || !arr[1] || arr[2])
 		return (ft_free_array(arr)); //error, invalid NO configuration
 	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
@@ -272,14 +270,13 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 
 	line = *line_addr;
 	if (map_data->colors_set & 2)
-		return (-1); //error, floor already set.
+		return (ft_error("Duplicate ceiling color configuration"));
 	rgb_i = 0;
 	status = 0;
-	arr = ft_split(line, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
+	if (!(arr = ft_split(line, ' ')))
+		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], "C", 2) || !arr[1] || arr[2])
-		return (ft_free_array(arr)); //error, invalid NO configuration
+		return (ft_free_array(arr)); //error, invalid ceiling color config
 	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
 		return (ft_free_array(arr)); //err, invalid rgb
 	map_data->ceil = rgb_i;
@@ -305,10 +302,9 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 	else
 		return (-1);
 	if (map_data->textures[index])
-		return (-1); //error, texture already supplied
-	arr = ft_split(*line_addr, ' ');
-	if (!arr)
-		return (-1); //error msg split failed / error parsing map
+		return (ft_error("Duplicate wall texture definition"));
+	if (!(arr = ft_split(*line_addr, ' ')))
+		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], code, 3) || !arr[1] || arr[2])
 		return (ft_free_array(arr)); //error, invalid NO configuration
 	filename = ft_strdup(arr[1]);
@@ -343,11 +339,11 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 		return (ft_config_nesw(line_addr, map_data, "SO"));
 	arr = ft_split(line, ' ');
 	if (!arr)
-		return (-1); //error msg split failed / error parsing map
+		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], "S", 2) || !arr[1] || arr[2])
 	{
 		ft_free_array(arr);
-		return (-1); //error, invalid NO configuration
+		return (ft_error("Invalid SO wall texture configuration"));
 	}
 	filename = ft_strdup(arr[1]);
 	map_data->sprite = filename;
