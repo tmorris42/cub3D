@@ -52,6 +52,16 @@ void		ft_init_image_data(t_img_data *img)
 	img->endian = 0;
 }
 
+void		ft_init_keys(t_keys *keys)
+{
+	keys->up = FALSE;
+	keys->down = FALSE;
+	keys->left = FALSE;
+	keys->right = FALSE;
+	keys->turn_right = FALSE;
+	keys->turn_left = FALSE;
+}
+
 void		ft_init_screen(t_screen *screen)
 {
 	int		i;
@@ -62,7 +72,7 @@ void		ft_init_screen(t_screen *screen)
 	screen->map_width = 0;
 	screen->map = NULL;
 	screen->player = NULL;
-	screen->player_move = 0;
+	ft_init_keys(&screen->keys);
 	screen->width = 0;
 	screen->height = 0;
 	screen->refresh = 1;

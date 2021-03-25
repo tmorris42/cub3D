@@ -42,17 +42,17 @@ int		ft_parse_keys(int key, t_screen *screen, int pressed)
 	if (key == K_ESCAPE)
 		ft_close_screen(&screen);
 	else if (key == K_UP || key == K_W)
-		screen->player_move += 8 * pressed;
+		screen->keys.up = pressed;
 	else if (key == K_A)
-		screen->player_move += 4 * pressed;
+		screen->keys.left = pressed;
 	else if (key == K_DOWN || key == K_S)
-		screen->player_move += 2 * pressed;
+		screen->keys.down = pressed;
 	else if (key == K_D)
-		screen->player_move += 1 * pressed;
+		screen->keys.right = pressed;
 	else if (key == K_RIGHT)
-		screen->player_move += 32 * pressed;
+		screen->keys.turn_right = pressed;
 	else if (key == K_LEFT)
-		screen->player_move += 16 * pressed;
+		screen->keys.turn_left = pressed;
 	else
 		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
 	screen->refresh = 1;
@@ -61,10 +61,10 @@ int		ft_parse_keys(int key, t_screen *screen, int pressed)
 
 int		ft_press_keys(int key, t_screen *screen)
 {
-	return (ft_parse_keys(key, screen, 1));
+	return (ft_parse_keys(key, screen, TRUE));
 }
 
 int		ft_lift_keys(int key, t_screen *screen)
 {
-	return (ft_parse_keys(key, screen, -1));
+	return (ft_parse_keys(key, screen, FALSE));
 }

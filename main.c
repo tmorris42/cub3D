@@ -101,17 +101,17 @@ int				ft_update(t_screen *screen)
 	t_player *p;
 
 	p = screen->player;
-	if (screen->player_move & 8)
+	if (screen->keys.up)
 		ft_move_relative(p->rot_x, p->rot_y, screen);
-	if (screen->player_move & 4)
+	if (screen->keys.left)
 		ft_move_relative(p->rot_y, -p->rot_x, screen);
-	if (screen->player_move & 2)
+	if (screen->keys.down)
 		ft_move_relative(-p->rot_x, -p->rot_y, screen);
-	if (screen->player_move & 1)
+	if (screen->keys.right)
 		ft_move_relative(-p->rot_y, p->rot_x, screen);
-	if (screen->player_move & 32)
+	if (screen->keys.turn_right)
 		ft_rotate(M_PI / 48.0, screen);
-	if (screen->player_move & 16)
+	if (screen->keys.turn_left)
 		ft_rotate(-M_PI / 48.0, screen);
 	screen->refresh = 1;
 	if (ft_draw(screen) == -1)
