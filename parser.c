@@ -441,8 +441,12 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 {
 	int		**arr;
 	int		str_index;
+	int		i;
+	int		j;
 
 	arr = map->map_grid;
+	if (x < 0 || y < 0)
+		return (-1);
 	str_index = (map->map_width * y) + x;
 	if (x >= map->map_width || y >= map->map_height || (arr[y][x] == ' ' - '0'))
 		return (-1);
@@ -451,14 +455,14 @@ int			ft_check_map_leaks(t_map_data *map, char *paths, int x, int y)
 	paths[str_index] = 'V';
 	if (arr[y][x] == 1)
 		return (1);
-	if (ft_check_map_leaks(map, paths, x, y + 1) == -1)
-		return (-1);
-	if (ft_check_map_leaks(map, paths, x, y - 1) == -1)
-		return (-1);
-	if (ft_check_map_leaks(map, paths, x + 1, y) == -1)
-		return (-1);
-	if (ft_check_map_leaks(map, paths, x - 1, y) == -1)
-		return (-1);
+	i = -2;
+	while (++i < 2)
+	{
+		j = -2;
+		while (++j < 2)
+			if ((i || j) && (ft_check_map_leaks(map, paths, x + i, y + j) == -1))
+				return (-1);
+	}
 	return (0);
 }
 
