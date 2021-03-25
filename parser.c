@@ -31,13 +31,13 @@ void		ft_map_data_init(t_map_data *map)
 			map->textures[i] = NULL;
 		map->sprite = NULL;
 		map->sprite_count = 0;
-		map->sprite_list = 0;
+		map->sprite_list = NULL;
 		map->map_layout = NULL;
 		map->map_grid = NULL;
 		map->player_x = -1;
 		map->player_y = -1;
-		map->player_facing_x = -1;
-		map->player_facing_y = -1;
+		map->player_facing_x = 0;
+		map->player_facing_y = 0;
 	}
 }
 
@@ -487,7 +487,10 @@ char		*ft_verify_data(t_map_data *map_data)
 		return ("Floor or ceiling color is missing");
 	if (map_data->player_x == -1 || map_data->player_y == -1)
 		return ("No starting location found");
-	//verify the rest too
+	if (map_data->map_width <= 0 || map_data->map_height <= 0)
+		return ("Map dimensions not properly detected");
+	if (!map_data->player_facing_x && !map_data->player_facing_y)
+		return ("No starting direction found");
 	return (NULL);
 }
 
