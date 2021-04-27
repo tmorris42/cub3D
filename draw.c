@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/02/26 14:50:49 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/27 22:05:10 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ int			ft_draw(t_screen *screen)
 	if (screen->refresh == 0)
 		return (0);
 	screen->refresh = 0;
-	ft_draw_rect(screen, 0, screen->height, screen->colors.ceiling);
-	ft_draw_rect(screen, screen->height / 2, screen->height / 2,
+	ft_draw_rect(screen, 0, screen->height / 2, screen->colors.ceiling);
+	ft_draw_rect(screen, screen->height / 2, 1 + screen->height / 2,
 			screen->colors.floor);
 	if (ft_raycast(screen) == -1)
 		return (-1);
