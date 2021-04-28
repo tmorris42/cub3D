@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 14:23:28 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/28 16:16:02 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,54 +193,100 @@ static int	ft_config_other(char **line_addr, t_map_data *map_data)
 
 static int	ft_config_r(char **line_addr, t_map_data *map_data)
 {
-	char	**arr;
 	char	*line;
+	int		i;
 
 	line = *line_addr;
 	if (map_data->res_width != 0 || map_data->res_height != 0)
 		return (ft_error("Duplicate resolution configuration"));
-	if (!(arr = ft_split(line, ' ')))
-		return (ft_error("Malloc failed during split"));
-	if (ft_strncmp(arr[0], "R", 2) || !arr[1] || !arr[2] || arr[3])
-		return (ft_free_array(arr)); //error, invalid R configuration
-	map_data->res_width = ft_atoi(arr[1]);
-	map_data->res_height = ft_atoi(arr[2]);
-	if (map_data->res_width <= 0 || map_data->res_height <= 0)
-		return (ft_free_array(arr)); //error, invalid resolution
-	ft_free_array(arr);
+	if (ft_strncmp(line, "R ", 2))
+		return (ft_error("Invalid resolution configuration"));
+	i = 2;
+	while (line_addr && line && line[i])
+	{
+		if (!(ft_isdigit(line[i])) && line[i] != ' ')
+			return (ft_error("Invalid characters in resolution configuration"));
+		++i;
+	}
+	i = 2;
+	map_data->res_width = ft_atoi(&line[i]);
+	while (line_addr && line && line[i] && ft_isdigit(line[i]))
+		++i;
+	while (line_addr && line && line[i] && line[i] == ' ')
+		++i;
+	map_data->res_height = ft_atoi(&line[i]);
+	while (line_addr && line && line[i] && ft_isdigit(line[i]))
+		++i;
+	while (line_addr && line && line[i] && line[i] == ' ')
+		++i;
+	if (line_addr && line && line[i])
+		return (ft_error("Invalid resolution configuration"));
 	return (1);
+}
+
+int		ft_islegal_char(char c, char *charset)
+{
+	int		i;
+
+	i = ft_strlen(charset) - 1;
+	while (i >= 0)
+	{
+		if (c == charset[i])
+			return (1);
+		--i;
+	}
+	return (0);
+}
+
+int		ft_contains_illegal_chars(char *str, char *charset)
+{
+	int		i;
+
+	i = 0;
+	while (str && str[i])
+	{
+		if (!(ft_islegal_char(str[i], charset)))
+			return (1);
+		++i;
+	}
+	return (0);
 }
 
 static int	ft_parse_rgb(char *line, unsigned int *rgb)
 {
-	char	**arr;
 	int		i;
-	int		temp;
+	int		color_channel;
+	int		colors_found;
 
-	(*rgb) = 0;
-	i = -1;
-	while (line && line[++i])
+	colors_found = 0;
+	color_channel = 0;
+	i = 0;
+	if (ft_contains_illegal_chars(line, "0123456789, "))
+		return (ft_error("Invalid character(s) in RGB configuration"));
+	i = 0;
+	while (line && line[i])
 	{
-		if (!(ft_isdigit(line[i])) && line[i] != ',')
-			return (ft_error("Invalid RGB value given"));
+		if (line[i] == ',')
+			return (ft_error("Invalid RGB values"));
+		color_channel = ft_atoi(&line[i]);
+		if (color_channel < 0 || color_channel > 255)
+			return (ft_error("Invalid RGB value"));
+		(*rgb) = ((*rgb) << 8) + color_channel;
+		colors_found += 1;
+		if (colors_found > 3)
+			return (ft_error("Too many RGB values given"));
+		while (line[i] && ft_isdigit(line[i]))
+			++i;
+		if (colors_found != 3 && line[i] == ',')
+			++i;
 	}
-	if (!(arr = ft_split(line, ',')))
-		return (ft_error("Malloc failed during split"));
-	i = -1;
-	while (arr[++i])
-	{
-		temp = ft_atoi(arr[i]);
-		if (i > 2 || temp < 0 || temp > 255)
-			return (ft_free_array(arr));
-		(*rgb) = ((*rgb) << 8) + temp;
-	}
-	ft_free_array(arr);
+	if (colors_found < 3)
+		return (ft_error("Too few RGB values given"));
 	return (1);
 }
 
 static int	ft_config_f(char **line_addr, t_map_data *map_data)
 {
-	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
 	char			*line;
@@ -248,22 +294,19 @@ static int	ft_config_f(char **line_addr, t_map_data *map_data)
 	line = *line_addr;
 	if (map_data->colors_set & 1)
 		return (ft_error("Duplicate floor color configuration"));
+	rgb_i = 0;
+	if (ft_strncmp(line, "F ", 2))
+		return (ft_error("Incomplete floor color configuration"));
 	status = 0;
-	if (!(arr = ft_split(line, ' ')))
-		return (ft_error("Malloc failed during split"));
-	if (ft_strncmp(arr[0], "F", 2) || !arr[1] || arr[2])
-		return (ft_free_array(arr)); //error, invalid NO configuration
-	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
-		return (ft_free_array(arr)); //err, invalid rgb
+	if ((status = ft_parse_rgb(&line[2], &rgb_i)) == -1)
+		return (-1);
 	map_data->floor = rgb_i;
 	map_data->colors_set += 1;
-	ft_free_array(arr);
 	return (1);
 }
 
 static int	ft_config_c(char **line_addr, t_map_data *map_data)
 {
-	char			**arr;
 	unsigned int	rgb_i;
 	int				status;
 	char			*line;
@@ -272,16 +315,13 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 	if (map_data->colors_set & 2)
 		return (ft_error("Duplicate ceiling color configuration"));
 	rgb_i = 0;
+	if (ft_strncmp(line, "C ", 2))
+		return (ft_error("Incomplete ceiling color configuration"));
 	status = 0;
-	if (!(arr = ft_split(line, ' ')))
-		return (ft_error("Malloc failed during split"));
-	if (ft_strncmp(arr[0], "C", 2) || !arr[1] || arr[2])
-		return (ft_free_array(arr)); //error, invalid ceiling color config
-	if ((status = ft_parse_rgb(arr[1], &rgb_i)) == -1)
-		return (ft_free_array(arr)); //err, invalid rgb
+	if ((status = ft_parse_rgb(&line[2], &rgb_i)) == -1)
+		return (-1);
 	map_data->ceil = rgb_i;
 	map_data->colors_set += 2;
-	ft_free_array(arr);
 	return (1);
 }
 
@@ -315,16 +355,22 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 
 static int	ft_config_n(char **line_addr, t_map_data *map_data)
 {
+	if (ft_strncmp((*line_addr), "NO ", 3))
+		return (ft_error("Illegal configuration command"));
 	return (ft_config_nesw(line_addr, map_data, "NO"));
 }
 
 static int	ft_config_e(char **line_addr, t_map_data *map_data)
 {
+	if (ft_strncmp((*line_addr), "EA ", 3))
+		return (ft_error("Illegal configuration command"));
 	return (ft_config_nesw(line_addr, map_data, "EA"));
 }
 
 static int	ft_config_w(char **line_addr, t_map_data *map_data)
 {
+	if (ft_strncmp((*line_addr), "WE ", 3))
+		return (ft_error("Illegal configuration command"));
 	return (ft_config_nesw(line_addr, map_data, "WE"));
 }
 
