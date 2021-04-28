@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 16:16:02 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/28 16:25:21 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,6 +390,11 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 	{
 		ft_free_array(arr);
 		return (ft_error("Invalid SO wall texture configuration"));
+	}
+	if (map_data->sprite)
+	{
+		ft_free_array(arr);
+		return (ft_error("Duplicate sprite textures"));
 	}
 	filename = ft_strdup(arr[1]);
 	map_data->sprite = filename;
