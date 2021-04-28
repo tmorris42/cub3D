@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/03/08 23:07:50 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/28 14:09:55 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ int				main(int argc, char **argv)
 	else
 		ft_close_on_error(screen, "Usage: ./cub3D <mapname.cub>");
 	if (!map_parse)
-		ft_close_on_error(screen, "Could not parse map");
+		ft_close_screen(&screen);
 	if (argc == 2)
 		screen = ft_load_screen(&player, map_parse, FALSE);
 	else
