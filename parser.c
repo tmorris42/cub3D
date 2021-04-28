@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 16:25:21 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/28 16:39:23 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -346,7 +346,10 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 	if (!(arr = ft_split(*line_addr, ' ')))
 		return (ft_error("Malloc failed during split"));
 	if (ft_strncmp(arr[0], code, 3) || !arr[1] || arr[2])
-		return (ft_free_array(arr)); //error, invalid NO configuration
+	{
+		ft_free_array(arr);
+		return (ft_error("Invalid wall texture configuration"));
+	}
 	filename = ft_strdup(arr[1]);
 	map_data->textures[index] = filename;
 	ft_free_array(arr);
@@ -423,6 +426,8 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	if (line[0] == '\0')
 		return (0);
 	i = ft_get_chr_index(line[0], "RFCNEWS");
+	if (i != -1 && (map_data->map_width || map_data->map_height))
+		return (ft_error("Map is not the last item in the configuration file"));
 	i = (*config[i + 1])(line_addr, map_data);
 	return (i);
 }
