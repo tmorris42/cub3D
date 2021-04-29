@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 09:06:02 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 14:52:23 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,10 +157,10 @@ int				main(int argc, char **argv)
 	t_map_data	*map_parse;
 
 	screen = NULL;
-	if (argc > 1)
+	if (argc > 1 && argc < 3)
 		map_parse = ft_parse_file(argv[1]);
 	else
-		ft_close_on_error(screen, "Usage: ./cub3D <mapname.cub>");
+		ft_close_on_error(screen, "Usage: ./cub3D <mapname.cub> [--save]");
 	if (!map_parse)
 		ft_close_screen(&screen);
 	if (argc == 2)
