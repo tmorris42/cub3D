@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 19:04:48 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 20:49:50 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -509,6 +509,8 @@ void		*ft_verify_all(t_map_data *data)
 	char	*line;
 	char	*msg;
 
+	if (!data)
+		return (NULL);
 	if ((msg = ft_verify_data(data)))
 		return (ft_free_map_error(data, msg));
 	if (ft_convert_map_to_2d(data) == -1)
