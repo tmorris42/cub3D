@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 17:31:52 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 19:04:48 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -509,26 +509,15 @@ void		*ft_verify_all(t_map_data *data)
 	char	*line;
 	char	*msg;
 
-	if (!data)
-		return (data);
 	if ((msg = ft_verify_data(data)))
 		return (ft_free_map_error(data, msg));
 	if (ft_convert_map_to_2d(data) == -1)
-	{
-		ft_error("Could not parse map data");
-		return (ft_free_map_data(data));
-	}
+		return (ft_free_map_error(data, "Could not parse map data"));
 	line = (char*)ft_calloc(data->map_width * data->map_height, sizeof(char));
 	if (!line)
-	{
-		ft_error("Could not allocate space");
-		return (ft_free_map_data(data));
-	}
+		return (ft_free_map_error(data, "Unable to allocate sufficient space"));
 	if (ft_check_map_void(data, line, data->player_x, data->player_y) < 0)
-	{
-		ft_error("Map must be surrounded by walls in all 8 directions");
-		data = ft_free_map_data(data);
-	}
+		data = ft_free_map_error(data, "Map must be surrounded by walls");
 	free(line);
 	return (data);
 }
@@ -540,12 +529,14 @@ t_map_data	*ft_parse_file(char *filename)
 	char		*line;
 	t_map_data	*map_data;
 
+	if (ft_strncmp(&filename[ft_strlen(filename) - 4], ".cub", 5))
+		return (ft_free_map_error(NULL, "Map file must be a .cub file"));
 	if (!(map_data = malloc(sizeof(*map_data))))
-		return (NULL);
+		return (ft_free_map_error(NULL, "Unable to allocate sufficient space"));
 	ft_map_data_init(map_data);
 	status = 0;
 	if ((fd = open(filename, O_RDONLY)) == -1)
-		return (ft_free_map_data(map_data));
+		return (ft_free_map_error(map_data, "Unable to open map file"));
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
