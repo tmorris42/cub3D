@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 15:23:17 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 17:31:52 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,46 +79,6 @@ t_map_data	*ft_free_map_data(t_map_data *map)
 	return (NULL);
 }
 
-void		ft_print_map_data(t_map_data *map)
-{
-	int		i;
-	int		j;
-	t_list	*index;
-
-	printf("Resolution: %dx%d\nMap Dimensions: %dx%d\nTextures:\n", map->res_width,
-			map->res_height, map->map_width, map->map_height);
-	i = -1;
-	while (++i < 4)
-		printf("\t%s\n", map->textures[i]);
-	printf("Sprite:\n\t%s\n", map->sprite);
-	printf("Number of Sprites = %d\n", map->sprite_count);
-	printf("Floor Color: %u\nCeiling Color: %u\n", map->floor, map->ceil);
-	printf("Player Location: %d, %d, <%d, %d>\n", map->player_x, map->player_y, map->player_facing_x, map->player_facing_y);
-	printf("Map Layout:\n");
-	index = map->map_layout;
-	while (index)
-	{
-		printf("\t|%s|\n", (char*)index->content);
-		index = index->next;
-	}
-	if (!map->map_grid)
-		return ;
-	printf("Map Grid:\n");
-	j = 0;
-	while (j < map->map_height)
-	{
-		i = 0;
-		while (i < map->map_width)
-		{
-			printf("%d", map->map_grid[j][i]);
-			++i;
-		}
-		printf("\n");
-		++j;
-	}
-	printf("Done printing map data\n");
-}
-
 int			ft_get_chr_index(char c, char *str)
 {
 	int		i;
@@ -133,7 +93,7 @@ int			ft_get_chr_index(char c, char *str)
 	return (-1);
 }
 
-int		ft_islegal_char(char c, char *charset)
+int			ft_islegal_char(char c, char *charset)
 {
 	int		i;
 
@@ -147,7 +107,7 @@ int		ft_islegal_char(char c, char *charset)
 	return (0);
 }
 
-int		ft_contains_illegal_chars(char *str, char *charset)
+int			ft_contains_illegal_chars(char *str, char *charset)
 {
 	int		i;
 
@@ -242,24 +202,14 @@ static int	ft_config_r(char **line_addr, t_map_data *map_data)
 		return (ft_error("Invalid resolution configuration"));
 	i = 2;
 	if (ft_contains_illegal_chars(&line[i], "0123456789 "))
-			return (ft_error("Invalid characters in resolution configuration"));
+		return (ft_error("Invalid characters in resolution configuration"));
 	i = ft_skip_chars(line, " ", 2);
-//	while (line_addr && line && line[i] == ' ')
-//		++i;
 	map_data->res_width = ft_atoi(&line[i]);
 	i = ft_skip_chars(line, "0123456789", i);
 	i = ft_skip_chars(line, " ", i);
-//	while (line_addr && line && line[i] && ft_isdigit(line[i]))
-//		++i;
-//	while (line_addr && line && line[i] && line[i] == ' ')
-//		++i;
 	map_data->res_height = ft_atoi(&line[i]);
 	i = ft_skip_chars(line, "0123456789", i);
 	i = ft_skip_chars(line, " ", i);
-//	while (line_addr && line && line[i] && ft_isdigit(line[i]))
-//		++i;
-//	while (line_addr && line && line[i] && line[i] == ' ')
-//		++i;
 	if (line_addr && line && line[i])
 		return (ft_error("Invalid resolution configuration"));
 	return (1);
@@ -276,24 +226,19 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 	if (ft_contains_illegal_chars(line, "0123456789, "))
 		return (ft_error("Invalid character(s) in RGB configuration"));
 	i = ft_skip_chars(line, " ", 0);
-	while (line && line[i])
+	while (line && line[i] && ft_isdigit(line[i]))
 	{
-		if (!(ft_isdigit(line[i])))
-			return (ft_error("Invalid RGB configuration"));
 		color_channel = ft_atoi(&line[i]);
 		if (color_channel < 0 || color_channel > 255)
 			return (ft_error("Invalid RGB value"));
 		(*rgb) = ((*rgb) << 8) + color_channel;
 		colors_found += 1;
-		if (colors_found > 3)
-			return (ft_error("Characters after RGB values"));
-		while (line[i] && ft_isdigit(line[i]))
-			++i;
+		i = ft_skip_chars(line, "0123456789", i);
 		if (colors_found != 3 && line[i] == ',')
 			++i;
 	}
-	if (colors_found < 3)
-		return (ft_error("Too few RGB values given"));
+	if (line[i] || colors_found != 3)
+		return (ft_error("Invalid RGB configuration"));
 	return (1);
 }
 
@@ -337,25 +282,14 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 	return (1);
 }
 
-static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
+static int	ft_config_nesw(char *line, t_map_data *map_data, int wall_index)
 {
 	char	*filename;
-	int		index;
 	int		i;
 
-	if (!line)
+	if (!line || wall_index < 0 || wall_index > 3)
 		return (ft_error("Invalid wall texture configuration"));
-	if (code[0] == 'N' && code[1] == 'O')
-		index = 0;
-	else if (code[0] == 'E' && code[1] == 'A')
-		index = 1;
-	else if (code[0] == 'S' && code[1] == 'O')
-		index = 2;
-	else if (code[0] == 'W' && code[1] == 'E')
-		index = 3;
-	else
-		return (-1);
-	if (map_data->textures[index])
+	if (map_data->textures[wall_index])
 		return (ft_error("Duplicate wall texture definition"));
 	i = ft_skip_chars(line, " ", 0);
 	if (ft_get_chr_index(' ', &line[i]) > -1)
@@ -363,7 +297,7 @@ static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
 	filename = ft_strdup(&line[i]);
 	if (!filename)
 		return (ft_error("Malloc error while configuring wall texture"));
-	map_data->textures[index] = filename;
+	map_data->textures[wall_index] = filename;
 	return (1);
 }
 
@@ -376,7 +310,7 @@ static int	ft_config_n(char **line_addr, t_map_data *map_data)
 	line = (*line_addr);
 	if (ft_strncmp(line, "NO ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(&line[3], map_data, "NO"));
+	return (ft_config_nesw(&line[3], map_data, 0));
 }
 
 static int	ft_config_e(char **line_addr, t_map_data *map_data)
@@ -388,7 +322,7 @@ static int	ft_config_e(char **line_addr, t_map_data *map_data)
 	line = (*line_addr);
 	if (ft_strncmp(line, "EA ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(&line[3], map_data, "EA"));
+	return (ft_config_nesw(&line[3], map_data, 1));
 }
 
 static int	ft_config_w(char **line_addr, t_map_data *map_data)
@@ -400,7 +334,7 @@ static int	ft_config_w(char **line_addr, t_map_data *map_data)
 	line = (*line_addr);
 	if (ft_strncmp(line, "WE ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(&line[3], map_data, "WE"));
+	return (ft_config_nesw(&line[3], map_data, 3));
 }
 
 static int	ft_config_s(char **line_addr, t_map_data *map_data)
@@ -411,7 +345,7 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 
 	line = *line_addr;
 	if (line[0] == 'S' && line[1] == 'O' && line[2] == ' ')
-		return (ft_config_nesw(&line[3], map_data, "SO"));
+		return (ft_config_nesw(&line[3], map_data, 2));
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (ft_error("Malloc failed during split"));
@@ -458,7 +392,7 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	return (i);
 }
 
-int		ft_copy_map_line(t_map_data *map, int **grid, char *content, int j)
+int			ft_copy_map_line(t_map_data *map, int **grid, char *content, int j)
 {
 	int			i;
 	t_sprite	*temp_sprite;
@@ -486,7 +420,7 @@ int		ft_copy_map_line(t_map_data *map, int **grid, char *content, int j)
 	return (0);
 }
 
-int		ft_convert_map_to_2d(t_map_data *map)
+int			ft_convert_map_to_2d(t_map_data *map)
 {
 	int			**grid;
 	t_list		*index;
