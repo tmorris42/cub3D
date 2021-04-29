@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 14:09:55 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 09:06:02 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,10 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	while (++i < 4)
 	{
 		if (ft_load_image(data->textures[i], screen, &(screen->walls[i])) == -1)
-			ft_free_map_exit(screen, data, "Error\nCouldn't load wall texture");
+			ft_free_map_exit(screen, data, "Wall texture not loadable as XPM");
 	}
 	if (ft_load_image(data->sprite, screen, &(screen->sprite)) == -1)
-		ft_free_map_exit(screen, data, "Error\nCouldn't load sprite texture");
+		ft_free_map_exit(screen, data, "Sprite texture not loadable as XPM");
 	return (screen);
 }
 
