@@ -1,5 +1,6 @@
 NAME = cub3D
 
+SRC_DIR = ./srcs/
 LIBFT_DIR = ./libft/
 LIBFT = libft.a
 MLX_DIR = ./minilibx-linux/
@@ -12,29 +13,21 @@ OBJS = ${SRCS:.c=.o}
 
 all: $(NAME)
 
-$(LIBFT_DIR)$(LIBFT):
-	$(MAKE) bonus -C $(LIBFT_DIR)
-
-$(MLX_DIR)$(MLX):
-	$(MAKE) -C $(MLX_DIR)
-
-$(NAME): $(OBJS) $(LIBFT_DIR)$(LIBFT) $(MLX_DIR)$(MLX)
-	gcc -Wall -Wextra -Werror $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
-
-$(OBJS): %.o : %.c
-	gcc -Wall -Wextra -Werror -c $< -o $@
+$(NAME):
+	@$(MAKE) bonus -C $(LIBFT_DIR)
+	@$(MAKE) -C $(MLX_DIR)
+	@$(MAKE) -C $(SRC_DIR)
 
 clean:
-	rm -f $(OBJS)
+	@$(MAKE) clean -C $(LIBFT_DIR)
+	@$(MAKE) clean -C $(MLX_DIR)
+	@$(MAKE) clean -C $(SRC_DIR)
 
-fclean: clean
-	rm -f $(NAME)
+fclean: 
+	@$(MAKE) fclean -C $(LIBFT_DIR)
+	@$(MAKE) clean -C $(MLX_DIR)
+	@$(MAKE) fclean -C $(SRC_DIR)
 
 re: fclean all
 
-debug:
-	gcc -c -g3 $(SRCS) -fsanitize=address
-	gcc -g3 $(OBJS) -L./libft/ -lft -L./minilibx-linux/ -lmlx -lXext -lX11 -lbsd -lm -o debug.o -fsanitize=address
-	rm -f $(OBJS)
-
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re $(NAME)

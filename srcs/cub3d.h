@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   header.h                                           :+:      :+:    :+:   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/03/08 23:08:38 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 19:40:22 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include <math.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include "minilibx-linux/mlx.h"
-# include "libft/libft.h"
+# include "../minilibx-linux/mlx.h"
+# include "../libft/libft.h"
 
 # define K_ESCAPE	65307
 # define K_LEFT		65361
