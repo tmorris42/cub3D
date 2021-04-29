@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 09:58:01 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 11:32:14 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,21 +273,20 @@ static int	ft_parse_rgb(char *line, unsigned int *rgb)
 
 	colors_found = 0;
 	color_channel = 0;
-	i = 0;
 	if (ft_contains_illegal_chars(line, "0123456789, "))
 		return (ft_error("Invalid character(s) in RGB configuration"));
-	i = 0;
+	i = ft_skip_chars(line, " ", 0);
 	while (line && line[i])
 	{
-		if (line[i] == ',')
-			return (ft_error("Invalid RGB values"));
+		if (!(ft_isdigit(line[i])))
+			return (ft_error("Invalid RGB configuration"));
 		color_channel = ft_atoi(&line[i]);
 		if (color_channel < 0 || color_channel > 255)
 			return (ft_error("Invalid RGB value"));
 		(*rgb) = ((*rgb) << 8) + color_channel;
 		colors_found += 1;
 		if (colors_found > 3)
-			return (ft_error("Too many RGB values given"));
+			return (ft_error("Characters after RGB values"));
 		while (line[i] && ft_isdigit(line[i]))
 			++i;
 		if (colors_found != 3 && line[i] == ',')
