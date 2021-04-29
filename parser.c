@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 09:24:56 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 09:58:01 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,43 @@ int			ft_get_chr_index(char c, char *str)
 	return (-1);
 }
 
+int		ft_islegal_char(char c, char *charset)
+{
+	int		i;
+
+	i = ft_strlen(charset) - 1;
+	while (i >= 0)
+	{
+		if (c == charset[i])
+			return (1);
+		--i;
+	}
+	return (0);
+}
+
+int		ft_contains_illegal_chars(char *str, char *charset)
+{
+	int		i;
+
+	i = 0;
+	while (str && str[i])
+	{
+		if (!(ft_islegal_char(str[i], charset)))
+			return (1);
+		++i;
+	}
+	return (0);
+}
+
+int			ft_skip_chars(char *str, char *charset, int i)
+{
+	if (i < 0 || !str || !charset)
+		return (i);
+	while (str[i] && ft_islegal_char(str[i], charset))
+		++i;
+	return (i);
+}
+
 void		ft_set_player_start(t_map_data *map_data, char dir, int x)
 {
 	map_data->player_x = x;
@@ -196,62 +233,36 @@ static int	ft_config_r(char **line_addr, t_map_data *map_data)
 	char	*line;
 	int		i;
 
+	if (!line_addr || !map_data)
+		return (ft_error("Invalid line or map data"));
 	line = *line_addr;
 	if (map_data->res_width != 0 || map_data->res_height != 0)
 		return (ft_error("Duplicate resolution configuration"));
 	if (ft_strncmp(line, "R ", 2))
 		return (ft_error("Invalid resolution configuration"));
 	i = 2;
-	while (line_addr && line && line[i])
-	{
-		if (!(ft_isdigit(line[i])) && line[i] != ' ')
+	if (ft_contains_illegal_chars(&line[i], "0123456789 "))
 			return (ft_error("Invalid characters in resolution configuration"));
-		++i;
-	}
-	i = 2;
-	while (line_addr && line && line[i] == ' ')
-		++i;
+	i = ft_skip_chars(line, " ", 2);
+//	while (line_addr && line && line[i] == ' ')
+//		++i;
 	map_data->res_width = ft_atoi(&line[i]);
-	while (line_addr && line && line[i] && ft_isdigit(line[i]))
-		++i;
-	while (line_addr && line && line[i] && line[i] == ' ')
-		++i;
+	i = ft_skip_chars(line, "0123456789", i);
+	i = ft_skip_chars(line, " ", i);
+//	while (line_addr && line && line[i] && ft_isdigit(line[i]))
+//		++i;
+//	while (line_addr && line && line[i] && line[i] == ' ')
+//		++i;
 	map_data->res_height = ft_atoi(&line[i]);
-	while (line_addr && line && line[i] && ft_isdigit(line[i]))
-		++i;
-	while (line_addr && line && line[i] && line[i] == ' ')
-		++i;
+	i = ft_skip_chars(line, "0123456789", i);
+	i = ft_skip_chars(line, " ", i);
+//	while (line_addr && line && line[i] && ft_isdigit(line[i]))
+//		++i;
+//	while (line_addr && line && line[i] && line[i] == ' ')
+//		++i;
 	if (line_addr && line && line[i])
 		return (ft_error("Invalid resolution configuration"));
 	return (1);
-}
-
-int		ft_islegal_char(char c, char *charset)
-{
-	int		i;
-
-	i = ft_strlen(charset) - 1;
-	while (i >= 0)
-	{
-		if (c == charset[i])
-			return (1);
-		--i;
-	}
-	return (0);
-}
-
-int		ft_contains_illegal_chars(char *str, char *charset)
-{
-	int		i;
-
-	i = 0;
-	while (str && str[i])
-	{
-		if (!(ft_islegal_char(str[i], charset)))
-			return (1);
-		++i;
-	}
-	return (0);
 }
 
 static int	ft_parse_rgb(char *line, unsigned int *rgb)
