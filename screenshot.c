@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 20:00:44 by tmorris           #+#    #+#             */
-/*   Updated: 2020/12/27 19:01:34 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 17:40:27 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ int			ft_save(t_screen *screen, char *filename)
 	fd = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (fd == -1)
 		return (-1);
-	printf("SAVING to '%s'\n", filename);
 	ft_print_header(fd);
 	ft_print_info(fd, screen);
 	ft_print_pixels(fd, screen);
