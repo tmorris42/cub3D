@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/03/08 23:07:50 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 23:18:34 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int		ft_parse_keys(int key, t_screen *screen, int pressed)
 	else if (key == K_LEFT)
 		screen->keys.turn_left = pressed;
 	else
-		printf(" : %d\n", key);  //for debugging only, REMOVE THIS
+		return (1);
 	screen->refresh = 1;
 	return (1);
 }
