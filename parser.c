@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 16:39:23 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 09:24:56 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,8 @@ static int	ft_config_r(char **line_addr, t_map_data *map_data)
 		++i;
 	}
 	i = 2;
+	while (line_addr && line && line[i] == ' ')
+		++i;
 	map_data->res_width = ft_atoi(&line[i]);
 	while (line_addr && line && line[i] && ft_isdigit(line[i]))
 		++i;
