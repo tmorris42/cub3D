@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 11:32:14 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/29 15:23:17 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,12 +337,14 @@ static int	ft_config_c(char **line_addr, t_map_data *map_data)
 	return (1);
 }
 
-static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
+static int	ft_config_nesw(char *line, t_map_data *map_data, char *code)
 {
-	char	**arr;
 	char	*filename;
 	int		index;
+	int		i;
 
+	if (!line)
+		return (ft_error("Invalid wall texture configuration"));
 	if (code[0] == 'N' && code[1] == 'O')
 		index = 0;
 	else if (code[0] == 'E' && code[1] == 'A')
@@ -355,38 +357,50 @@ static int	ft_config_nesw(char **line_addr, t_map_data *map_data, char *code)
 		return (-1);
 	if (map_data->textures[index])
 		return (ft_error("Duplicate wall texture definition"));
-	if (!(arr = ft_split(*line_addr, ' ')))
-		return (ft_error("Malloc failed during split"));
-	if (ft_strncmp(arr[0], code, 3) || !arr[1] || arr[2])
-	{
-		ft_free_array(arr);
-		return (ft_error("Invalid wall texture configuration"));
-	}
-	filename = ft_strdup(arr[1]);
+	i = ft_skip_chars(line, " ", 0);
+	if (ft_get_chr_index(' ', &line[i]) > -1)
+		return (ft_error("Invalid filename in wall texture definition"));
+	filename = ft_strdup(&line[i]);
+	if (!filename)
+		return (ft_error("Malloc error while configuring wall texture"));
 	map_data->textures[index] = filename;
-	ft_free_array(arr);
 	return (1);
 }
 
 static int	ft_config_n(char **line_addr, t_map_data *map_data)
 {
-	if (ft_strncmp((*line_addr), "NO ", 3))
+	char	*line;
+
+	if (!line_addr)
+		return (ft_error("Error parsing north wall texture"));
+	line = (*line_addr);
+	if (ft_strncmp(line, "NO ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(line_addr, map_data, "NO"));
+	return (ft_config_nesw(&line[3], map_data, "NO"));
 }
 
 static int	ft_config_e(char **line_addr, t_map_data *map_data)
 {
-	if (ft_strncmp((*line_addr), "EA ", 3))
+	char	*line;
+
+	if (!line_addr)
+		return (ft_error("Error parsing north wall texture"));
+	line = (*line_addr);
+	if (ft_strncmp(line, "EA ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(line_addr, map_data, "EA"));
+	return (ft_config_nesw(&line[3], map_data, "EA"));
 }
 
 static int	ft_config_w(char **line_addr, t_map_data *map_data)
 {
-	if (ft_strncmp((*line_addr), "WE ", 3))
+	char	*line;
+
+	if (!line_addr)
+		return (ft_error("Error parsing north wall texture"));
+	line = (*line_addr);
+	if (ft_strncmp(line, "WE ", 3))
 		return (ft_error("Illegal configuration command"));
-	return (ft_config_nesw(line_addr, map_data, "WE"));
+	return (ft_config_nesw(&line[3], map_data, "WE"));
 }
 
 static int	ft_config_s(char **line_addr, t_map_data *map_data)
@@ -396,8 +410,8 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 	char	*line;
 
 	line = *line_addr;
-	if (line[0] == 'S' && line[1] == 'O')
-		return (ft_config_nesw(line_addr, map_data, "SO"));
+	if (line[0] == 'S' && line[1] == 'O' && line[2] == ' ')
+		return (ft_config_nesw(&line[3], map_data, "SO"));
 	arr = ft_split(line, ' ');
 	if (!arr)
 		return (ft_error("Malloc failed during split"));
