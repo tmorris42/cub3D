@@ -1,4 +1,7 @@
 *.o
 *.swp
 cub3D
+
+# Testers
 cub3D_leaks_maps_tester
+cub3d_destroyer
