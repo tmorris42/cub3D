@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 20:49:50 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 14:52:13 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,7 +340,6 @@ static int	ft_config_w(char **line_addr, t_map_data *map_data)
 static int	ft_config_s(char **line_addr, t_map_data *map_data)
 {
 	char	**arr;
-	char	*filename;
 	char	*line;
 
 	line = *line_addr;
@@ -359,9 +358,10 @@ static int	ft_config_s(char **line_addr, t_map_data *map_data)
 		ft_free_array(arr);
 		return (ft_error("Duplicate sprite textures"));
 	}
-	filename = ft_strdup(arr[1]);
-	map_data->sprite = filename;
+	map_data->sprite = ft_strdup(arr[1]);
 	ft_free_array(arr);
+	if (!(map_data->sprite))
+		return (ft_error("Malloc error while configuring sprite texture"));
 	return (1);
 }
 
@@ -380,7 +380,7 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
 	i = 0;
-	if (!line_addr || !(*line_addr))
+	if (!line_addr || !(*line_addr) || !(map_data))
 		return (-1);
 	line = *line_addr;
 	if (line[0] == '\0')
@@ -392,27 +392,41 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	return (i);
 }
 
+int			ft_create_sprite(t_map_data *map, int i, int j)
+{
+	t_sprite	*temp_sprite;
+	t_list		*temp_node;
+
+	temp_sprite = malloc(sizeof(*temp_sprite));
+	if (!temp_sprite)
+		return (-1);
+	temp_sprite->x = i * 1.0 + 0.5;
+	temp_sprite->y = j * 1.0 + 0.5;
+	temp_node = ft_lstnew(temp_sprite);
+	if (!temp_node)
+	{
+		free(temp_sprite);
+		return (-1);
+	}
+	ft_lstadd_front(&map->sprite_list, temp_node);
+	map->sprite_count++;
+	return (0);
+}
+
 int			ft_copy_map_line(t_map_data *map, int **grid, char *content, int j)
 {
 	int			i;
-	t_sprite	*temp_sprite;
 
-	grid[j] = (int*)ft_calloc(map->map_width, sizeof(**grid));
-	if (!(grid[j]))
+	if (!(grid[j] = (int*)ft_calloc(map->map_width, sizeof(**grid))))
 		return (-1);
 	i = 0;
-	while ((i < map->map_width) && (content)[i])
+	while ((i < map->map_width) && content[i])
 	{
 		grid[j][i] = content[i] - '0';
 		if (grid[j][i] == 2)
 		{
-			temp_sprite = malloc(sizeof(*temp_sprite));
-			if (!temp_sprite)
+			if (ft_create_sprite(map, i, j) == -1)
 				return (-1);
-			temp_sprite->x = i * 1.0 + 0.5;
-			temp_sprite->y = j * 1.0 + 0.5;
-			ft_lstadd_front(&map->sprite_list, ft_lstnew(temp_sprite));
-			map->sprite_count++;
 			grid[j][i] = 0;
 		}
 		++i;
@@ -536,13 +550,14 @@ t_map_data	*ft_parse_file(char *filename)
 	if (!(map_data = malloc(sizeof(*map_data))))
 		return (ft_free_map_error(NULL, "Unable to allocate sufficient space"));
 	ft_map_data_init(map_data);
+	line = NULL;
 	status = 0;
 	if ((fd = open(filename, O_RDONLY)) == -1)
 		return (ft_free_map_error(map_data, "Unable to open map file"));
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);
-		if (map_data && ft_parse_line(&line, map_data) < 0)
+		if (status < 0 || (map_data && ft_parse_line(&line, map_data) < 0))
 			map_data = ft_free_map_data(map_data);
 		free(line);
 		line = NULL;
