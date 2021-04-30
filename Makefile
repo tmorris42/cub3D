@@ -25,4 +25,10 @@ fclean:
 
 re: fclean all
 
-.PHONY: all clean fclean re $(NAME)
+test:
+	bash ./tests/test_invalid_maps.sh
+
+leaks:
+	bash ./tests/test_invalid_maps_leaks.sh
+
+.PHONY: all clean fclean re $(NAME) test leaks
