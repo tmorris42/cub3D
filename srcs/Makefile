@@ -20,6 +20,8 @@ SRCS = draw.c \
 	   screen.c \
 	   screenshot.c \
 	   raycast.c \
+	   raycast_sprites.c \
+	   raycast_sprites_utils.c
 
 OBJS = ${SRCS:.c=.o}
 
