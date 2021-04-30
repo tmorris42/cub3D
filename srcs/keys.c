@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 23:18:34 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 17:17:10 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_rotate(double rad, t_screen *screen)
 	double		old_rx;
 	t_player	*p;
 
-	rad = rad / 6;
+	rad = rad / 2;
 	p = screen->player;
 	old_rx = p->rot_x;
 	p->rot_x = (cos(rad) * old_rx) - (p->rot_y * sin(rad));
@@ -28,8 +28,8 @@ void	ft_move_relative(double x, double y, t_screen *screen)
 {
 	t_player	*p;
 
-	x = x / 50;
-	y = y / 50;
+	x = x / 10;
+	y = y / 10;
 	p = screen->player;
 	if (screen->map[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
 		p->pos_x += x;
