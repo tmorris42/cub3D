@@ -1,8 +1,8 @@
-R 300 200
-NO ./textures/no.xpm
-SO ./textures/so.xpm
-WE ./textures/we.xpm
-EA ./textures/ea.xpm
+R 800 600
+NO ./textures/no-brick.xpm
+SO ./textures/so-brick.xpm
+WE ./textures/we-brick.xpm
+EA ./textures/ea-brick.xpm
 
 S ./textures/sprite.xpm
 F 100,100,100
