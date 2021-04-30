@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/03/08 18:42:01 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 17:10:28 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,9 +233,9 @@ void	ft_draw_wall(t_screen *screen, t_camera *cam, t_wall_data *wall, int x)
 	int				line_height;
 
 	text.x = (int)(wall->x * (double)screen->walls[wall->num].width);
-	if (wall->side_check == 0 && cam->ray_dir.x > 0)
+	if (wall->side_check == 0 && cam->ray_dir.x < 0)
 		text.x = screen->walls[wall->num].width - text.x - 1;
-	else if (wall->side_check == 1 && cam->ray_dir.y < 0)
+	else if (wall->side_check == 1 && cam->ray_dir.y > 0)
 		text.x = screen->walls[wall->num].width - text.x - 1;
 	line_height = (int)(screen->height / wall->dist);
 	step = 1.0 * screen->walls[wall->num].height / line_height;
