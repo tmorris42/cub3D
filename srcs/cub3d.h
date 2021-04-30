@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 22:44:28 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 23:10:05 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ typedef struct		s_screen
 }					t_screen;
 
 t_map_data			*ft_free_map_data(t_map_data *map);
-void				ft_print_map_data(t_map_data *map);
 t_map_data			*ft_parse_file(char *filename);
 int					ft_save(t_screen *screen, char *filename);
 void				ft_pixel_put(t_img_data *img, int x, int y, int color);
@@ -153,9 +152,6 @@ void				ft_free_map_exit(t_screen *scr, t_map_data *map, char *msg);
 int					ft_error(char *msg);
 void				ft_close_on_error(t_screen *screen, char *msg);
 t_map_data			*ft_free_map_error(t_map_data *map, char *msg);
-void				ft_reset_resolution(t_screen *screen);
-void				ft_sprite_list_to_array(t_screen *screen, t_map_data *data);
-void				ft_parse_to_screen(t_screen *screen, t_map_data *data);
 t_screen			*ft_load_screen(t_player *p, t_map_data *data, int save);
 
 #endif
