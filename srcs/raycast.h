@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 18:27:39 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 22:25:43 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 23:16:07 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,6 @@ typedef struct	s_texture
 	double	pos;
 }				t_texture;
 
-void			ft_draw_col(t_screen *scr, t_sprite_data *d, t_pt *t, t_pt *p);
-void			ft_render_sprite(t_screen *scr, t_sprite_data *data);
-void			ft_draw_sprite(t_screen *screen, t_sprite_data *data, int *i);
 int				ft_cast_sprites(t_screen *scr, t_sprite_data *data);
 void			ft_sort_sprites(t_sprite_data *sprite_data, int amount);
 void			ft_calc_transform(t_screen *screen, t_sprite_data *data);
