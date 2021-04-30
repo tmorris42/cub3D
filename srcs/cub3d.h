@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 19:40:22 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/04/30 21:49:38 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,5 +156,9 @@ void				ft_free_map_exit(t_screen *scr, t_map_data *map, char *msg);
 int					ft_error(char *msg);
 void				ft_close_on_error(t_screen *screen, char *msg);
 t_map_data			*ft_free_map_error(t_map_data *map, char *msg);
+void				ft_reset_resolution(t_screen *screen);
+void				ft_sprite_list_to_array(t_screen *screen, t_map_data *data);
+void				ft_parse_to_screen(t_screen *screen, t_map_data *data);
+t_screen			*ft_load_screen(t_player *p, t_map_data *data, int save);
 
 #endif

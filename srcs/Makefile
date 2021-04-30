@@ -15,6 +15,7 @@ SRCS = draw.c \
 	   parser_config_textures.c \
 	   parser_data.c \
 	   parser_map.c \
+	   parser_to_screen.c \
 	   parser_utils.c \
 	   screen.c \
 	   screenshot.c \
