@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/28 14:15:43 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 18:00:38 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 int			ft_error(char *msg)
 {
-	if (ft_strncmp(msg, "Error\n", 6))
-		ft_putstr_fd("Error\n", 1); //should be 2 for stderr
-	ft_putstr_fd(msg, 1); //should be 2 for stderr
-	ft_putstr_fd("\n", 1); //should be 2 for stderr
+	ft_putstr_fd("Error\n", ERROR_FD);
+	ft_putstr_fd(msg, ERROR_FD);
+	ft_putstr_fd("\n", ERROR_FD);
 	return (-1);
 }
 

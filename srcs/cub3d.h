@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 23:10:05 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 18:26:26 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,10 @@
 
 # define TRUE		1
 # define FALSE		0
+
+# ifndef ERROR_FD
+#  define ERROR_FD 1 //should be 2
+# endif
 
 typedef struct		s_point
 {

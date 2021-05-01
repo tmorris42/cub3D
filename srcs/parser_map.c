@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 15:39:10 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 17:35:57 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,43 +60,37 @@ int			ft_convert_map_to_2d(t_map_data *map)
 	map->map_grid = grid;
 	return (1);
 }
-#include <stdio.h> //
-int			check_map_zeroes(t_map_data *map)
+
+static int	ft_check_surrounding(t_map_data *map, int x, int y)
 {
 	int		**arr;
+
+	arr = map->map_grid;
+	if (arr[y][x] == '0')
+	{
+		if (y == 0 || y == map->map_height - 1)
+			return (-1);
+		if (x == 0 || x == map->map_width - 1)
+			return (-1);
+		if (arr[y - 1][x] < '0' || arr[y + 1][x] < '0')
+			return (-1);
+		if (arr[y][x - 1] < '0' || arr[y][x + 1] < '0')
+			return (-1);
+		if (arr[y - 1][x - 1] < '0' || arr[y - 1][x + 1] < '0')
+			return (-1);
+		if (arr[y + 1][x - 1] < '0' || arr[y + 1][x + 1] < '0')
+			return (-1);
+	}
+	return (0);
+}
+
+static void	ft_convert_map_to_int(t_map_data *map)
+{
 	int		x;
 	int		y;
+	int		**arr;
 
-	if (!map)
-		return (-1);
-	y = 0;
 	arr = map->map_grid;
-	printf("Map dimensiones = %d, %d\n", map->map_width, map->map_height);
-	while (y < map->map_height)
-	{
-		x = 0;
-		while (x < map->map_width)
-		{
-//			printf("X=%d, Y=%d, Value=%d\n", x, y, arr[y][x]);//
-			if (arr[y][x] == '0')
-			{
-				if (y == 0 || y == map->map_height - 1)
-					return (-1);
-				if (x == 0 || x == map->map_width - 1)
-					return (-1);
-				if (arr[y - 1][x] < '0' || arr[y + 1][x] < '0')
-					return (-1);
-				if (arr[y][x - 1] < '0' || arr[y][x + 1] < '0')
-					return (-1);
-				if (arr[y - 1][x - 1] < '0' || arr[y - 1][x + 1] < '0')
-					return (-1);
-				if (arr[y + 1][x - 1] < '0' || arr[y + 1][x + 1] < '0')
-					return (-1);
-			}
-			++x;
-		}
-		++y;
-	}
 	y = 0;
 	while (y < map->map_height)
 	{
@@ -108,34 +102,27 @@ int			check_map_zeroes(t_map_data *map)
 		}
 		++y;
 	}
-	return (0);
 }
 
-int			ft_check_map_void(t_map_data *map, char *paths, int x, int y)
+int			ft_check_map_zeroes(t_map_data *map)
 {
-	int		**arr;
-	int		str_index;
-	int		i;
-	int		j;
+	int		x;
+	int		y;
 
-	arr = map->map_grid;
-	if (x < 0 || y < 0)
+	if (!map)
 		return (-1);
-	str_index = (map->map_width * y) + x;
-	if (x >= map->map_width || y >= map->map_height || (arr[y][x] == ' ' - '0'))
-		return (-1);
-	if (paths[str_index] == 'V')
-		return (0);
-	paths[str_index] = 'V';
-	if (arr[y][x] == 1)
-		return (1);
-	i = -2;
-	while (++i < 2)
+	y = 0;
+	while (y < map->map_height)
 	{
-		j = -2;
-		while (++j < 2)
-			if ((i || j) && (ft_check_map_void(map, paths, x + i, y + j) == -1))
+		x = 0;
+		while (x < map->map_width)
+		{
+			if (ft_check_surrounding(map, x, y) < 0)
 				return (-1);
+			++x;
+		}
+		++y;
 	}
+	ft_convert_map_to_int(map);
 	return (0);
 }

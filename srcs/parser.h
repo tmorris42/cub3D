@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 20:07:57 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 23:15:27 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 17:28:24 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ t_map_data	*ft_free_map_data(t_map_data *map);
 int			ft_free_array(char **array);
 int			ft_create_sprite(t_map_data *map, int i, int j);
 int			ft_convert_map_to_2d(t_map_data *map);
-int			ft_check_map_void(t_map_data *map, char *paths, int x, int y);
+int			ft_check_map_zeroes(t_map_data *map);
 #endif

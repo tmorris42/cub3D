@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/29 15:27:41 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 17:54:15 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,14 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->sprite_count = data->sprite_count;
 	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
 	if (!screen->sprites)
-		ft_free_map_exit(screen, data, "Error\nCouldn't allocate sprite array");
+		ft_free_map_exit(screen, data, "Couldn't allocate sprite array");
 	ft_sprite_list_to_array(screen, data);
 	screen->width = data->res_width;
 	screen->height = data->res_height;
 	screen->refresh = 1;
 	screen->mlx = mlx_init();
 	if (!screen->mlx)
-		ft_free_map_exit(screen, data, "Error\nCouldn't connect to X server");
+		ft_free_map_exit(screen, data, "Couldn't connect to X server");
 }
 
 t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
@@ -80,7 +80,7 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 	screen->buf.img = mlx_new_image(screen->mlx, screen->width,
 			screen->height);
 	if (!screen->buf.img)
-		ft_free_map_exit(screen, data, "Error\nCouldn't create buffer image");
+		ft_free_map_exit(screen, data, "Couldn't create buffer image");
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp,
 			&screen->buf.len, &screen->buf.endian);
 	screen->buf.width = screen->width;

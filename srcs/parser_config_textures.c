@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 21:36:42 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 17:52:04 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ int	ft_config_n(char **line_addr, t_map_data *map_data)
 	char	*line;
 
 	if (!line_addr)
-		return (ft_error("Error parsing north wall texture"));
+		return (ft_error("Cannot parse north wall texture"));
 	line = (*line_addr);
 	if (ft_strncmp(line, "NO ", 3))
-		return (ft_error("Illegal configuration command"));
+		return (ft_error("Illegal type identifier"));
 	return (ft_config_nesw(&line[3], map_data, 0));
 }
 
@@ -49,10 +49,10 @@ int	ft_config_e(char **line_addr, t_map_data *map_data)
 	char	*line;
 
 	if (!line_addr)
-		return (ft_error("Error parsing north wall texture"));
+		return (ft_error("Cannot parse east wall texture"));
 	line = (*line_addr);
 	if (ft_strncmp(line, "EA ", 3))
-		return (ft_error("Illegal configuration command"));
+		return (ft_error("Illegal type identifier"));
 	return (ft_config_nesw(&line[3], map_data, 1));
 }
 
@@ -61,10 +61,10 @@ int	ft_config_w(char **line_addr, t_map_data *map_data)
 	char	*line;
 
 	if (!line_addr)
-		return (ft_error("Error parsing north wall texture"));
+		return (ft_error("Cannot parse west wall texture"));
 	line = (*line_addr);
 	if (ft_strncmp(line, "WE ", 3))
-		return (ft_error("Illegal configuration command"));
+		return (ft_error("Illegal type identifier"));
 	return (ft_config_nesw(&line[3], map_data, 3));
 }
 

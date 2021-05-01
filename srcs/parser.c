@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 15:07:23 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 17:29:06 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,6 @@ char		*ft_verify_data(t_map_data *map_data)
 	return (NULL);
 }
 
-int			check_map_zeroes(t_map_data *map); //
-
 void		*ft_verify_all(t_map_data *data)
 {
 	char	*line;
@@ -84,7 +82,7 @@ void		*ft_verify_all(t_map_data *data)
 	line = (char*)ft_calloc(data->map_width * data->map_height, sizeof(char));
 	if (!line)
 		return (ft_free_map_error(data, "Unable to allocate sufficient space"));
-	if (check_map_zeroes(data) == -1)
+	if (ft_check_map_zeroes(data) == -1)
 		data = ft_free_map_error(data, "Map must be surrounded by walls");
 	free(line);
 	return (data);
