@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 17:29:06 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 19:48:43 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ t_map_data	*ft_parse_file(char *filename)
 	line = NULL;
 	status = 0;
 	if ((fd = open(filename, O_RDONLY)) == -1)
-		return (ft_free_map_error(map_data, "Unable to open map file"));
+		return (ft_free_map_error(map_data, "Map missing or can't be opened"));
 	while (status >= 0)
 	{
 		status = get_next_line(fd, &line);

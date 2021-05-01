@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 21:33:20 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 19:44:39 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int		ft_config_other(char **line_addr, t_map_data *map_data)
 			(*line_addr)[i] = '0';
 		}
 		else if (ft_strchr(" 012", (*line_addr)[i]) == NULL)
-			return (ft_error("Illegal variable or illegal character in map"));
+			return (ft_error("Invalid identifier or illegal character in map"));
 		++i;
 	}
 	if (!(new = ft_lstnew((*line_addr))))
