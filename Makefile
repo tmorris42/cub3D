@@ -6,22 +6,45 @@ LIBFT = libft.a
 MLX_DIR = ./minilibx-linux/
 MLX = libmlx.a
 
+SRCS = $(SRC_DIR)draw.c \
+	   $(SRC_DIR)errors.c \
+	   $(SRC_DIR)images.c \
+	   $(SRC_DIR)keys.c \
+	   $(SRC_DIR)main.c \
+	   $(SRC_DIR)parser.c \
+	   $(SRC_DIR)parser_config_other.c \
+	   $(SRC_DIR)parser_config_textures.c \
+	   $(SRC_DIR)parser_data.c \
+	   $(SRC_DIR)parser_map.c \
+	   $(SRC_DIR)parser_to_screen.c \
+	   $(SRC_DIR)parser_utils.c \
+	   $(SRC_DIR)screen.c \
+	   $(SRC_DIR)screenshot.c \
+	   $(SRC_DIR)raycast.c \
+	   $(SRC_DIR)raycast_sprites.c \
+	   $(SRC_DIR)raycast_sprites_utils.c
+
+OBJS = ${SRCS:.c=.o}
+
 all: $(NAME)
 
-$(NAME):
-	@$(MAKE) bonus -C $(LIBFT_DIR)
-	@$(MAKE) -C $(MLX_DIR)
-	@$(MAKE) -C $(SRC_DIR)
+$(LIBFT_DIR)$(LIBFT):
+	$(MAKE) bonus -C $(LIBFT_DIR)
+
+$(MLX_DIR)$(MLX):
+	$(MAKE) -C $(MLX_DIR)
+
+$(NAME): $(MLX_DIR)$(MLX) $(LIBFT_DIR)$(LIBFT) $(OBJS)
+	gcc -Wall -Wextra -Werror $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
+
+$(OBJS): %.o : %.c
+	gcc -Wall -Wextra -Werror -c $< -o $@
 
 clean:
-	@$(MAKE) clean -C $(LIBFT_DIR)
-	@$(MAKE) clean -C $(MLX_DIR)
-	@$(MAKE) clean -C $(SRC_DIR)
+	rm -f $(OBJS)
 
-fclean: 
-	@$(MAKE) fclean -C $(LIBFT_DIR)
-	@$(MAKE) clean -C $(MLX_DIR)
-	@$(MAKE) fclean -C $(SRC_DIR)
+fclean: clean
+	rm -f $(NAME)
 
 re: fclean all
 
@@ -31,4 +54,4 @@ test:
 leaks:
 	bash ./tests/test_invalid_maps_leaks.sh
 
-.PHONY: all clean fclean re $(NAME) test leaks
+.PHONY: all clean fclean re test leaks
