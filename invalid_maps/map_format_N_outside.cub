@@ -1,0 +1,21 @@
+R 300 200
+NO ./textures/no.xpm
+SO ./textures/so.xpm
+WE ./textures/we.xpm
+EA ./textures/ea.xpm
+
+S ./textures/sprite.xpm
+F 220,100,0
+C 225,30,0
+
+1111111111
+1000100001
+1000100001
+1000000101
+1000001001
+1110000001
+ N10000001
+1110000001
+1000000001
+1000000001
+1111111111
