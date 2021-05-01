@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 17:54:15 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 18:52:22 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,22 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 		ft_free_map_exit(screen, data, "Couldn't connect to X server");
 }
 
+static void		ft_load_textures(t_map_data *data, t_screen *screen)
+{
+	int		i;
+
+	i = -1;
+	while (++i < 4)
+	{
+		if (ft_load_image(data->textures[i], screen, &(screen->walls[i])) == -1)
+			ft_free_map_exit(screen, data, "Wall texture not loadable as XPM");
+	}
+	if (ft_load_image(data->sprite, screen, &(screen->sprite)) == -1)
+		ft_free_map_exit(screen, data, "Sprite texture not loadable as XPM");
+}
+
 t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 {
-	int			i;
 	t_screen	*screen;
 
 	if (!(screen = ft_new_screen(player)))
@@ -83,15 +96,10 @@ t_screen		*ft_load_screen(t_player *player, t_map_data *data, int save)
 		ft_free_map_exit(screen, data, "Couldn't create buffer image");
 	screen->buf.addr = mlx_get_data_addr(screen->buf.img, &screen->buf.bpp,
 			&screen->buf.len, &screen->buf.endian);
+	if (!screen->buf.addr)
+		ft_free_map_exit(screen, data, "Couldn't get buffer address");
 	screen->buf.width = screen->width;
 	screen->buf.height = screen->height;
-	i = -1;
-	while (++i < 4)
-	{
-		if (ft_load_image(data->textures[i], screen, &(screen->walls[i])) == -1)
-			ft_free_map_exit(screen, data, "Wall texture not loadable as XPM");
-	}
-	if (ft_load_image(data->sprite, screen, &(screen->sprite)) == -1)
-		ft_free_map_exit(screen, data, "Sprite texture not loadable as XPM");
+	ft_load_textures(data, screen);
 	return (screen);
 }
