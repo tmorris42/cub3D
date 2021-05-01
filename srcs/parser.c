@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 18:50:33 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/01 15:07:23 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ char		*ft_verify_data(t_map_data *map_data)
 	return (NULL);
 }
 
+int			check_map_zeroes(t_map_data *map); //
+
 void		*ft_verify_all(t_map_data *data)
 {
 	char	*line;
@@ -78,11 +80,11 @@ void		*ft_verify_all(t_map_data *data)
 	if ((msg = ft_verify_data(data)))
 		return (ft_free_map_error(data, msg));
 	if (ft_convert_map_to_2d(data) == -1)
-		return (ft_free_map_error(data, "Could not parse map data"));
+		return (ft_free_map_data(data));
 	line = (char*)ft_calloc(data->map_width * data->map_height, sizeof(char));
 	if (!line)
 		return (ft_free_map_error(data, "Unable to allocate sufficient space"));
-	if (ft_check_map_void(data, line, data->player_x, data->player_y) < 0)
+	if (check_map_zeroes(data) == -1)
 		data = ft_free_map_error(data, "Map must be surrounded by walls");
 	free(line);
 	return (data);
