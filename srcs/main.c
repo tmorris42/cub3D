@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 19:40:52 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/02 12:10:08 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ int				ft_update(t_screen *screen)
 	if (screen->keys.turn_left)
 		ft_rotate(-M_PI / 48.0, screen);
 	screen->refresh = 1;
-	if (ft_draw(screen) == -1)
-		ft_close_on_error(screen, "Couldn't allocate memory");
+	if (ft_draw(screen) < 0)
+		ft_close_on_error(screen, "Couldn't allocate memory to draw");
 	return (0);
 }
 
@@ -50,20 +50,20 @@ int				ft_run(t_screen *screen)
 	return (ft_close_screen(&screen));
 }
 
-void			ft_parse_options(int argc, char **argv, t_screen *screen)
+static void		ft_parse_options(int argc, char **argv, t_screen *screen)
 {
-	if (argc > 2)
+	if (argc == 2)
+		return;
+	if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 	{
-		if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
-		{
-			ft_redraw(screen);
-			if (ft_save(screen, "save.bmp") == -1)
-				ft_error("Could not save screenshot");
-			ft_close_screen(&screen);
-		}
-		else
-			ft_close_on_error(screen, "Invalid Options");
+		if (ft_redraw(screen) == -1)
+			ft_error("Couldn't allocate sufficient memory to generate image");
+		else if (ft_save(screen, "save.bmp") == -1)
+			ft_error("Could not save screenshot to file");
+		ft_close_screen(&screen);
 	}
+	else
+		ft_close_on_error(screen, "Invalid Options");
 }
 
 int				main(int argc, char **argv)
