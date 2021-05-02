@@ -2,6 +2,7 @@
 *.swp
 cub3D
 logs/
+*.bmp
 
 # Testers
 cub3D_leaks_maps_tester
