@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/02 12:08:27 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 17:34:47 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,3 @@ int			ft_redraw(t_screen *screen)
 	screen->refresh = 1;
 	return (ft_draw(screen));
 }
-

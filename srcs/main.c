@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/02 12:10:08 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 17:35:34 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int				ft_run(t_screen *screen)
 static void		ft_parse_options(int argc, char **argv, t_screen *screen)
 {
 	if (argc == 2)
-		return;
+		return ;
 	if (argc == 3 && !ft_strncmp(argv[2], "--save", 7))
 	{
 		if (ft_redraw(screen) == -1)
