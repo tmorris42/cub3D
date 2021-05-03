@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   screen.c                                           :+:      :+:    :+:   */
+/*   screen_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 20:19:09 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 23:12:14 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int			ft_close_screen(t_screen **screen_addr)
 	if (screen->map)
 		ft_free_int_array(screen->map, screen->map_height);
 	i = 0;
+	free(screen->next_level);
 	while (screen->mlx && screen->walls && i < 4 && screen->walls[i].img)
 		mlx_destroy_image(screen->mlx, screen->walls[i++].img);
 	if ((screen->mlx) && (screen->buf.img))
@@ -36,7 +37,6 @@ int			ft_close_screen(t_screen **screen_addr)
 	free(screen->sprites);
 	free(screen->mlx);
 	free(screen);
-	(*screen_addr) = NULL;
 	exit(EXIT_SUCCESS);
 	return (1);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_to_screen.c                                 :+:      :+:    :+:   */
+/*   parser_to_screen_bonus.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 20:31:00 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 23:43:51 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->map_height = data->map_height;
 	screen->map_width = data->map_width;
 	screen->map = data->map_grid;
+	screen->next_level = data->next_level;
+	data->next_level = NULL;
 	data->map_grid = NULL;
 	screen->sprite_count = data->sprite_count;
 	screen->sprites = malloc(sizeof(t_sprite) * data->sprite_count);
@@ -68,7 +70,7 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 		ft_free_map_exit(screen, data, "Couldn't connect to X server");
 }
 
-static void		ft_load_textures(t_map_data *data, t_screen *screen)
+void			ft_load_textures(t_map_data *data, t_screen *screen)
 {
 	int		i;
 

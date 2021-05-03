@@ -30,11 +30,13 @@ BONUS_FILES = draw_bonus.c \
 		images.c \
 		keys_bonus.c \
 		main_bonus.c \
+		next_level_bonus.c \
 		object_collision_bonus.c \
-		parser.c \
+		parser_bonus.c \
+		parser_config_bonus.c \
 		parser_config_other.c \
 		parser_config_textures.c \
-		parser_data.c \
+		parser_data_bonus.c \
 		parser_map.c \
 		parser_to_screen_bonus.c \
 		parser_utils.c \

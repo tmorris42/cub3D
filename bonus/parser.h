@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 20:07:57 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 17:28:24 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 23:18:44 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int			ft_config_n(char **line_addr, t_map_data *map_data);
 int			ft_config_e(char **line_addr, t_map_data *map_data);
 int			ft_config_w(char **line_addr, t_map_data *map_data);
 int			ft_config_s(char **line_addr, t_map_data *map_data);
+int			ft_config_p(char **line_addr, t_map_data *map_data);
 int			ft_get_chr_index(char c, char *str);
 int			ft_islegal_char(char c, char *charset);
 int			ft_has_only_legal_chars(char *str, char *charset);

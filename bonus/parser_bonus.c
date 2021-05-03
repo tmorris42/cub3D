@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 19:48:43 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 23:02:13 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 {
 	int		i;
-	int		(*config[8]) (char **map_line, t_map_data *map_data);
+	int		(*config[9]) (char **map_line, t_map_data *map_data);
 	char	*line;
 
 	config[0] = ft_config_other;
@@ -27,13 +27,14 @@ static int	ft_parse_line(char **line_addr, t_map_data *map_data)
 	config[5] = ft_config_e;
 	config[6] = ft_config_w;
 	config[7] = ft_config_s;
+	config[8] = ft_config_p;
 	i = 0;
 	if (!line_addr || !(*line_addr) || !(map_data))
 		return (-1);
 	line = *line_addr;
 	if (line[0] == '\0')
 		return (0);
-	i = ft_get_chr_index(line[0], "RFCNEWS");
+	i = ft_get_chr_index(line[0], "RFCNEWSP");
 	if (i != -1 && (map_data->map_width || map_data->map_height))
 		return (ft_error("Map is not the last item in the configuration file"));
 	i = (*config[i + 1])(line_addr, map_data);

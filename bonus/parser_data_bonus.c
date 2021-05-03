@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_data.c                                      :+:      :+:    :+:   */
+/*   parser_data_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 18:41:50 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 14:18:30 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 23:08:52 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void		ft_map_data_init(t_map_data *map)
 		map->player_y = -1;
 		map->player_facing_x = 0;
 		map->player_facing_y = 0;
+		map->next_level = NULL;
 	}
 }
 
@@ -76,6 +77,8 @@ t_map_data	*ft_free_map_data(t_map_data *map)
 	map->map_grid = NULL;
 	ft_lstclear(&map->sprite_list, &free);
 	map->sprite_list = NULL;
+	free(map->next_level);
+	map->next_level = NULL;
 	free(map);
 	return (NULL);
 }

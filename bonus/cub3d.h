@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 20:57:27 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/04 00:00:14 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct		s_map_data
 	int				player_y;
 	int				player_facing_x;
 	int				player_facing_y;
+	char			*next_level;
 
 }					t_map_data;
 
@@ -135,6 +136,7 @@ typedef struct		s_screen
 	t_colors	colors;
 	int			refresh;
 	int			score;
+	char		*next_level;
 }					t_screen;
 
 t_map_data			*ft_free_map_data(t_map_data *map);
@@ -162,5 +164,12 @@ t_screen			*ft_load_screen(t_player *p, t_map_data *data, int save);
 void				check_object_collision(t_screen *screen);
 void				draw_rect(t_screen *scr, t_pt start, t_pt stop, int color);
 int					int_to_str(char *msg, int x, int i);
+t_screen			*next_level(t_screen *screen);
+void				ft_init_image_data(t_img_data *img);
+void				ft_init_keys(t_keys *keys);
+void				ft_parse_to_screen(t_screen *screen, t_map_data *data);
+void				ft_reset_resolution(t_screen *screen);
+void				ft_load_textures(t_map_data *data, t_screen *screen);
+void				ft_sprite_list_to_array(t_screen *screen, t_map_data *data);
 
 #endif

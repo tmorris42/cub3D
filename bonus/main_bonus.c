@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 19:17:05 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/04 00:12:38 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int				ft_update(t_screen *screen)
 	if (screen->keys.turn_left)
 		ft_rotate(-M_PI / 48.0, screen);
 	check_object_collision(screen);
+	if (screen->sprite_count == 0 && screen->next_level)
+		next_level(screen);
 	screen->refresh = 1;
 	if (ft_draw(screen) == -1)
 		ft_close_on_error(screen, "Couldn't allocate memory");
