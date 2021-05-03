@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/04 00:13:21 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/04 00:17:49 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void		ft_reinit_screen(t_screen *screen)
 	}
 }
 
-void			reparse_to_screen(t_screen *screen, t_map_data *data)
+void		reparse_to_screen(t_screen *screen, t_map_data *data)
 {
 	screen->player->pos_x = data->player_x + 0.01;
 	screen->player->pos_y = data->player_y + 0.01;
@@ -77,7 +77,7 @@ void			reparse_to_screen(t_screen *screen, t_map_data *data)
 	screen->refresh = 1;
 }
 
-t_screen		*reload_screen(t_screen *screen, t_map_data *data)
+t_screen	*reload_screen(t_screen *screen, t_map_data *data)
 {
 	reparse_to_screen(screen, data);
 	if (!screen->buf.addr)
@@ -97,7 +97,6 @@ t_screen	*next_level(t_screen *screen)
 		ft_close_on_error(screen, "Failed to load next map");
 	cleanse_screen(&screen);
 	ft_reinit_screen(screen);
-	ft_putstr("Would load next level around here"); //
 	screen = reload_screen(screen, map_parse);
 	map_parse = ft_free_map_data(map_parse);
 	return (screen);
