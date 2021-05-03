@@ -1,6 +1,7 @@
 *.o
 *.swp
 cub3D
+bonus3D
 logs/
 *.bmp
 
