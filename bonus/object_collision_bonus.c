@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 19:12:19 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 19:36:12 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,10 @@ void			check_object_collision(t_screen *screen)
 		sprite = &screen->sprites[i];
 		if (floor(sprite->x) == floor(screen->player->pos_x) &&
 				floor(sprite->y) == floor(screen->player->pos_y))
+		{
+			system("aplay -q ./audio/soda.wav &");
 			delete_sprite(screen, i);
+		}
 		++i;
 	}
 }
