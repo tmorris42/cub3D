@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/30 11:38:43 by tmorris           #+#    #+#             */
-/*   Updated: 2021/03/08 18:12:22 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 20:19:09 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void		ft_init_screen(t_screen *screen)
 		ft_init_image_data(&screen->walls[i]);
 		++i;
 	}
+	screen->score = 0;
 }
 
 t_screen	*ft_new_screen(t_player *player)

@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 19:13:16 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 20:18:24 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ typedef struct		s_screen
 	t_sprite	*sprites;
 	t_colors	colors;
 	int			refresh;
+	int			score;
 }					t_screen;
 
 t_map_data			*ft_free_map_data(t_map_data *map);
