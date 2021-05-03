@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 18:52:22 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 20:31:00 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void			ft_parse_to_screen(t_screen *screen, t_map_data *data)
 	screen->player->pos_y = data->player_y + 0.01;
 	screen->player->rot_x = data->player_facing_x;
 	screen->player->rot_y = data->player_facing_y;
+	screen->player->hp = 20;
 	screen->colors.ceiling = data->ceil;
 	screen->colors.floor = data->floor;
 	screen->map_height = data->map_height;

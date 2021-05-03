@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   keys.c                                             :+:      :+:    :+:   */
+/*   keys_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/04/30 17:17:10 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 20:50:03 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,17 @@ void	ft_move_relative(double x, double y, t_screen *screen)
 	p = screen->player;
 	if (screen->map[(int)(p->pos_y)][(int)(p->pos_x + x)] == 0)
 		p->pos_x += x;
+	else
+		screen->player->hp -= 1;
 	if (screen->map[(int)(p->pos_y + y)][(int)p->pos_x] == 0)
 		p->pos_y += y;
+	else
+		screen->player->hp -= 1;
+	if (screen->player->hp < 1)
+	{
+		ft_putstr("GAME OVER!");
+		ft_close_screen(&screen);
+	}
 }
 
 int		ft_parse_keys(int key, t_screen *screen, int pressed)

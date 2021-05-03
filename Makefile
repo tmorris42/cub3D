@@ -25,9 +25,10 @@ FILES = draw.c \
 	   	raycast_sprites_utils.c
 
 BONUS_FILES = draw_bonus.c \
+		draw_utils_bonus.c \
 		errors.c \
 		images.c \
-		keys.c \
+		keys_bonus.c \
 		main_bonus.c \
 		object_collision_bonus.c \
 		parser.c \
@@ -35,7 +36,7 @@ BONUS_FILES = draw_bonus.c \
 		parser_config_textures.c \
 		parser_data.c \
 		parser_map.c \
-		parser_to_screen.c \
+		parser_to_screen_bonus.c \
 		parser_utils.c \
 		screen_bonus.c \
 	   	screenshot.c \

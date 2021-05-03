@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 20:18:24 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 20:57:27 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ typedef struct		s_player
 	double	pos_y;
 	double	rot_x;
 	double	rot_y;
+	int		hp;
 }					t_player;
 
 typedef struct		s_image_data
@@ -159,5 +160,7 @@ void				ft_close_on_error(t_screen *screen, char *msg);
 t_map_data			*ft_free_map_error(t_map_data *map, char *msg);
 t_screen			*ft_load_screen(t_player *p, t_map_data *data, int save);
 void				check_object_collision(t_screen *screen);
+void				draw_rect(t_screen *scr, t_pt start, t_pt stop, int color);
+int					int_to_str(char *msg, int x, int i);
 
 #endif
