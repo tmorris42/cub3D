@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 20:10:39 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 19:12:47 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ int				ft_update(t_screen *screen)
 
 	p = screen->player;
 	if (screen->keys.up)
+	{
 		ft_move_relative(p->rot_x, p->rot_y, screen);
+		check_object_collision(screen);
+	}
 	if (screen->keys.left)
 		ft_move_relative(p->rot_y, -p->rot_x, screen);
 	if (screen->keys.down)
@@ -29,6 +32,7 @@ int				ft_update(t_screen *screen)
 		ft_rotate(M_PI / 48.0, screen);
 	if (screen->keys.turn_left)
 		ft_rotate(-M_PI / 48.0, screen);
+//	check_object_collision(screen);
 	screen->refresh = 1;
 	if (ft_draw(screen) == -1)
 		ft_close_on_error(screen, "Couldn't allocate memory");

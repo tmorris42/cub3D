@@ -24,12 +24,31 @@ FILES = draw.c \
 	 	raycast_sprites.c \
 	   	raycast_sprites_utils.c
 
+BONUS_FILES = draw.c \
+		errors.c \
+		images.c \
+		keys.c \
+		main_bonus.c \
+		object_collision_bonus.c \
+		parser.c \
+		parser_config_other.c \
+		parser_config_textures.c \
+		parser_data.c \
+		parser_map.c \
+		parser_to_screen.c \
+		parser_utils.c \
+		screen.c \
+	   	screenshot.c \
+	   	raycast.c \
+	 	raycast_sprites.c \
+	   	raycast_sprites_utils.c
+
 SRCS = $(addprefix $(SRC_DIR),$(FILES))
 OBJS = ${SRCS:.c=.o}
 
 BONUS_NAME = bonus3D
 BONUS_DIR = ./bonus/
-BONUS_SRCS = $(addprefix $(BONUS_DIR),$(FILES))
+BONUS_SRCS = $(addprefix $(BONUS_DIR),$(BONUS_FILES))
 BONUS_OBJS = ${BONUS_SRCS:.c=.o}
 
 all: $(NAME)
@@ -44,6 +63,9 @@ $(NAME): $(MLX_DIR)$(MLX) $(LIBFT_DIR)$(LIBFT) $(OBJS)
 	gcc -Wall -Wextra -Werror $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
 
 $(OBJS): %.o : %.c
+	gcc -Wall -Wextra -Werror -c $< -o $@
+
+$(BONUS_OBJS): %.o : %.c
 	gcc -Wall -Wextra -Werror -c $< -o $@
 
 clean:

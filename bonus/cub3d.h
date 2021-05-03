@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 00:24:37 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/01 19:11:09 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/03 19:13:16 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,5 +157,6 @@ int					ft_error(char *msg);
 void				ft_close_on_error(t_screen *screen, char *msg);
 t_map_data			*ft_free_map_error(t_map_data *map, char *msg);
 t_screen			*ft_load_screen(t_player *p, t_map_data *data, int save);
+void				check_object_collision(t_screen *screen);
 
 #endif
