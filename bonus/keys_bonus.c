@@ -6,7 +6,7 @@
 /*   By: tmorris <tmorris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/16 18:05:52 by tmorris           #+#    #+#             */
-/*   Updated: 2021/05/03 22:59:29 by tmorris          ###   ########.fr       */
+/*   Updated: 2021/05/04 13:34:19 by tmorris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void	ft_move_relative(double x, double y, t_screen *screen)
 		screen->player->hp -= 1;
 	if (screen->player->hp < 1)
 	{
+		system("aplay -q ./audio/SCREAM3.wav &");
 		ft_putstr("GAME OVER!");
-		system("aplay -q ./audio/SCREAM3.wav");
 		ft_close_screen(&screen);
 	}
 }
