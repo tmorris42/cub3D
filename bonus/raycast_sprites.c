@@ -60,12 +60,12 @@ void	ft_draw_sprite(t_screen *screen, t_sprite_data *data, int *i)
 	ft_calc_transform(screen, data);
 	temp = ((screen->width / 2) * (1 + data->transform.x / data->transform.y));
 	data->screen_x = (int)temp;
-	data->dim.y = (int)(abs(screen->height / data->transform.y));
+	data->dim.y = (int)(fabs(screen->height / data->transform.y));
 	data->draw.start.y = -data->dim.y / 2 + screen->height / 2;
 	data->draw.start.y = ft_max(data->draw.start.y, 0);
 	data->draw.end.y = data->dim.y / 2 + screen->height / 2;
 	data->draw.end.y = ft_min(data->draw.end.y, screen->height);
-	data->dim.x = (int)(abs(screen->height / data->transform.y));
+	data->dim.x = (int)(fabs(screen->height / data->transform.y));
 	data->draw.start.x = (int)(-data->dim.x / 2 + data->screen_x);
 	data->draw.start.x = ft_max(data->draw.start.x, 0);
 	data->draw.end.x = (int)(data->dim.x / 2 + data->screen_x);
