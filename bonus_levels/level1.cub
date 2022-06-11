@@ -1,0 +1,14 @@
+R 600 400
+NO ./textures/summer.xpm
+SO ./textures/winter.xpm
+WE ./textures/autumn.xpm
+EA ./textures/spring.xpm
+
+P ./bonus_levels/level2.cub
+S ./textures/sprite.xpm
+F 150,150,150
+C 50,200,255
+
+11111111111
+1E000000021
+11111111111
