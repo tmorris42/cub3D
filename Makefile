@@ -74,10 +74,10 @@ $(BONUS_OBJS): %.o : %.c
 	gcc -Wall -Wextra -Werror -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(BONUS_NAME)
 
 re: fclean all
 
