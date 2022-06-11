@@ -23,6 +23,8 @@ FILES = draw.c \
 	   	raycast.c \
 	 	raycast_sprites.c \
 	   	raycast_sprites_utils.c
+CC = gcc
+FLAGS = -Wall -Wextra -Werror
 
 BONUS_FILES = draw_bonus.c \
 		draw_utils_bonus.c \
@@ -57,16 +59,16 @@ BONUS_OBJS = ${BONUS_SRCS:.c=.o}
 all: $(NAME)
 
 $(LIBFT_DIR)$(LIBFT):
-	$(MAKE) bonus -C $(LIBFT_DIR)
+	$(MAKE) -C $(LIBFT_DIR)
 
 $(MLX_DIR)$(MLX):
 	$(MAKE) -C $(MLX_DIR)
 
 $(NAME): $(MLX_DIR)$(MLX) $(LIBFT_DIR)$(LIBFT) $(OBJS)
-	gcc -Wall -Wextra -Werror $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
+	$(CC) $(FLAGS) $(OBJS) -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx -lXext -lX11 -lbsd -lm -o $(NAME)
 
 $(OBJS): %.o : %.c
-	gcc -Wall -Wextra -Werror -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 
 $(BONUS_OBJS): %.o : %.c
 	gcc -Wall -Wextra -Werror -c $< -o $@

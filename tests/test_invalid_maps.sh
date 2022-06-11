@@ -7,7 +7,7 @@ for f in invalid_maps/*.cub
 do
 	printf '%-50s' "$f";
 	bn="$(basename -- "$f" .cub)"
-	./cub3D $f > "logs/$bn.log" 2> "logs/$bn.valgrind.log"
+	./cub3D $f > "logs/$bn.log" 2>&1
 	if [[ $(grep "Error" "logs/$bn.log" | wc -l) = 1 ]]; then
 		echo -e ${GREEN}Error Printed -- OK${NC}
 	else
