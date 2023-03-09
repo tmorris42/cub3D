@@ -15,7 +15,7 @@
 # include <fcntl.h>
 # include <math.h>
 # include "../minilibx-linux/mlx.h"
-# include "../libft/libft.h"
+# include "../libft/includes/libft.h"
 
 # define K_ESCAPE	65307
 # define K_LEFT		65361
