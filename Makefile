@@ -86,10 +86,10 @@ $(BONUS_NAME): $(MLX_DIR)$(MLX) $(LIBFT_DIR)$(LIBFT) $(BONUS_OBJS)
 
 bonus: $(BONUS_NAME)
 
-test:
+test: $(NAME)
 	bash ./tests/test_invalid_maps.sh
 
-leaks:
+leaks: $(NAME)
 	bash ./tests/test_invalid_maps_leaks.sh
 
 .PHONY: all clean fclean re test leaks bonus
